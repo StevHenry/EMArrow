@@ -11,26 +11,25 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
 public class Map {
-    Texture img;
+
     TiledMap tiledMap;
     OrthographicCamera camera;
     TiledMapRenderer tiledMapRenderer;
 
-    @Override
-    public void create () {
-        float w = Gdx.graphics.getWidth();
-        float h = Gdx.graphics.getHeight();
-
-        camera = new OrthographicCamera();
-        camera.zoom = 0.2f;
-        camera.setToOrtho(false,w,h);
-        camera.update();
-        tiledMap = new TmxMapLoader().load("maps/map1.tmx");
-        tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
-        Gdx.input.setInputProcessor(this);
+    public Map(String mapName) {
+        create(mapName);
     }
 
-    @Override
+    private void create (String mapName) {
+        camera = new OrthographicCamera();
+        camera.zoom = 0.2f;
+        camera.setToOrtho(false,1740,950);
+        camera.update();
+
+        tiledMap = new TmxMapLoader().load("maps/"+ mapName +".tmx");
+        tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+    }
+
     public void render () {
         Gdx.gl.glClearColor(1, 0, 0, 1);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);

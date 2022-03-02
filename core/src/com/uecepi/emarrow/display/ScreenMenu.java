@@ -3,12 +3,15 @@ package com.uecepi.emarrow.display;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.uecepi.emarrow.assets.Assets;
 
-public class ScreenMenu implements Screen {
+public abstract class ScreenMenu implements Screen {
 
     protected Stage stage;
     protected Table table;
+    protected Skin skin;
 
     public ScreenMenu() {
         stage = new Stage();
@@ -16,6 +19,8 @@ public class ScreenMenu implements Screen {
         table = new Table();
         table.setFillParent(true);
         stage.addActor(table);
+
+        skin = Assets.getAssetManager().get(Assets.SKIN_VIS);
 
         Gdx.input.setInputProcessor(stage);
     }
