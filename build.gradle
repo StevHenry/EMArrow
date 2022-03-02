@@ -1,6 +1,4 @@
 buildscript {
-    
-
     repositories {
         mavenLocal()
         mavenCentral()
@@ -8,11 +6,9 @@ buildscript {
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         google()
     }
-    dependencies {
-        
-
-    }
+    dependencies {}
 }
+
 
 allprojects {
     apply plugin: "eclipse"
@@ -35,36 +31,59 @@ allprojects {
         gradlePluginPortal()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+        maven { url "https://clojars.org/repo/" }
     }
 }
 
 project(":desktop") {
     apply plugin: "java-library"
 
-
     dependencies {
         implementation project(":core")
+        testImplementation 'junit:junit:4.13.2'
         api "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
-        api "com.badlogicgames.gdx:gdx-bullet-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
         api "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
-        
     }
 }
 
 project(":core") {
     apply plugin: "java-library"
 
-
     dependencies {
+        testImplementation 'junit:junit:4.13.2'
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
-        api "com.badlogicgames.gdx:gdx-bullet:$gdxVersion"
         api "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
         api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
-        
+        api "kryonet:kryonet:2.21"
+    }
+
+    test {
+        useJUnitPlatform()
     }
 }
+
+project(":server") {
+    apply plugin: "java-library"
+
+    dependencies {
+        testImplementation 'junit:junit:4.13.2'
+        implementation 'com.esotericsoftware:kryo:5.3.0'
+        implementation "kryonet:kryonet:2.21"
+
+        implementation 'org.apache.logging.log4j:log4j-api:2.17.2'
+        implementation 'org.apache.logging.log4j:log4j-core:2.17.2'
+        implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.17.2'
+
+        implementation project(':core')
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+}
+
