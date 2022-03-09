@@ -4,41 +4,48 @@ import com.emarrow.uecepi.server.ServerStarter;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
-import com.uecepi.emarrow.networking.ConnectionPacket;
-import com.uecepi.emarrow.networking.PlayerData;
-import org.junit.Assert;
-import org.junit.Test;
+import com.uecepi.emarrow.networking.PingPacket;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.UUID;
 
 public class ServerTest {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServerTest.class);
+
     @Test
-    public void testServer() {
+    public void testServer() throws IOException, InterruptedException {
         new ServerStarter();
+        final boolean[] valid = {false};
 
         Client client = new Client();
         client.start();
-        try {
-            client.connect(5000, "127.0.0.1", 54555, 54777);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        PlayerData data = new PlayerData("moi", UUID.randomUUID());
-        ConnectionPacket connectionPacket = new ConnectionPacket(data);
+        client.getKryo().register(PingPacket.class);
 
         client.addListener(new Listener() {
             @Override
-            public void received(Connection connection, Object o) {
-                super.received(connection, o);
-                if (o instanceof ConnectionPacket) {
-                    ConnectionPacket connectionPacket = (ConnectionPacket) o;
-                    Assert.assertEquals(connectionPacket.getPlayerData().getUUID(), data.getUUID());
+            public void received(Connection connection, Object obj) {
+                super.received(connection, obj);
+                LOGGER.debug("Received a packet from the server!");
+                if (obj instanceof PingPacket) {
+                    valid[0] = true;
+                    LOGGER.info("Received a pong!");
                 }
             }
         });
-        client.sendTCP(connectionPacket);
+
+        client.connect(5000, "127.0.0.1", 54555, 54777);
+
+        client.sendTCP(new PingPacket());
+        for (int i = 0; i < 50; i++) {
+            if (!valid[0]) {
+                Thread.sleep(100);
+            } else
+                return;
+        }
+        Assertions.fail();
     }
 }
