@@ -10,6 +10,9 @@ import com.badlogic.gdx.physics.box2d.World;
 
 public class GameEngine {
     private World world;
+    private float accumulator = 0;
+    private Character player;
+    private KeyboardController controller;
 
     public GameEngine() {
         this.world = new World(new Vector2(0, -150), true);

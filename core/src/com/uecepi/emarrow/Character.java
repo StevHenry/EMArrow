@@ -14,7 +14,8 @@ public class Character {
     private GameEngine gameEngine;
     private Body body;
 
-    public Character(){
+    public Character(GameEngine gameEngine){
+        this.gameEngine = gameEngine;
         this.bodyDef = new BodyDef();
         this.createHitBox();
     }
