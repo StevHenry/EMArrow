@@ -64,7 +64,7 @@ public class GameEngine {
 
         }
         if (controller.jump){
-                //&& player.isGrounded()) {
+            //&& player.isGrounded()) {
             player.getBody().applyLinearImpulse(new Vector2(0, 100), player.getBody().getPosition(), true);
         }
 

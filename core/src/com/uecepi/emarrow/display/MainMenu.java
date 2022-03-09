@@ -52,11 +52,4 @@ public class MainMenu extends ScreenMenu{
         });
     }
 
-
-
-
-
-
-
-
 }

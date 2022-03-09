@@ -9,7 +9,6 @@ import com.badlogic.gdx.physics.box2d.*;
 
 public class Character {
     private int life;
-    private Weapon weapon;
     private BodyDef bodyDef;
     private GameEngine gameEngine;
     private Body body;
