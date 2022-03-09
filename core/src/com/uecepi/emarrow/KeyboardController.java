@@ -22,6 +22,14 @@ public class KeyboardController  implements InputProcessor {
                 right = true;   //do this
                 keyProcessed = true;    //we have reacted to a keypress
                 break;
+            case Keys.Q:     //if keycode is the same as Keys.LEFT a.k.a 21
+                left = true;    //do this
+                keyProcessed = true;    //we have reacted to a keypress
+                break;
+            case Keys.D:    //if keycode is the same as Keys.LEFT a.k.a 22
+                right = true;   //do this
+                keyProcessed = true;    //we have reacted to a keypress
+                break;
             case Keys.SPACE:       //if keycode is the same as Keys.LEFT a.k.a 19
                 jump = true;      //do this
                 keyProcessed = true;    //we have reacted to a keypress
@@ -43,6 +51,14 @@ public class KeyboardController  implements InputProcessor {
                 keyProcessed = true;    //we have reacted to a keypress
                 break;
             case Keys.RIGHT:    //if keycode is the same as Keys.LEFT a.k.a 22
+                right = false;  //do this
+                keyProcessed = true;    //we have reacted to a keypress
+                break;
+            case Keys.Q:     //if keycode is the same as Keys.LEFT a.k.a 21
+                left = false;   //do this
+                keyProcessed = true;    //we have reacted to a keypress
+                break;
+            case Keys.D:    //if keycode is the same as Keys.LEFT a.k.a 22
                 right = false;  //do this
                 keyProcessed = true;    //we have reacted to a keypress
                 break;

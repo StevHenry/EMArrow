@@ -17,7 +17,7 @@ public class DesktopLauncher {
     config.width = 1920;
 		config.height = 1080;
 		configure(config);;
-		new LwjglApplication(new GameTest(), config);
+		new LwjglApplication(new Emarrow(), config);
 	}
 
 	private static void configure(LwjglApplicationConfiguration config) {
