@@ -12,7 +12,7 @@ public class GameEngine {
     private World world;
 
     public GameEngine() {
-        this.world = new World(new Vector2(0, -60), true);
+        this.world = new World(new Vector2(0, -150), true);
         this.player = new Character(this);
         this.createGround();
         controller = new KeyboardController();
