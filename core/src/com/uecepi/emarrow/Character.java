@@ -36,7 +36,7 @@ public class Character {
 
 // Create a circle shape and set its radius to 6
         PolygonShape hitBox = new PolygonShape();
-        hitBox.setAsBox(4.0f, 7.0f);
+        hitBox.setAsBox(50.0f, 50.0f);
 
 // Create a fixture definition to apply our shape to
         FixtureDef fixtureDef = new FixtureDef();

@@ -13,6 +13,11 @@ public class GameEngine {
     private float accumulator = 0;
     private Character player;
     private KeyboardController controller;
+    private static GameEngine gameEngine;
+
+    public static GameEngine getInstance(){
+        return gameEngine;
+    }
 
     public GameEngine() {
         this.world = new World(new Vector2(0, -150), true);
@@ -20,6 +25,10 @@ public class GameEngine {
         this.createGround();
         controller = new KeyboardController();
         Gdx.input.setInputProcessor(controller);
+    }
+
+    public static void start(){
+        gameEngine = new GameEngine();
     }
 
     public void createGround(){
