@@ -19,7 +19,7 @@ public class GameEngine {
 
     public GameEngine() {
         map = new Map("map1");
-        this.world = new World(new Vector2(0, -250), true);
+        this.world = new World(new Vector2(0, -350), true);
         this.player = new Character(this);
         this.createGround();
         controller = new KeyboardController();
@@ -59,13 +59,16 @@ public class GameEngine {
         if (controller.left) {
             //TODO Ameliorer la facon de déplacer
             //body.setTransform(body.getTransform().getPosition().x-1,body.getTransform().getPosition().y,body.getTransform().getRotation());
-            player.getBody().applyLinearImpulse(new Vector2(-5, 0), player.getBody().getPosition(), true);
+            player.getBody().applyLinearImpulse(new Vector2(-player.getSpeed(), 0), player.getBody().getPosition(), true);
         }
-        if (controller.right) {
+        else if (controller.right) {
             //TODO Ameliorer la facon de déplacer
             //body.setTransform(body.getTransform().getPosition().x+1,body.getTransform().getPosition().y,body.getTransform().getRotation());
-            player.getBody().applyLinearImpulse(new Vector2(5, 0), player.getBody().getPosition(), true);
-
+            player.getBody().applyLinearImpulse(new Vector2(player.getSpeed(), 0), player.getBody().getPosition(), true);
+        }
+        else {
+            // Stop moving in the Y direction
+            player.getBody().setLinearVelocity(0, player.getBody().getLinearVelocity().y);
         }
         if (controller.jump){
             //&& player.isGrounded()) {

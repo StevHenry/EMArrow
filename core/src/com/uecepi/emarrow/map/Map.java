@@ -24,7 +24,7 @@ public class Map {
     public void create (String mapName) {
         camera = new OrthographicCamera();
 
-        //camera.zoom = 0.5f;
+        camera.zoom = 0.51f;
         camera.setToOrtho(false,1740,950);
         camera.update();
 

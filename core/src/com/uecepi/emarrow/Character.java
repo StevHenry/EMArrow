@@ -14,13 +14,14 @@ public class Character {
     private GameEngine gameEngine;
     private Body body;
     private Texture texture;
+    private float speed;
 
     public Character(GameEngine gameEngine){
         texture = new Texture("images/char/1/20_1.png"); //TODO mettre en parametre pour pouvoir chosir skin
         this.gameEngine = gameEngine;
         this.bodyDef = new BodyDef();
         this.createHitBox();
-
+        this.speed = 25f;
     }
 
     public Body getBody() {
@@ -56,5 +57,9 @@ public class Character {
 
     public Texture getTexture() {
         return texture;
+    }
+
+    public float getSpeed() {
+        return speed;
     }
 }

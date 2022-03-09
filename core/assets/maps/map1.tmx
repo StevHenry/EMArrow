@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.8" tiledversion="1.8.2" orientation="orthogonal" renderorder="left-up" width="28" height="15" tilewidth="24" tileheight="24" infinite="0" nextlayerid="6" nextobjectid="1">
+<map version="1.8" tiledversion="1.8.2" orientation="orthogonal" renderorder="left-up" width="28" height="15" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="1">
  <tileset firstgid="1" source="tileset1.tsx"/>
- <imagelayer id="2" name="Calque d'Images 1" opacity="0.6" offsetx="-16" offsety="0">
-  <image source="../images/bgResized.png" width="260" height="120"/>
+ <imagelayer id="2" name="Calque d'Images 1" opacity="0.6" offsetx="-32" offsety="0">
+  <image source="../images/bgResized.png" width="520" height="240"/>
  </imagelayer>
  <layer id="5" name="Objects" width="28" height="15">
   <data encoding="csv">
