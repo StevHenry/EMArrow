@@ -21,7 +21,6 @@ public abstract class ScreenMenu implements Screen {
         stage.addActor(table);
 
         skin = Assets.getAssetManager().get(Assets.SKIN_VIS);
-
         Gdx.input.setInputProcessor(stage);
     }
 

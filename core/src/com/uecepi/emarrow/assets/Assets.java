@@ -9,10 +9,11 @@ public class Assets {
 
     private static AssetManager assetManager = new AssetManager();
 
-    public static final AssetDescriptor<Skin> SKIN_VIS = new AssetDescriptor<>("skins/skin-composer/skin/skin-composer-ui.json", Skin.class, new SkinLoader.SkinParameter("skins/skin-composer/skin/skin-composer-ui.atlas"));
+    public static final AssetDescriptor<Skin> SKIN_VIS = new AssetDescriptor<>("default/uiskin.json", Skin.class, new SkinLoader.SkinParameter("default/uiskin.atlas"));
 
     public static void load() {
         assetManager.load(SKIN_VIS);
+        assetManager.finishLoading();
     }
 
     public static AssetManager getAssetManager() {

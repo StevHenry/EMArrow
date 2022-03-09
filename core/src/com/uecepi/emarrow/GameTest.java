@@ -1,6 +1,8 @@
 package com.uecepi.emarrow;
 
 import com.badlogic.gdx.Game;
+import com.uecepi.emarrow.assets.Assets;
+import com.uecepi.emarrow.display.MainMenu;
 import com.uecepi.emarrow.display.ScreenMenu;
 import com.uecepi.emarrow.map.Map;
 
@@ -10,15 +12,12 @@ public class GameTest extends Game {
 
     @Override
     public void create() {
-        setScreen(new ScreenMenu() {
-
-        });
-        map = new Map("map1");
+        Assets.load();
+        setScreen(new MainMenu());
     }
 
     @Override
     public void render() {
         super.render();
-        map.render();
     }
 }
