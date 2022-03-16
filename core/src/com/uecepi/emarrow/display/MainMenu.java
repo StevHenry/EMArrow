@@ -32,8 +32,12 @@ public class MainMenu extends ScreenMenu{
 
         playButton = new TextButton("Play", skin);
         table.add(playButton).height(100).width(200).padTop(30).row();
-        onClick(playButton);
-        //playButton.setLabel().setFontScale(10);
+        playButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new GameScreen());
+            }
+        });
 
         controlButton = new TextButton("Controls", skin);
         table.add(controlButton).height(100).width(200).padTop(30).row();
@@ -49,19 +53,6 @@ public class MainMenu extends ScreenMenu{
 
 
     }
-
-    private void onClick(TextButton button){
-        button.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new GameScreen());
-            }
-        });
-    }
-
-
-
-
 
 
 
