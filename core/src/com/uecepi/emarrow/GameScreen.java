@@ -21,7 +21,7 @@ public class GameScreen extends ScreenMenu {
     private World world;
     private SpriteBatch batch;
 
-    public GameScreen(){
+    public GameScreen() {
         super();
         create();
     }
@@ -48,7 +48,7 @@ public class GameScreen extends ScreenMenu {
         GameEngine.getInstance().getMap().render();
         batch.draw(GameEngine.getInstance().getPlayer1().getTexture(), GameEngine.getInstance().getPlayer1().getBody().getPosition().x - (GameEngine.getInstance().getPlayer1().getTexture().getWidth() / 2), GameEngine.getInstance().getPlayer1().getBody().getPosition().y - (GameEngine.getInstance().getPlayer1().getTexture().getHeight() / 2));
         batch.end();
-        box2DDebugRenderer.render(world, orthographicCamera.combined);
+        box2DDebugRenderer.render(world, GameEngine.getInstance().getMap().getCamera().combined);
 
     }
 
@@ -69,7 +69,7 @@ public class GameScreen extends ScreenMenu {
 
     @Override
     public void resize(int width, int height) {
-        orthographicCamera.setToOrtho(false, width / SCALE, height / SCALE);
+        GameEngine.getInstance().getMap().getCamera().setToOrtho(false, width / SCALE, height / SCALE);
 
     }
 
@@ -91,7 +91,7 @@ public class GameScreen extends ScreenMenu {
     @Override
     public void dispose() {
         box2DDebugRenderer.dispose();
-        texture.dispose();
+        GameEngine.getInstance().getPlayer1().getTexture().dispose();
         batch.dispose();
         world.dispose();
     }

@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
@@ -20,9 +21,10 @@ public class Map {
         create(mapName);
     }
 
-    private void create (String mapName) {
+    public void create (String mapName) {
         camera = new OrthographicCamera();
-        camera.zoom = 0.2f;
+
+        camera.zoom = 0.51f;
         camera.setToOrtho(false,1740,950);
         camera.update();
 
@@ -37,8 +39,20 @@ public class Map {
         camera.update();
         tiledMapRenderer.setView(camera);
         tiledMapRenderer.render();
+
     }
 
+    public TiledMap getTiledMap() {
+        return tiledMap;
+    }
+
+    public OrthographicCamera getCamera() {
+        return camera;
+    }
+
+    public TiledMapRenderer getTiledMapRenderer() {
+        return tiledMapRenderer;
+    }
 
 
 }
