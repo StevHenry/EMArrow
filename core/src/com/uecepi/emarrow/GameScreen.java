@@ -17,11 +17,9 @@ public class GameScreen extends ScreenMenu {
     private static final float TIME_STEP = 1 / 60f;
     private static final int VELOCITY_ITERATIONS = 6;
     private static final int POSITION_ITERATIONS = 2;
-    private OrthographicCamera orthographicCamera;
     private Box2DDebugRenderer box2DDebugRenderer;
     private World world;
     private SpriteBatch batch;
-    private Texture texture;
 
     public GameScreen(){
         super();
@@ -29,11 +27,8 @@ public class GameScreen extends ScreenMenu {
     }
 
     private void create() {
-        orthographicCamera = new OrthographicCamera();
-        orthographicCamera.setToOrtho(false, Gdx.graphics.getWidth() / SCALE, Gdx.graphics.getHeight() / SCALE);
         GameEngine.start();
         batch = new SpriteBatch();
-        texture = new Texture("images/char/1/1.png");
         box2DDebugRenderer = new Box2DDebugRenderer();
         world = GameEngine.getInstance().getPlayer1().getBody().getWorld();
     }
@@ -50,7 +45,8 @@ public class GameScreen extends ScreenMenu {
         update();
         Gdx.gl.glClearColor(1f, 1f, 1f, 1f);
         batch.begin();
-        batch.draw(texture, GameEngine.getInstance().getPlayer1().getBody().getPosition().x - (texture.getWidth() / 2), GameEngine.getInstance().getPlayer1().getBody().getPosition().y - (texture.getHeight() / 2));
+        GameEngine.getInstance().getMap().render();
+        batch.draw(GameEngine.getInstance().getPlayer1().getTexture(), GameEngine.getInstance().getPlayer1().getBody().getPosition().x - (GameEngine.getInstance().getPlayer1().getTexture().getWidth() / 2), GameEngine.getInstance().getPlayer1().getBody().getPosition().y - (GameEngine.getInstance().getPlayer1().getTexture().getHeight() / 2));
         batch.end();
         box2DDebugRenderer.render(world, orthographicCamera.combined);
 
@@ -59,16 +55,16 @@ public class GameScreen extends ScreenMenu {
     private void update() {
         GameEngine.getInstance().processInput();
         world.step(TIME_STEP, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
-        cameraUpdate();
-        batch.setProjectionMatrix(orthographicCamera.combined);
+        //cameraUpdate();
+        batch.setProjectionMatrix(GameEngine.getInstance().getMap().getCamera().combined);
     }
 
     private void cameraUpdate() {
-        Vector3 position = orthographicCamera.position;
-        position.x = GameEngine.getInstance().getPlayer1().getBody().getPosition().x ;
-        position.y = GameEngine.getInstance().getPlayer1().getBody().getPosition().y ;
-        orthographicCamera.position.set(position);
-        orthographicCamera.update();
+        Vector3 position = GameEngine.getInstance().getMap().getCamera().position;
+        position.x = GameEngine.getInstance().getPlayer1().getBody().getPosition().x;
+        position.y = GameEngine.getInstance().getPlayer1().getBody().getPosition().y;
+        GameEngine.getInstance().getMap().getCamera().position.set(position);
+        GameEngine.getInstance().getMap().getCamera().update();
     }
 
     @Override
