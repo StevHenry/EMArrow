@@ -12,6 +12,9 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.uecepi.emarrow.display.ScreenMenu;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class GameScreen extends ScreenMenu {
     private static final float SCALE = 2.0f;
     private static final float TIME_STEP = 1 / 60f;
@@ -30,7 +33,7 @@ public class GameScreen extends ScreenMenu {
         GameEngine.start();
         batch = new SpriteBatch();
         box2DDebugRenderer = new Box2DDebugRenderer();
-        world = GameEngine.getInstance().getPlayer1().getBody().getWorld();
+        world = GameEngine.getInstance().getWorld();
     }
 
     @Override
@@ -46,10 +49,13 @@ public class GameScreen extends ScreenMenu {
         Gdx.gl.glClearColor(1f, 1f, 1f, 1f);
         batch.begin();
         GameEngine.getInstance().getMap().render();
-        batch.draw(GameEngine.getInstance().getPlayer1().getTexture(), GameEngine.getInstance().getPlayer1().getBody().getPosition().x - (GameEngine.getInstance().getPlayer1().getTexture().getWidth() / 2), GameEngine.getInstance().getPlayer1().getBody().getPosition().y - (GameEngine.getInstance().getPlayer1().getTexture().getHeight() / 2));
+        for (Character player : GameEngine.getInstance().getPlayers()) {
+            batch.draw(player.getTexture(), player.getBody().getPosition().x - (player.getTexture().getWidth() / 2), player.getBody().getPosition().y - (player.getTexture().getHeight() / 2));
+            player.getHealthBar().getProgressBar().draw(batch,1);
+        }
+        drawProjectiles();
         batch.end();
         box2DDebugRenderer.render(world, GameEngine.getInstance().getMap().getCamera().combined);
-
     }
 
     private void update() {
@@ -57,15 +63,20 @@ public class GameScreen extends ScreenMenu {
         world.step(TIME_STEP, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
         //cameraUpdate();
         batch.setProjectionMatrix(GameEngine.getInstance().getMap().getCamera().combined);
+        for (Character player : GameEngine.getInstance().getPlayers()) {
+            for (Projectile projectile : player.getProjectilesShooted()){
+                projectile.update();
+            }
+        }
     }
 
-    private void cameraUpdate() {
+    /*private void cameraUpdate() {
         Vector3 position = GameEngine.getInstance().getMap().getCamera().position;
         position.x = GameEngine.getInstance().getPlayer1().getBody().getPosition().x;
         position.y = GameEngine.getInstance().getPlayer1().getBody().getPosition().y;
         GameEngine.getInstance().getMap().getCamera().position.set(position);
         GameEngine.getInstance().getMap().getCamera().update();
-    }
+    }*/
 
     @Override
     public void resize(int width, int height) {
@@ -91,8 +102,18 @@ public class GameScreen extends ScreenMenu {
     @Override
     public void dispose() {
         box2DDebugRenderer.dispose();
-        GameEngine.getInstance().getPlayer1().getTexture().dispose();
+        for (Character player : GameEngine.getInstance().getPlayers()) {
+            player.getTexture().dispose();
+        }
         batch.dispose();
         world.dispose();
+    }
+
+    private void drawProjectiles() {
+        for (Character player : GameEngine.getInstance().getPlayers()) {
+            for (Projectile projectile : player.getProjectilesShooted()){
+                batch.draw(projectile.getTexture(), projectile.getBody().getPosition().x - (projectile.getTexture().getWidth() / 2), projectile.getBody().getPosition().y - (projectile.getTexture().getHeight() / 2));
+            }
+        }
     }
 }

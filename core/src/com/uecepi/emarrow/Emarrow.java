@@ -8,8 +8,6 @@ import com.uecepi.emarrow.map.Map;
 
 public class Emarrow extends Game {
 
-    private Map map;
-
     @Override
     public void create() {
         Assets.load();
