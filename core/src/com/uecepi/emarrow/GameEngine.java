@@ -12,7 +12,6 @@ public class GameEngine {
     private World world;
     private float accumulator = 0;
     private Character player;
-    private KeyboardController controller;
     private static GameEngine gameEngine;
 
     public static GameEngine getInstance(){
@@ -23,8 +22,7 @@ public class GameEngine {
         this.world = new World(new Vector2(0, -150), true);
         this.player = new Character(this);
         this.createGround();
-        controller = new KeyboardController();
-        Gdx.input.setInputProcessor(controller);
+        Gdx.input.setInputProcessor(Emarrow.getInstance().getController());
     }
 
     public static void start(){
@@ -52,23 +50,23 @@ public class GameEngine {
     }
 
     public void processInput() {
-        if (controller.left) {
+        if (Emarrow.getInstance().getController().left) {
             //TODO Ameliorer la facon de déplacer
             //body.setTransform(body.getTransform().getPosition().x-1,body.getTransform().getPosition().y,body.getTransform().getRotation());
             player.getBody().applyLinearImpulse(new Vector2(-5, 0), player.getBody().getPosition(), true);
         }
-        if (controller.right) {
+        if (Emarrow.getInstance().getController().right) {
             //TODO Ameliorer la facon de déplacer
             //body.setTransform(body.getTransform().getPosition().x+1,body.getTransform().getPosition().y,body.getTransform().getRotation());
             player.getBody().applyLinearImpulse(new Vector2(5, 0), player.getBody().getPosition(), true);
 
         }
-        if (controller.jump){
+        if (Emarrow.getInstance().getController().jump){
                 //&& player.isGrounded()) {
             player.getBody().applyLinearImpulse(new Vector2(0, 100), player.getBody().getPosition(), true);
         }
 
-        if (controller.dash) {
+        if (Emarrow.getInstance().getController().dash) {
             player.getBody().applyLinearImpulse(new Vector2(player.getBody().getLinearVelocity().x * 10, player.getBody().getLinearVelocity().y * 10), player.getBody().getPosition(), true);
         }
     }

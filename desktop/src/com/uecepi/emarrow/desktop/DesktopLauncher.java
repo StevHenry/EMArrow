@@ -14,7 +14,7 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		configure(config);;
-		Emarrow game = new Emarrow();
+		Emarrow game = Emarrow.getInstance();
 		new LwjglApplication(game, config);
 	}
 

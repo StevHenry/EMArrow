@@ -9,25 +9,47 @@ public class KeyboardController  implements InputProcessor {
     public boolean isMouse1Down, isMouse2Down,isMouse3Down;
     public boolean isDragged;
     public Vector2 mouseLocation = new Vector2(0,0);
-    @Override
+    private int leftKey, rightKey, jumpKey, dashKey;
+    public KeyboardController(){
+        this.leftKey = Keys.Q;
+        this.rightKey = Keys.RIGHT;
+        this.dashKey = Keys.E;
+        this.jumpKey = Keys.SPACE;
+
+    }
     public boolean keyDown(int keycode) {
         boolean keyProcessed = false;
         switch (keycode) //switch code base on the variable keycode
         {
             case Keys.LEFT:     //if keycode is the same as Keys.LEFT a.k.a 21
-                left = true;    //do this
+                left = (leftKey == Keys.LEFT);
+                keyProcessed = true;
+                break;
+
+
+            case Keys.RIGHT:    //if keycode is the same as Keys.LEFT a.k.a 22
+                right = (rightKey == Keys.RIGHT);
                 keyProcessed = true;    //we have reacted to a keypress
                 break;
-            case Keys.RIGHT:    //if keycode is the same as Keys.LEFT a.k.a 22
-                right = true;   //do this
+            case Keys.Q:     //if keycode is the same as Keys.LEFT a.k.a 21
+                left =  (leftKey == Keys.Q);
+                keyProcessed = true;    //we have reacted to a keypress
+                break;
+            case Keys.D:    //if keycode is the same as Keys.LEFT a.k.a 22
+                right = (rightKey == Keys.D);
                 keyProcessed = true;    //we have reacted to a keypress
                 break;
             case Keys.SPACE:       //if keycode is the same as Keys.LEFT a.k.a 19
-                jump = true;      //do this
+                jump = (jumpKey == Keys.SPACE);
                 keyProcessed = true;    //we have reacted to a keypress
                 break;
+
             case Keys.E:       //if keycode is the same as Keys.LEFT a.k.a 19
-                dash = true;      //do this
+                dash = (dashKey == Keys.E);
+                keyProcessed = true;    //we have reacted to a keypress
+                break;
+            case Keys.SHIFT_LEFT:       //if keycode is the same as Keys.LEFT a.k.a 19
+                dash = (dashKey == Keys.SHIFT_LEFT);
                 keyProcessed = true;    //we have reacted to a keypress
                 break;
         }
@@ -46,6 +68,14 @@ public class KeyboardController  implements InputProcessor {
                 right = false;  //do this
                 keyProcessed = true;    //we have reacted to a keypress
                 break;
+            case Keys.Q:     //if keycode is the same as Keys.LEFT a.k.a 21
+                left = false;   //do this
+                keyProcessed = true;    //we have reacted to a keypress
+                break;
+            case Keys.D:    //if keycode is the same as Keys.LEFT a.k.a 22
+                right = false;  //do this
+                keyProcessed = true;    //we have reacted to a keypress
+                break;
             case Keys.SPACE:       //if keycode is the same as Keys.LEFT a.k.a 19
                 jump = false;      //do this
                 keyProcessed = true;    //we have reacted to a keypress
@@ -53,6 +83,10 @@ public class KeyboardController  implements InputProcessor {
             case Keys.E:       //if keycode is the same as Keys.LEFT a.k.a 19
                 dash = false;      //do this
                 keyProcessed = true;    //we have reacted to a keypress
+                break;
+            case Keys.SHIFT_LEFT:
+                dash = false;
+                keyProcessed = true;
                 break;
         }
         return keyProcessed;    // return our peyProcessed flag
@@ -106,5 +140,37 @@ public class KeyboardController  implements InputProcessor {
     @Override
     public boolean scrolled(float amountX, float amountY) {
         return false;
+    }
+
+    public void setLeftKey(int leftKey) {
+        this.leftKey = leftKey;
+    }
+
+    public void setRightKey(int rightKey) {
+        this.rightKey = rightKey;
+    }
+
+    public void setJumpKey(int jumpKey) {
+        this.jumpKey = jumpKey;
+    }
+
+    public void setDashKey(int dashKey) {
+        this.dashKey = dashKey;
+    }
+
+    public int getLeftKey() {
+        return leftKey;
+    }
+
+    public int getRightKey() {
+        return rightKey;
+    }
+
+    public int getDashKey() {
+        return dashKey;
+    }
+
+    public int getJumpKey() {
+        return jumpKey;
     }
 }

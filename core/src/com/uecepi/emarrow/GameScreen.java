@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.uecepi.emarrow.display.ScreenMenu;
 
 public class GameScreen extends ScreenMenu {
+
     private static final float SCALE = 2.0f;
     private static final float TIME_STEP = 1 / 60f;
     private static final int VELOCITY_ITERATIONS = 6;
