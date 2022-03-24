@@ -1,5 +1,4 @@
 ## Java
-
 *.class
 *.war
 *.ear
@@ -15,22 +14,16 @@ com_crashlytics_export_strings.xml
 /build/
 /core/build/
 /desktop/build/
-/html/build/
 
 /dist/
 /core/dist/
 /desktop/dist/
-/html/dist/
 
-/server/resources/credentials.properties
+/properties/credentials.properties
 
 ## Gradle
 /local.properties
 .gradle/
 gradle-app.setting
-/build/
 /android/build/
-/core/build/
-/desktop/build/
-/html/build/
 /ios/build/
