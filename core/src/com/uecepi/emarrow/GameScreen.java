@@ -53,7 +53,7 @@ public class GameScreen extends ScreenMenu {
         batch.begin();
         GameEngine.getInstance().getMap().render();
         for (Character player : GameEngine.getInstance().getPlayers()) {
-            batch.draw(player.getTexture(), player.getBody().getPosition().x - (player.getTexture().getWidth() / 2), player.getBody().getPosition().y - (player.getTexture().getHeight() / 2));
+            player.getAnimator().render(batch,(int) player.getBody().getPosition().x - (player.getAnimator().width / 2), (int) player.getBody().getPosition().y - (player.getAnimator().height / 2));
             player.getHealthBar().draw(batch,1);
         }
         drawProjectiles();
@@ -67,7 +67,7 @@ public class GameScreen extends ScreenMenu {
         //cameraUpdate();
         batch.setProjectionMatrix(GameEngine.getInstance().getMap().getCamera().combined);
         for (Character player : GameEngine.getInstance().getPlayers()) {
-            player.getHealthBar().setPosition(player.getBody().getPosition().x-player.getTexture().getWidth()/2,player.getBody().getPosition().y+player.getTexture().getHeight()/2);
+            player.getHealthBar().setPosition(player.getBody().getPosition().x-player.getAnimator().width/2,player.getBody().getPosition().y+player.getAnimator().height/2);
             player.getHealthBar().updateVisualValue();
             for (Projectile projectile : player.getProjectilesShooted()){
                 projectile.update();
@@ -108,7 +108,7 @@ public class GameScreen extends ScreenMenu {
     public void dispose() {
         box2DDebugRenderer.dispose();
         for (Character player : GameEngine.getInstance().getPlayers()) {
-            player.getTexture().dispose();
+            //player.getAnimator().
         }
         batch.dispose();
         world.dispose();

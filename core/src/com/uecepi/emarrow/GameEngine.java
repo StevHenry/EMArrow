@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.uecepi.emarrow.display.Animator;
 import com.uecepi.emarrow.map.Map;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,20 +37,11 @@ public class GameEngine {
 
     public static void start() {
         gameEngine = new GameEngine();
-        gameEngine.players.add(new Character(new Texture("images/char/1/20_1.png"))); //TODO mettre en parametre pour pouvoir chosir skin));
-        gameEngine.players.add(new Character(new Texture("images/char/2/2.png")));
+        gameEngine.players.add(new Character("1")); //TODO mettre en parametre pour pouvoir chosir skin));
+        gameEngine.players.add(new Character("2"));
     }
 
     public void createGround() {
-        TiledMapTileLayer layer = (TiledMapTileLayer) map.getTiledMap().getLayers().get(2);  // assuming the layer at index on contains tiles
-        for (int i = 0; i < layer.getWidth(); i++) {
-            for (int j = 0; j < layer.getHeight(); j++) {
-                if (layer.getCell(i, j) != null) {
-                    // Create our body definition
-                    BodyDef groundBodyDef = new BodyDef();
-                    // Set its world position
-                    groundBodyDef.position.set(i * layer.getTileWidth() + layer.getTileWidth() * .5f, j * layer.getTileHeight() + layer.getTileHeight() * .5f);
-
         TiledMapTileLayer layer = (TiledMapTileLayer)map.getTiledMap().getLayers().get(2);  // assuming the layer at index on contains tiles
         for (int i=0; i<layer.getWidth();i++){
             for (int j=0; j< layer.getHeight();j++){
@@ -93,6 +85,7 @@ public class GameEngine {
         }
         if (controller.jump){ //TODO améliorer la facon de sauter : quand on se deplace lateralement en l'air
             //&& player.isGrounded()) {
+            players.get(0).getAnimator().setCurrentAnimation(Animator.FLYING_ANIMATION);
             players.get(0).getBody().applyLinearImpulse(new Vector2(0, 100), players.get(0).getBody().getPosition(), true);
             //player.getBody().applyForceToCenter(0, 8000f, true);
 

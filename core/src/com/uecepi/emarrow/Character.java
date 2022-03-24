@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.uecepi.emarrow.display.Animator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +16,7 @@ public class Character extends Actor {
     private int life;
     private BodyDef bodyDef;
     private Body body;
-    private Texture texture;
+    private Animator animator;
     private float speed;
 
     private long lastShotTime = 0;
@@ -23,13 +24,13 @@ public class Character extends Actor {
     private List<Projectile> projectilesShooted;
     private HealthBar healthBar;
 
-    public Character(Texture texture){
-        this.texture = texture; //TODO mettre en parametre pour pouvoir chosir skin
+    public Character(String nb){
+        this.animator = new Animator(nb); //TODO mettre en parametre pour pouvoir chosir skin
         this.bodyDef = new BodyDef();
         this.speed = 25f;
         this.projectilesShooted = new ArrayList<>();
         this.createHitBox();
-        this.healthBar = new HealthBar(texture.getWidth(),2,100,body.getPosition());
+        this.healthBar = new HealthBar(animator.width,2,100,body.getPosition());
     }
 
     public Body getBody() {
@@ -50,7 +51,7 @@ public class Character extends Actor {
         // Create a circle shape and set its radius to 6
         PolygonShape hitBox = new PolygonShape();
         //hitBox.setAsBox(4.0f, 7.0f);
-        hitBox.setAsBox(texture.getWidth()/4, texture.getHeight()/2);
+        hitBox.setAsBox(animator.width/4, animator.height/2);
 
         // Create a fixture definition to apply our shape to
         FixtureDef fixtureDef = new FixtureDef();
@@ -73,9 +74,7 @@ public class Character extends Actor {
             lastShotTime = System.currentTimeMillis();
         }
     }
-    public Texture getTexture() {
-        return texture;
-    }
+
 
     public float getSpeed() {
         return speed;
@@ -96,12 +95,15 @@ public class Character extends Actor {
                 "life=" + life +
                 ", bodyDef=" + bodyDef +
                 ", body=" + body +
-                ", texture=" + texture +
                 ", speed=" + speed +
                 ", lastShotTime=" + lastShotTime +
                 ", fireRate=" + fireRate +
                 ", projectilesShooted=" + projectilesShooted +
                 ", healthBar=" + healthBar +
                 '}';
+    }
+
+    public Animator getAnimator() {
+        return animator;
     }
 }

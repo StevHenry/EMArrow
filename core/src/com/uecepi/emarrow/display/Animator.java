@@ -19,11 +19,15 @@ public class Animator {
     public static final String RUNNING_ANIMATION = "running";
 
     private static final int FRAME_COLS = 4, FRAME_ROWS = 1;
+    public static final int width = 20;
+    public static final int height = 20;
+
     private static final float frameDuration = 0.1f;
 
     private float stateTime = 0f;
     private String currentAnimation = "standing";
     private String characterNumber;
+
 
     public static void load() {
         loadAnimation("1");
@@ -85,4 +89,11 @@ public class Animator {
 
     }
 
+    public static int getWidth() {
+        return width;
+    }
+
+    public static int getHeight() {
+        return height;
+    }
 }
