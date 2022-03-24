@@ -26,7 +26,7 @@ public class ControlsMenu extends ScreenMenu {
     private void create(){
         controls = new Label("CONTROLS", skin);
         table.add(controls).row();
-        //controls.setFontScale(10);
+        controls.setFontScale(10);
 
         if (Emarrow.getInstance().getController().getLeftKey() == Input.Keys.Q){
             leftButton = new TextButton("Left : Q", skin);

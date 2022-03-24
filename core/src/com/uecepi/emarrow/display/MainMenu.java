@@ -10,6 +10,7 @@ import com.uecepi.emarrow.ControlsMenu;
 import com.uecepi.emarrow.GameScreen;
 import com.uecepi.emarrow.Emarrow;
 import com.uecepi.emarrow.SettingsScreen;
+import com.uecepi.emarrow.audio.MusicManager;
 
 public class MainMenu extends ScreenMenu{
     Emarrow game;
@@ -27,7 +28,7 @@ public class MainMenu extends ScreenMenu{
     private void create() {
         emarrow = new Label("Em'Arrow", skin);
         table.add(emarrow).row();
-        //emarrow.setFontScale(10);
+        emarrow.setFontScale(10);
 
         playButton = new TextButton("Play", skin);
         table.add(playButton).height(100).width(200).padTop(30).row();
@@ -35,6 +36,7 @@ public class MainMenu extends ScreenMenu{
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Emarrow.getInstance().setScreen(new GameScreen());
+                MusicManager.playSE(2);
 
             }
         });
@@ -53,6 +55,7 @@ public class MainMenu extends ScreenMenu{
         settingsButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 Emarrow.getInstance().setScreen(new SettingsScreen());
+                MusicManager.setMusic(MusicManager.MUSIC1_BGM);
             }
         });
 
