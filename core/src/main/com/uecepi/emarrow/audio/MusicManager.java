@@ -36,16 +36,16 @@ public class MusicManager {
 
 
     public static void load() {
-        BGM.put(MUSIC1_BGM, Gdx.audio.newMusic(Gdx.files.internal("audios/bgm/music1.mp3")));
-        BGM.put(MUSIC2_BGM, Gdx.audio.newMusic(Gdx.files.internal("audios/bgm/music1.mp3")));
+        BGM.put(MUSIC1_BGM, Gdx.audio.newMusic(Gdx.files.internal("audios/bgm/music1.ogg")));
+        BGM.put(MUSIC2_BGM, Gdx.audio.newMusic(Gdx.files.internal("audios/bgm/music1.ogg")));
 
-        SE.put(SHOT_SE, Gdx.audio.newSound(Gdx.files.internal("audios/se/shot1.mp3")));
-        SE.put(SHOT2_SE, Gdx.audio.newSound(Gdx.files.internal("audios/se/shot2.mp3")));
-        SE.put(JUMP_SE, Gdx.audio.newSound(Gdx.files.internal("audios/se/jump.mp3")));
-        SE.put(DASH_SE, Gdx.audio.newSound(Gdx.files.internal("audios/se/dash.mp3")));
-        SE.put(FLY_SE, Gdx.audio.newSound(Gdx.files.internal("audios/se/fly.mp3")));
-        SE.put(RUN_SE, Gdx.audio.newSound(Gdx.files.internal("audios/se/run.mp3")));
-        SE.put(TOUCHED_SE, Gdx.audio.newSound(Gdx.files.internal("audios/se/touched.mp3")));
+        SE.put(SHOT_SE, Gdx.audio.newSound(Gdx.files.internal("audios/se/shot1.ogg")));
+        SE.put(SHOT2_SE, Gdx.audio.newSound(Gdx.files.internal("audios/se/shot2.ogg")));
+        SE.put(JUMP_SE, Gdx.audio.newSound(Gdx.files.internal("audios/se/jump.ogg")));
+        SE.put(DASH_SE, Gdx.audio.newSound(Gdx.files.internal("audios/se/dash.ogg")));
+        SE.put(FLY_SE, Gdx.audio.newSound(Gdx.files.internal("audios/se/fly.ogg")));
+        SE.put(RUN_SE, Gdx.audio.newSound(Gdx.files.internal("audios/se/run.ogg")));
+        SE.put(TOUCHED_SE, Gdx.audio.newSound(Gdx.files.internal("audios/se/touched.ogg")));
 
     }
 
