@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.PolygonRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.uecepi.emarrow.audio.MusicManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,6 +80,7 @@ public class Character {
             //TODO
             projectilesShooted.add(new Projectile(this));
             lastShotTime = System.currentTimeMillis();
+            MusicManager.playSE(MusicManager.SHOT2_SE);
         }
     }
     

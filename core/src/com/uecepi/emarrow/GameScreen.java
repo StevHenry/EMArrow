@@ -62,6 +62,15 @@ public class GameScreen extends ScreenMenu {
         box2DDebugRenderer.render(world, GameEngine.getInstance().getMap().getCamera().combined);
     }
 
+    @Override
+    public void dispose() {
+        box2DDebugRenderer.dispose();
+        for (Character player : GameEngine.getInstance().getPlayers()) {
+            player.getTexture().dispose();
+        }
+        batch.dispose();
+        world.dispose();
+    }
     private void update() {
         GameEngine.getInstance().processInput();
         world.step(TIME_STEP, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
@@ -97,15 +106,6 @@ public class GameScreen extends ScreenMenu {
 
     }
 
-    @Override
-    public void dispose() {
-        box2DDebugRenderer.dispose();
-        for (Character player : GameEngine.getInstance().getPlayers()) {
-            player.getTexture().dispose();
-        }
-        batch.dispose();
-        world.dispose();
-    }
 
     private void drawProjectiles() {
         for (Character player : GameEngine.getInstance().getPlayers()) {

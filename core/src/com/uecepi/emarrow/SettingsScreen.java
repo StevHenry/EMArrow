@@ -71,7 +71,6 @@ public class SettingsScreen extends ScreenMenu {
             @Override
             public boolean handle(Event event) {
                 MusicManager.setSEVolume(seVolumeButton.getValue()/100f);
-                MusicManager.playSE(MusicManager.SHOT_SE);
                 return false;
             }
         });

@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.uecepi.emarrow.audio.MusicManager;
 import com.uecepi.emarrow.map.Map;
 
 import java.util.ArrayList;
@@ -87,14 +88,17 @@ public class GameEngine {
             if (players.get(0).isCanJump()){
                 players.get(0).setCanJump(false);
                 players.get(0).getBody().applyLinearImpulse(new Vector2(0, 150), players.get(0).getBody().getPosition(), true);
+                MusicManager.playSE(MusicManager.JUMP_SE);
             }
             //player.getBody().applyForceToCenter(0, 8000f, true);
 
         if (Emarrow.getInstance().getController().dash) {
             players.get(0).getBody().applyLinearImpulse(new Vector2(players.get(0).getBody().getLinearVelocity().x * 10, players.get(0).getBody().getLinearVelocity().y * 10), players.get(0).getBody().getPosition(), true);
+            MusicManager.playSE(MusicManager.DASH_SE);
         }
         if (Emarrow.getInstance().getController().shoot){
             players.get(0).shoot();
+
         }
     }
 }
