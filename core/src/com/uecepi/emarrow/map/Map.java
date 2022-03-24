@@ -39,11 +39,14 @@ public class Map {
         camera.update();
         tiledMapRenderer.setView(camera);
         tiledMapRenderer.render();
+
     }
 
     public TiledMap getTiledMap() {
         return tiledMap;
     }
+
+
 
     public OrthographicCamera getCamera() {
         return camera;

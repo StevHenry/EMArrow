@@ -4,7 +4,6 @@ import com.badlogic.gdx.Files;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.uecepi.emarrow.Emarrow;
-import com.uecepi.emarrow.GameTest;
 import com.uecepi.emarrow.assets.Assets;
 
 public class DesktopLauncher {
@@ -14,7 +13,7 @@ public class DesktopLauncher {
 
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-    config.width = 1920;
+    	config.width = 1920;
 		config.height = 1080;
 		configure(config);;
 		new LwjglApplication(new Emarrow(), config);

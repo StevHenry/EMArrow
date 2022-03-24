@@ -5,7 +5,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 
 public class KeyboardController  implements InputProcessor {
-    public boolean left,right,jump, dash;
+    public boolean left,right,jump, dash, shoot;
     public boolean isMouse1Down, isMouse2Down,isMouse3Down;
     public boolean isDragged;
     public Vector2 mouseLocation = new Vector2(0,0);
@@ -36,6 +36,10 @@ public class KeyboardController  implements InputProcessor {
                 break;
             case Keys.E:       //if keycode is the same as Keys.LEFT a.k.a 19
                 dash = true;      //do this
+                keyProcessed = true;    //we have reacted to a keypress
+                break;
+            case Keys.A:       //if keycode is the same as Keys.LEFT a.k.a 19
+                shoot = true;      //do this
                 keyProcessed = true;    //we have reacted to a keypress
                 break;
         }
@@ -70,6 +74,10 @@ public class KeyboardController  implements InputProcessor {
                 dash = false;      //do this
                 keyProcessed = true;    //we have reacted to a keypress
                 break;
+            case Keys.A:       //if keycode is the same as Keys.LEFT a.k.a 19
+                shoot = false;      //do this
+                keyProcessed = true;    //we have reacted to a keypress
+                break;
         }
         return keyProcessed;    // return our peyProcessed flag
     }
@@ -93,7 +101,7 @@ public class KeyboardController  implements InputProcessor {
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         isDragged = false;
-//System.out.println(button);
+        //System.out.println(button);
         if(button == 0){
             isMouse1Down = false;
         }else if(button == 1){
