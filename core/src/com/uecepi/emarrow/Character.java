@@ -6,14 +6,14 @@ import com.badlogic.gdx.graphics.g2d.PolygonRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Character {
+public class Character extends Actor {
     private int life;
     private BodyDef bodyDef;
-    private GameEngine gameEngine;
     private Body body;
     private Texture texture;
     private float speed;
@@ -22,14 +22,13 @@ public class Character {
     private List<Projectile> projectilesShooted;
     private HealthBar healthBar;
 
-    public Character(GameEngine gameEngine, Texture texture){
+    public Character(Texture texture){
         this.texture = texture; //TODO mettre en parametre pour pouvoir chosir skin
-        this.gameEngine = gameEngine;
         this.bodyDef = new BodyDef();
         this.speed = 25f;
         this.projectilesShooted = new ArrayList<>();
         this.createHitBox();
-        this.healthBar = new HealthBar(100,body.getPosition());
+        this.healthBar = new HealthBar(texture.getWidth(),2,100,body.getPosition());
     }
 
     public Body getBody() {
@@ -44,7 +43,8 @@ public class Character {
         bodyDef.position.set(new Vector2(50, 100f));
 
         // Create our body in the world using our body definition
-        this.body = this.gameEngine.getWorld().createBody(bodyDef);
+        this.body = GameEngine.getInstance().getWorld().createBody(bodyDef);
+        body.setUserData(this);
 
         // Create a circle shape and set its radius to 6
         PolygonShape hitBox = new PolygonShape();
@@ -56,16 +56,15 @@ public class Character {
         fixtureDef.shape = hitBox;
 
 
+
         // Create our fixture and attach it to the body
-        body.createFixture(fixtureDef);
+        body.createFixture(fixtureDef).setUserData("Player");
         // Remember to dispose of any shapes after you're done with them!
         // BodyDef and FixtureDef don't need disposing, but shapes do.
         hitBox.dispose();
     }
 
     public void shoot(){
-        System.out.println(System.currentTimeMillis()- lastShotTime);
-        System.out.println(fireRate);
         if (System.currentTimeMillis() - lastShotTime >= fireRate)
         {
             //TODO
@@ -87,5 +86,22 @@ public class Character {
 
     public HealthBar getHealthBar() {
         return healthBar;
+    }
+
+
+
+    @Override
+    public String toString() {
+        return "Character{" +
+                "life=" + life +
+                ", bodyDef=" + bodyDef +
+                ", body=" + body +
+                ", texture=" + texture +
+                ", speed=" + speed +
+                ", lastShotTime=" + lastShotTime +
+                ", fireRate=" + fireRate +
+                ", projectilesShooted=" + projectilesShooted +
+                ", healthBar=" + healthBar +
+                '}';
     }
 }

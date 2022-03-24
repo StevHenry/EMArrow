@@ -30,8 +30,6 @@ public class GameEngine {
         map = new Map("map1");
         this.world = new World(new Vector2(0, -150), true);
         players = new ArrayList<>();
-        players.add(new Character(this,new Texture("images/char/1/20_1.png"))); //TODO mettre en parametre pour pouvoir chosir skin));
-        players.add(new Character(this,new Texture("images/char/2/2.png")));
         this.createGround();
         controller = new KeyboardController();
         Gdx.input.setInputProcessor(controller);
@@ -39,6 +37,8 @@ public class GameEngine {
 
     public static void start() {
         gameEngine = new GameEngine();
+        gameEngine.players.add(new Character(new Texture("images/char/1/20_1.png"))); //TODO mettre en parametre pour pouvoir chosir skin));
+        gameEngine.players.add(new Character(new Texture("images/char/2/2.png")));
     }
 
     public void createGround() {

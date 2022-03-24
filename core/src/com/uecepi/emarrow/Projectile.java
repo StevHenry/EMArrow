@@ -6,6 +6,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.bullet.Bullet;
 
 public class Projectile {
     float speed;
@@ -36,7 +37,7 @@ public class Projectile {
 
         // Create our body in the world using our body definition
         this.body = GameEngine.getInstance().getWorld().createBody(bodyDef);
-
+        body.setUserData(this);
         // Create a circle shape and set its radius to 6
         PolygonShape hitBox = new PolygonShape();
         //hitBox.setAsBox(4.0f, 7.0f);
@@ -45,9 +46,10 @@ public class Projectile {
         // Create a fixture definition to apply our shape to
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = hitBox;
+        fixtureDef.isSensor = true;
 
         // Create our fixture and attach it to the body
-        body.createFixture(fixtureDef);
+        body.createFixture(fixtureDef).setUserData("Projectile");
         // Remember to dispose of any shapes after you're done with them!
         // BodyDef and FixtureDef don't need disposing, but shapes do.
         hitBox.dispose();

@@ -14,6 +14,7 @@ import com.uecepi.emarrow.display.ScreenMenu;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class GameScreen extends ScreenMenu {
     private static final float SCALE = 2.0f;
@@ -34,6 +35,8 @@ public class GameScreen extends ScreenMenu {
         batch = new SpriteBatch();
         box2DDebugRenderer = new Box2DDebugRenderer();
         world = GameEngine.getInstance().getWorld();
+        world.setContactListener(new ListenerClass());
+
     }
 
     @Override
@@ -51,7 +54,7 @@ public class GameScreen extends ScreenMenu {
         GameEngine.getInstance().getMap().render();
         for (Character player : GameEngine.getInstance().getPlayers()) {
             batch.draw(player.getTexture(), player.getBody().getPosition().x - (player.getTexture().getWidth() / 2), player.getBody().getPosition().y - (player.getTexture().getHeight() / 2));
-            player.getHealthBar().getProgressBar().draw(batch,1);
+            player.getHealthBar().draw(batch,1);
         }
         drawProjectiles();
         batch.end();
@@ -64,6 +67,8 @@ public class GameScreen extends ScreenMenu {
         //cameraUpdate();
         batch.setProjectionMatrix(GameEngine.getInstance().getMap().getCamera().combined);
         for (Character player : GameEngine.getInstance().getPlayers()) {
+            player.getHealthBar().setPosition(player.getBody().getPosition().x-player.getTexture().getWidth()/2,player.getBody().getPosition().y+player.getTexture().getHeight()/2);
+            player.getHealthBar().updateVisualValue();
             for (Projectile projectile : player.getProjectilesShooted()){
                 projectile.update();
             }
