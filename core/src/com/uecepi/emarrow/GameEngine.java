@@ -5,10 +5,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.*;
 import com.uecepi.emarrow.map.Map;
 
 import java.util.ArrayList;
@@ -56,8 +53,10 @@ public class GameEngine {
                     PolygonShape groundBox = new PolygonShape();
                     // (setAsBox takes half-width and half-height as arguments)
                     groundBox.setAsBox(layer.getTileWidth() / 2f, layer.getTileHeight() / 2f);
+                    FixtureDef groundFixture = new FixtureDef();
+                    groundFixture.shape=groundBox;
                     // Create a fixture from our polygon shape and add it to our ground body
-                    groundBody.createFixture(groundBox, 0.0f);
+                    groundBody.createFixture(groundFixture).setUserData("Ground");
                     // Clean up after ourselves
                     groundBox.dispose();
                 }
@@ -69,20 +68,26 @@ public class GameEngine {
         if (Emarrow.getInstance().getController().left) {
             //TODO Ameliorer la facon de déplacer
             //body.setTransform(body.getTransform().getPosition().x-1,body.getTransform().getPosition().y,body.getTransform().getRotation());
+            //players.get(0).getBody().applyForceToCenter(new Vector2(-50, 0),true);
+
             players.get(0).getBody().applyLinearImpulse(new Vector2(-players.get(0).getSpeed(), 0), players.get(0).getBody().getPosition(), true);
         }
         else if (Emarrow.getInstance().getController().right) {
             //TODO Ameliorer la facon de déplacer
             //body.setTransform(body.getTransform().getPosition().x+1,body.getTransform().getPosition().y,body.getTransform().getRotation());
+            //players.get(0).getBody().applyForceToCenter(new Vector2(50, 0),true);
             players.get(0).getBody().applyLinearImpulse(new Vector2(players.get(0).getSpeed(), 0), players.get(0).getBody().getPosition(), true);
         }
         else {
-            // Stop moving in the Y direction
+            // Stop moving in the X direction
             players.get(0).getBody().setLinearVelocity(0, players.get(0).getBody().getLinearVelocity().y);
         }
         if (Emarrow.getInstance().getController().jump){ //TODO améliorer la facon de sauter : quand on se deplace lateralement en l'air
             //&& player.isGrounded()) {
-            players.get(0).getBody().applyLinearImpulse(new Vector2(0, 100), players.get(0).getBody().getPosition(), true);
+            if (players.get(0).isCanJump()){
+                players.get(0).setCanJump(false);
+                players.get(0).getBody().applyLinearImpulse(new Vector2(0, 150), players.get(0).getBody().getPosition(), true);
+            }
             //player.getBody().applyForceToCenter(0, 8000f, true);
 
         if (Emarrow.getInstance().getController().dash) {
@@ -92,8 +97,6 @@ public class GameEngine {
             players.get(0).shoot();
         }
     }
-
-
 }
 
     public World getWorld() {

@@ -14,12 +14,14 @@ public class Character {
     private int life;
     private BodyDef bodyDef;
     private Body body;
+    private Body detectBox;
     private Texture texture;
     private float speed;
     private long lastShotTime = 0;
     private float fireRate = 1000f;
     private List<Projectile> projectilesShooted;
     private HealthBar healthBar;
+    private boolean canJump;
 
     public Character(Texture texture){
         this.texture = texture; //TODO mettre en parametre pour pouvoir chosir skin
@@ -55,7 +57,15 @@ public class Character {
 
 
         // Create our fixture and attach it to the body
-        body.createFixture(fixtureDef);
+        this.body.createFixture(fixtureDef);
+
+        hitBox.setAsBox(4, 2, new Vector2(0f, -13f),0f);
+        fixtureDef.shape = hitBox;
+        fixtureDef.isSensor = true;
+
+
+        this.body.createFixture(fixtureDef).setUserData("GroundHitBox");
+
         // Remember to dispose of any shapes after you're done with them!
         // BodyDef and FixtureDef don't need disposing, but shapes do.
         hitBox.dispose();
@@ -71,8 +81,21 @@ public class Character {
             lastShotTime = System.currentTimeMillis();
         }
     }
+    
     public Texture getTexture() {
         return texture;
+    }
+
+    public BodyDef getBodyDef() {
+        return bodyDef;
+    }
+
+    public boolean isCanJump() {
+        return canJump;
+    }
+
+    public void setCanJump(boolean canJump) {
+        this.canJump = canJump;
     }
 
     public float getSpeed() {
