@@ -2,16 +2,23 @@ package com.uecepi.emarrow;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.uecepi.emarrow.map.Map;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GameEngine {
+    private Map map;
     private World world;
     private float accumulator = 0;
-    private Character player;
+    private List<Character> players;
     private static GameEngine gameEngine;
 
     public static GameEngine getInstance(){
@@ -19,62 +26,83 @@ public class GameEngine {
     }
 
     public GameEngine() {
+        map = new Map("map1");
         this.world = new World(new Vector2(0, -150), true);
-        this.player = new Character(this);
+        players = new ArrayList<>();
+        players.add(new Character(this,new Texture("images/char/1/20_1.png"))); //TODO mettre en parametre pour pouvoir chosir skin));
+        players.add(new Character(this,new Texture("images/char/2/2.png")));
         this.createGround();
         Gdx.input.setInputProcessor(Emarrow.getInstance().getController());
     }
 
-    public static void start(){
+    public static void start() {
         gameEngine = new GameEngine();
     }
 
-    public void createGround(){
-// Create our body definition
-        BodyDef groundBodyDef = new BodyDef();
-// Set its world position
-        groundBodyDef.position.set(new Vector2(0, 10.0f));
+    public void createGround() {
+        TiledMapTileLayer layer = (TiledMapTileLayer) map.getTiledMap().getLayers().get(2);  // assuming the layer at index on contains tiles
+        for (int i = 0; i < layer.getWidth(); i++) {
+            for (int j = 0; j < layer.getHeight(); j++) {
+                if (layer.getCell(i, j) != null) {
+                    // Create our body definition
+                    BodyDef groundBodyDef = new BodyDef();
+                    // Set its world position
+                    groundBodyDef.position.set(i * layer.getTileWidth() + layer.getTileWidth() * .5f, j * layer.getTileHeight() + layer.getTileHeight() * .5f);
 
 
-        Body groundBody = world.createBody(groundBodyDef);
+                    Body groundBody = world.createBody(groundBodyDef);
 
-        // Create a polygon shape
-        PolygonShape groundBox = new PolygonShape();
-// Set the polygon shape as a box which is twice the size of our view port and 20 high
-// (setAsBox takes half-width and half-height as arguments)
-        groundBox.setAsBox(100.0f, 10.0f);
-        // Create a fixture from our polygon shape and add it to our ground body
-        groundBody.createFixture(groundBox, 0.0f);
-        // Clean up after ourselves
-        groundBox.dispose();
+                    // Create a polygon shape
+                    PolygonShape groundBox = new PolygonShape();
+                    // (setAsBox takes half-width and half-height as arguments)
+                    groundBox.setAsBox(layer.getTileWidth() / 2f, layer.getTileHeight() / 2f);
+                    // Create a fixture from our polygon shape and add it to our ground body
+                    groundBody.createFixture(groundBox, 0.0f);
+                    // Clean up after ourselves
+                    groundBox.dispose();
+                }
+            }
+        }
     }
 
-    public void processInput() {
+    public void processInput() {//TODO CHANGER players.get(0) EN ACTIVE PLAYER (CELUI QUI JOUE sur le pc)
         if (Emarrow.getInstance().getController().left) {
             //TODO Ameliorer la facon de déplacer
             //body.setTransform(body.getTransform().getPosition().x-1,body.getTransform().getPosition().y,body.getTransform().getRotation());
-            player.getBody().applyLinearImpulse(new Vector2(-5, 0), player.getBody().getPosition(), true);
+            players.get(0).getBody().applyLinearImpulse(new Vector2(-players.get(0).getSpeed(), 0), players.get(0).getBody().getPosition(), true);
         }
-        if (Emarrow.getInstance().getController().right) {
+        else if (Emarrow.getInstance().getController().right) {
             //TODO Ameliorer la facon de déplacer
             //body.setTransform(body.getTransform().getPosition().x+1,body.getTransform().getPosition().y,body.getTransform().getRotation());
-            player.getBody().applyLinearImpulse(new Vector2(5, 0), player.getBody().getPosition(), true);
-
+            players.get(0).getBody().applyLinearImpulse(new Vector2(players.get(0).getSpeed(), 0), players.get(0).getBody().getPosition(), true);
         }
-        if (Emarrow.getInstance().getController().jump){
-                //&& player.isGrounded()) {
-            player.getBody().applyLinearImpulse(new Vector2(0, 100), player.getBody().getPosition(), true);
+        else {
+            // Stop moving in the Y direction
+            players.get(0).getBody().setLinearVelocity(0, players.get(0).getBody().getLinearVelocity().y);
         }
+        if (Emarrow.getInstance().getController().jump){ //TODO améliorer la facon de sauter : quand on se deplace lateralement en l'air
+            //&& player.isGrounded()) {
+            players.get(0).getBody().applyLinearImpulse(new Vector2(0, 100), players.get(0).getBody().getPosition(), true);
+            //player.getBody().applyForceToCenter(0, 8000f, true);
 
         if (Emarrow.getInstance().getController().dash) {
-            player.getBody().applyLinearImpulse(new Vector2(player.getBody().getLinearVelocity().x * 10, player.getBody().getLinearVelocity().y * 10), player.getBody().getPosition(), true);
+            players.get(0).getBody().applyLinearImpulse(new Vector2(players.get(0).getBody().getLinearVelocity().x * 10, players.get(0).getBody().getLinearVelocity().y * 10), players.get(0).getBody().getPosition(), true);
+        }
+        if (Emarrow.getInstance().getController().shoot){
+            players.get(0).shoot();
         }
     }
 
     public World getWorld() {
         return world;
     }
-    public Character getPlayer1() {
-        return player;
+
+    public Map getMap() {
+        return map;
+    }
+}
+
+    public List<Character> getPlayers() {
+        return players;
     }
 }

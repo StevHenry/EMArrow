@@ -12,6 +12,7 @@ import com.uecepi.emarrow.Emarrow;
 import com.uecepi.emarrow.SettingsScreen;
 
 public class MainMenu extends ScreenMenu{
+    Emarrow game;
     Label emarrow;
     TextButton controlButton;
     TextButton playButton;
@@ -63,9 +64,11 @@ public class MainMenu extends ScreenMenu{
                 Gdx.app.exit();
             }
         });
-
-
     }
+
+
+
+
 
 
 

@@ -5,16 +5,17 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 
 public class KeyboardController  implements InputProcessor {
-    public boolean left,right,jump, dash;
+    public boolean left,right,jump, dash, shoot;
     public boolean isMouse1Down, isMouse2Down,isMouse3Down;
     public boolean isDragged;
     public Vector2 mouseLocation = new Vector2(0,0);
-    private int leftKey, rightKey, jumpKey, dashKey;
+    private int leftKey, rightKey, jumpKey, dashKey, shootKey;
     public KeyboardController(){
         this.leftKey = Keys.Q;
         this.rightKey = Keys.RIGHT;
         this.dashKey = Keys.E;
         this.jumpKey = Keys.SPACE;
+        this.shootKey = Keys.A;
 
     }
     public boolean keyDown(int keycode) {
@@ -25,8 +26,6 @@ public class KeyboardController  implements InputProcessor {
                 left = (leftKey == Keys.LEFT);
                 keyProcessed = true;
                 break;
-
-
             case Keys.RIGHT:    //if keycode is the same as Keys.LEFT a.k.a 22
                 right = (rightKey == Keys.RIGHT);
                 keyProcessed = true;    //we have reacted to a keypress
@@ -43,13 +42,16 @@ public class KeyboardController  implements InputProcessor {
                 jump = (jumpKey == Keys.SPACE);
                 keyProcessed = true;    //we have reacted to a keypress
                 break;
-
             case Keys.E:       //if keycode is the same as Keys.LEFT a.k.a 19
                 dash = (dashKey == Keys.E);
                 keyProcessed = true;    //we have reacted to a keypress
                 break;
             case Keys.SHIFT_LEFT:       //if keycode is the same as Keys.LEFT a.k.a 19
                 dash = (dashKey == Keys.SHIFT_LEFT);
+                keyProcessed = true;    //we have reacted to a keypress
+                break;
+            case Keys.A:       //if keycode is the same as Keys.LEFT a.k.a 19
+                shoot = true;      //do this
                 keyProcessed = true;    //we have reacted to a keypress
                 break;
         }
@@ -84,9 +86,13 @@ public class KeyboardController  implements InputProcessor {
                 dash = false;      //do this
                 keyProcessed = true;    //we have reacted to a keypress
                 break;
-            case Keys.SHIFT_LEFT:
-                dash = false;
-                keyProcessed = true;
+            case Keys.SHIFT_LEFT:   //if keycode is the same as Keys.LEFT a.k.a 19
+                dash = false;   //do this
+                keyProcessed = true;    //we have reacted to a keypress
+                break;
+            case Keys.A:       //if keycode is the same as Keys.LEFT a.k.a 19
+                shoot = false;      //do this
+                keyProcessed = true;    //we have reacted to a keypress
                 break;
         }
         return keyProcessed;    // return our peyProcessed flag
@@ -111,7 +117,7 @@ public class KeyboardController  implements InputProcessor {
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         isDragged = false;
-//System.out.println(button);
+        //System.out.println(button);
         if(button == 0){
             isMouse1Down = false;
         }else if(button == 1){
@@ -158,6 +164,10 @@ public class KeyboardController  implements InputProcessor {
         this.dashKey = dashKey;
     }
 
+    public void setShoot(int shootKey) {
+        this.shootKey = shootKey;
+    }
+
     public int getLeftKey() {
         return leftKey;
     }
@@ -172,5 +182,9 @@ public class KeyboardController  implements InputProcessor {
 
     public int getJumpKey() {
         return jumpKey;
+    }
+
+    public int getShootKey() {
+        return shootKey;
     }
 }

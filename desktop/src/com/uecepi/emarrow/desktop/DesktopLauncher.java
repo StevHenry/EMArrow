@@ -4,6 +4,7 @@ import com.badlogic.gdx.Files;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.uecepi.emarrow.Emarrow;
+import com.uecepi.emarrow.assets.Assets;
 
 public class DesktopLauncher {
 
