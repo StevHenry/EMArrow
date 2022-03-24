@@ -9,16 +9,14 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.uecepi.emarrow.ControlsMenu;
 import com.uecepi.emarrow.GameScreen;
 import com.uecepi.emarrow.Emarrow;
+import com.uecepi.emarrow.SettingsScreen;
 
 public class MainMenu extends ScreenMenu{
     Label emarrow;
     TextButton controlButton;
     TextButton playButton;
+    TextButton settingsButton;
     TextButton exitButton;
-    TextButton backButton;
-
-
-
 
     public MainMenu(){
         super();
@@ -47,6 +45,14 @@ public class MainMenu extends ScreenMenu{
                 Emarrow.getInstance().setScreen(new ControlsMenu());
                 }
 
+        });
+
+        settingsButton = new TextButton("Settings", skin);
+        table.add(settingsButton).height(100).width(200).padTop(30).row();
+        settingsButton.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                Emarrow.getInstance().setScreen(new SettingsScreen());
+            }
         });
 
         exitButton = new TextButton("Exit", skin);
