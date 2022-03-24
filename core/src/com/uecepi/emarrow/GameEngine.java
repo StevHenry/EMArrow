@@ -18,8 +18,8 @@ public class GameEngine {
     private Map map;
     private World world;
     private float accumulator = 0;
-    private List<Character> players;
-    private static GameEngine gameEngine;
+    private static List<Character> players;
+    private static GameEngine gameEngine = new GameEngine();
 
     public static GameEngine getInstance(){
         return gameEngine;
@@ -28,15 +28,15 @@ public class GameEngine {
     public GameEngine() {
         map = new Map("map1");
         this.world = new World(new Vector2(0, -150), true);
-        players = new ArrayList<>();
-        players.add(new Character(this,new Texture("images/char/1/20_1.png"))); //TODO mettre en parametre pour pouvoir chosir skin));
-        players.add(new Character(this,new Texture("images/char/2/2.png")));
         this.createGround();
         Gdx.input.setInputProcessor(Emarrow.getInstance().getController());
     }
 
     public static void start() {
         gameEngine = new GameEngine();
+        players = new ArrayList<>();
+        players.add(new Character(new Texture("images/char/1/20_1.png"))); //TODO mettre en parametre pour pouvoir chosir skin));
+        players.add(new Character(new Texture("images/char/2/2.png")));
     }
 
     public void createGround() {
@@ -93,6 +93,9 @@ public class GameEngine {
         }
     }
 
+
+}
+
     public World getWorld() {
         return world;
     }
@@ -100,9 +103,9 @@ public class GameEngine {
     public Map getMap() {
         return map;
     }
-}
-
     public List<Character> getPlayers() {
         return players;
     }
+
+
 }

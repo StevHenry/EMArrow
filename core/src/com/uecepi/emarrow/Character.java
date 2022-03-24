@@ -13,7 +13,6 @@ import java.util.List;
 public class Character {
     private int life;
     private BodyDef bodyDef;
-    private GameEngine gameEngine;
     private Body body;
     private Texture texture;
     private float speed;
@@ -22,9 +21,8 @@ public class Character {
     private List<Projectile> projectilesShooted;
     private HealthBar healthBar;
 
-    public Character(GameEngine gameEngine, Texture texture){
+    public Character(Texture texture){
         this.texture = texture; //TODO mettre en parametre pour pouvoir chosir skin
-        this.gameEngine = gameEngine;
         this.bodyDef = new BodyDef();
         this.speed = 25f;
         this.projectilesShooted = new ArrayList<>();
@@ -44,7 +42,7 @@ public class Character {
         bodyDef.position.set(new Vector2(50, 100f));
 
         // Create our body in the world using our body definition
-        this.body = this.gameEngine.getWorld().createBody(bodyDef);
+        this.body = GameEngine.getInstance().getWorld().createBody(bodyDef);
 
         // Create a circle shape and set its radius to 6
         PolygonShape hitBox = new PolygonShape();
