@@ -21,7 +21,6 @@ public class Projectile {
         this.speed = 25f;
         this.shooter = shooter;
         this.createHitBox();
-
     }
 
     public Body getBody() {

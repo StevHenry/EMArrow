@@ -69,7 +69,6 @@ public class Character {
         if (System.currentTimeMillis() - lastShotTime >= fireRate)
         {
             //TODO
-            new Projectile(this);
             projectilesShooted.add(new Projectile(this));
             lastShotTime = System.currentTimeMillis();
         }
