@@ -39,11 +39,13 @@ public class SignInMenu extends ScreenMenu {
         createBackGroundTable();
         addTitle();
         addFieldsTable();
+        addErrorMessage(true);
         addSignInButton();
+
     }
 
     /**
-     * Method called to check the account before singing in.
+     * Method called to check the account before signing in.
      */
     private void signIn() {
 
@@ -99,5 +101,14 @@ public class SignInMenu extends ScreenMenu {
         secondTable.setBackground(textureRegionDrawableBg);
         table.add(secondTable).height(400).width(400);
         bgPixmap.dispose();
+    }
+
+    public void addErrorMessage(boolean error){
+        if (error) {
+            Label message = new Label("Wrong Pseudo or ID or Password", skin);
+            message.setColor(new Color(1f,0.25f,0f,1f));
+            secondTable.add(message);
+            secondTable.row();
+        }
     }
 }
