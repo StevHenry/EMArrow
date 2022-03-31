@@ -25,6 +25,7 @@ public class Projectile {
         else
             this.speed = -25f;
         this.createHitBox();
+        this.damage = 25f;
     }
 
     public Body getBody() {

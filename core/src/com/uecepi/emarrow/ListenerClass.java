@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 
 import com.badlogic.gdx.physics.box2d.*;
+import com.uecepi.emarrow.audio.MusicManager;
 
 public class ListenerClass implements ContactListener {
 
@@ -36,7 +37,10 @@ public class ListenerClass implements ContactListener {
             Projectile projectile = (Projectile) fixtureB.getBody().getUserData();
 
             if (!character.getProjectilesShooted().contains(projectile)) {
-                character.getHealthBar().setValue(character.getHealthBar().getValue() - 10f);
+                MusicManager.playSE(MusicManager.TOUCHED_SE);
+                character.getHealthBar().setValue(character.getHealthBar().getValue() - projectile.damage);
+                if (character.getHealthBar().getValue()<=0)
+                    character.die();
                 projectile.getShooter().getProjectilesShooted().remove(projectile);
                 //GameEngine.getInstance().getWorld().destroyBody(projectile.getBody());
             }
@@ -48,9 +52,13 @@ public class ListenerClass implements ContactListener {
             Projectile projectile = (Projectile) fixtureA.getBody().getUserData();
 
             if (!character.getProjectilesShooted().contains(projectile)) {
-                character.getHealthBar().setValue(character.getHealthBar().getValue() - 10f);
+                MusicManager.playSE(MusicManager.TOUCHED_SE);
+
+                character.getHealthBar().setValue(character.getHealthBar().getValue() - projectile.damage);
+                if (character.getHealthBar().getValue()<=0)
+                    character.die();
                 projectile.getShooter().getProjectilesShooted().remove(projectile);
-                //GameEngine.getInstance().getWorld().destroyBody(projectile.getBody());
+                GameEngine.getInstance().getDeadBodies().add(projectile.getBody());
             }
         } else if (fixtureA.getUserData() != null
                 && fixtureA.getUserData().equals("Projectile")
@@ -58,7 +66,7 @@ public class ListenerClass implements ContactListener {
                 && fixtureB.getUserData().equals("Ground")) {
             Projectile projectile = (Projectile) fixtureA.getBody().getUserData();
             projectile.getShooter().getProjectilesShooted().remove(projectile);
-            //GameEngine.getInstance().getWorld().destroyBody(projectile.getBody());
+            GameEngine.getInstance().getDeadBodies().add(projectile.getBody());
 
         } else if (fixtureA.getUserData() != null
                 && fixtureA.getUserData().equals("Ground")
