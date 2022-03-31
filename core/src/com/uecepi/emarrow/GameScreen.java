@@ -54,7 +54,6 @@ public class GameScreen extends ScreenMenu {
         GameEngine.getInstance().getMap().render();
         for (Character player : GameEngine.getInstance().getPlayers()) {
             batch.draw(player.getTexture(), player.getBody().getPosition().x - (player.getTexture().getWidth() / 2), player.getBody().getPosition().y - (player.getTexture().getHeight() / 2));
-
             player.getHealthBar().getProgressBar().draw(batch,1);
         }
         drawProjectiles();

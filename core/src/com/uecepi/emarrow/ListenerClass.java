@@ -10,7 +10,12 @@ public class ListenerClass implements ContactListener {
 
         if(fixtureA.getUserData() == "Ground"){
             if(fixtureB.getUserData() == "GroundHitBox") {
-                GameEngine.getInstance().getPlayers().get(0).setCanJump(true);
+                GameEngine.getInstance().getPlayers().get(0).setJumpLeft(2);
+            }
+        }
+        if(fixtureA.getUserData() == "GroundHitBox"){
+            if(fixtureB.getUserData() == "Player") {
+                GameEngine.getInstance().getPlayers().get(0).setJumpLeft(2);
             }
         }
     }

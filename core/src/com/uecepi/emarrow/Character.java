@@ -21,7 +21,7 @@ public class Character {
     private float fireRate = 1000f;
     private List<Projectile> projectilesShooted;
     private HealthBar healthBar;
-    private boolean canJump;
+    private int jumpLeft = 2;
 
     public Character(Texture texture){
         this.texture = texture; //TODO mettre en parametre pour pouvoir chosir skin
@@ -57,12 +57,11 @@ public class Character {
 
 
         // Create our fixture and attach it to the body
-        this.body.createFixture(fixtureDef);
+        this.body.createFixture(fixtureDef).setUserData("Player");
 
         hitBox.setAsBox(4, 2, new Vector2(0f, -13f),0f);
         fixtureDef.shape = hitBox;
         fixtureDef.isSensor = true;
-
 
         this.body.createFixture(fixtureDef).setUserData("GroundHitBox");
 
@@ -86,16 +85,12 @@ public class Character {
         return texture;
     }
 
-    public BodyDef getBodyDef() {
-        return bodyDef;
+    public int getJumpLeft() {
+        return jumpLeft;
     }
 
-    public boolean isCanJump() {
-        return canJump;
-    }
-
-    public void setCanJump(boolean canJump) {
-        this.canJump = canJump;
+    public void setJumpLeft(int jumpLeft) {
+        this.jumpLeft = jumpLeft;
     }
 
     public float getSpeed() {

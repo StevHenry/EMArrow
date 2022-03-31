@@ -71,33 +71,35 @@ public class GameEngine {
             //players.get(0).getBody().applyForceToCenter(new Vector2(-50, 0),true);
 
             players.get(0).getBody().applyLinearImpulse(new Vector2(-players.get(0).getSpeed(), 0), players.get(0).getBody().getPosition(), true);
-        }
-        else if (Emarrow.getInstance().getController().right) {
+        } else if (Emarrow.getInstance().getController().right) {
             //TODO Ameliorer la facon de déplacer
             //body.setTransform(body.getTransform().getPosition().x+1,body.getTransform().getPosition().y,body.getTransform().getRotation());
             //players.get(0).getBody().applyForceToCenter(new Vector2(50, 0),true);
             players.get(0).getBody().applyLinearImpulse(new Vector2(players.get(0).getSpeed(), 0), players.get(0).getBody().getPosition(), true);
-        }
-        else {
+        } else {
             // Stop moving in the X direction
             players.get(0).getBody().setLinearVelocity(0, players.get(0).getBody().getLinearVelocity().y);
         }
-        if (Emarrow.getInstance().getController().jump){ //TODO améliorer la facon de sauter : quand on se deplace lateralement en l'air
-            //&& player.isGrounded()) {
-            if (players.get(0).isCanJump()){
-                players.get(0).setCanJump(false);
-                players.get(0).getBody().applyLinearImpulse(new Vector2(0, 150), players.get(0).getBody().getPosition(), true);
+        if (Emarrow.getInstance().getController().jump) { //TODO améliorer la facon de sauter : quand on se deplace lateralement en l'air
+            if (players.get(0).getJumpLeft() > 0) {
+                players.get(0).setJumpLeft(players.get(0).getJumpLeft() - 1);
+                //players.get(0).getBody().applyLinearImpulse(new Vector2(0, 150), players.get(0).getBody().getPosition(), true);
+                players.get(0).getBody().applyForceToCenter(0, 8000f, true);
             }
-            //player.getBody().applyForceToCenter(0, 8000f, true);
+            Emarrow.getInstance().getController().jump = false;
+        }
 
         if (Emarrow.getInstance().getController().dash) {
-            players.get(0).getBody().applyLinearImpulse(new Vector2(players.get(0).getBody().getLinearVelocity().x * 10, players.get(0).getBody().getLinearVelocity().y * 10), players.get(0).getBody().getPosition(), true);
+            if (Emarrow.getInstance().getController().left && Emarrow.getInstance().getController().up) {
+                players.get(0).getBody().applyLinearImpulse(new Vector2(-8000, 8000), players.get(0).getBody().getPosition(), true);
+            }
         }
-        if (Emarrow.getInstance().getController().shoot){
+
+        if (Emarrow.getInstance().getController().shoot) {
             players.get(0).shoot();
         }
+
     }
-}
 
     public World getWorld() {
         return world;

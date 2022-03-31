@@ -37,7 +37,6 @@ public class MainMenu extends ScreenMenu{
             public void clicked(InputEvent event, float x, float y) {
                 Emarrow.getInstance().setScreen(new GameScreen());
                 MusicManager.playSE(2);
-
             }
         });
 
@@ -47,7 +46,6 @@ public class MainMenu extends ScreenMenu{
             public void clicked(InputEvent event, float x, float y){
                 Emarrow.getInstance().setScreen(new ControlsMenu());
                 }
-
         });
 
         settingsButton = new TextButton("Settings", skin);
