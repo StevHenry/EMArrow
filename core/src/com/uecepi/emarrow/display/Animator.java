@@ -26,7 +26,10 @@ public class Animator {
 
     private float stateTime = 0f;
     private String currentAnimation = "standing";
+    private String lastAnimation = "standing";
     private String characterNumber;
+    private boolean isLooping = true;
+    private boolean isFlippedToLeft = false;
 
 
     public static void load() {
@@ -41,8 +44,18 @@ public class Animator {
     public void render(SpriteBatch spriteBatch, int x, int y) {
         stateTime += Gdx.graphics.getDeltaTime();
 
+        if(!isLooping) {
+            if(stateTime > FRAME_COLS*frameDuration) {
+                setCurrentAnimation(lastAnimation);
+                isLooping = true;
+            }
+        }
+
         // Get current frame of animation for the current stateTime
         TextureRegion currentFrame = Assets.ANIMATIONS.get(currentAnimation+characterNumber).getKeyFrame(stateTime, true);
+        if(isFlippedToLeft) {
+            currentFrame.flip(true,false);
+        }
         spriteBatch.draw(currentFrame, x, y);
 
     }
@@ -56,6 +69,15 @@ public class Animator {
         stateTime = 0f;
     }
 
+    public void playOnceAnimation(String animation) {
+        isLooping = false;
+        lastAnimation = currentAnimation;
+        setCurrentAnimation(animation);
+    }
+
+    public void setFlippedToLeft(boolean flippedToLeft) {
+        isFlippedToLeft = flippedToLeft;
+    }
 
     private static void loadAnimation(String charNum) {
         ArrayList<Texture> textures = new ArrayList<>();
