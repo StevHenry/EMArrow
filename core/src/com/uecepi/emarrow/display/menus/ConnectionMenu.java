@@ -26,6 +26,7 @@ public class ConnectionMenu extends ScreenMenu {
     TextButton connectionButton;
     Label title;
     Label connectionLabel;
+    Label errorMessage;
 
     public ConnectionMenu(){
         super();
@@ -36,7 +37,6 @@ public class ConnectionMenu extends ScreenMenu {
         createBackGroundTable();
         addTitle();
         addFieldsTable();
-        addErrorMessage(true);
         addSignInButton();
     }
 
@@ -45,10 +45,19 @@ public class ConnectionMenu extends ScreenMenu {
      */
     private void connection() {
 
-        Emarrow.getInstance().setScreen(new GameScreen());
+        Emarrow.getInstance().setScreen(new HubMenu());
     }
 
+    /**
+     * Adding message error because of a failed connection to server.
+     */
+    public void addErrorMessage(){
+        errorMessage = new Label("Connection to server failed", skin);
+        errorMessage.setColor(new Color(1f,0.5f,0f,1f));
+        secondTable.add(errorMessage);
+        secondTable.padTop(5).row();
 
+    }
     // __________________ Extracted Methods __________________ //
 
     private void addSignInButton() {
@@ -89,13 +98,6 @@ public class ConnectionMenu extends ScreenMenu {
         bgPixmap.dispose();
     }
 
-    public void addErrorMessage(boolean error){
-        if (error) {
-            Label message = new Label("Wrong ID", skin);
-            message.setColor(new Color(1f,0.25f,0f,1f));
-            secondTable.add(message);
-            secondTable.row();
-        }
-    }
+
 }
 

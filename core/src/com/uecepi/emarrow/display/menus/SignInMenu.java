@@ -29,6 +29,7 @@ public class SignInMenu extends ScreenMenu {
     Label pseudoLabel;
     Label idLabel;
     Label passwordLabel;
+    Label errorMessage;
 
     public SignInMenu(){
         super();
@@ -39,9 +40,7 @@ public class SignInMenu extends ScreenMenu {
         createBackGroundTable();
         addTitle();
         addFieldsTable();
-        addErrorMessage(true);
         addSignInButton();
-
     }
 
     /**
@@ -50,6 +49,17 @@ public class SignInMenu extends ScreenMenu {
     private void signIn() {
 
         Emarrow.getInstance().setScreen(new ConnectionMenu());
+    }
+
+    /**
+     * Adding message error because of a wrong ID/Password or an already used pseudo.
+     * @param errorStr
+     */
+    public void addErrorMessage(String errorStr){
+        errorMessage = new Label(errorStr, skin);
+        errorMessage.setColor(new Color(1f,0.5f,0f,1f));
+        secondTable.add(errorMessage);
+        secondTable.padTop(5).row();
     }
 
 
@@ -103,12 +113,5 @@ public class SignInMenu extends ScreenMenu {
         bgPixmap.dispose();
     }
 
-    public void addErrorMessage(boolean error){
-        if (error) {
-            Label message = new Label("Wrong Pseudo or ID or Password", skin);
-            message.setColor(new Color(1f,0.25f,0f,1f));
-            secondTable.add(message);
-            secondTable.row();
-        }
-    }
+
 }

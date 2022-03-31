@@ -66,6 +66,9 @@ public class HubMenu extends ScreenMenu {
             Label l = new Label(pseudo, skin);
             midTable.add(l).left().row();
         }
+
+        // Check if there are at least 2 players in the queue
+        // if it is the case, then Emarrow.getInstance().setScreen(new GameScreen()); with the 2 players
     }
 
     /**

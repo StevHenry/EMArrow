@@ -27,6 +27,7 @@ public class LogInMenu extends ScreenMenu {
     Label title;
     Label idLabel;
     Label passwordLabel;
+    Label errorMessage;
 
     public LogInMenu(){
         super();
@@ -37,7 +38,6 @@ public class LogInMenu extends ScreenMenu {
         createBackGroundTable();
         addTitle();
         addFieldsTable();
-        addErrorMessage(true);
         addSignInButton();
     }
 
@@ -49,6 +49,15 @@ public class LogInMenu extends ScreenMenu {
         Emarrow.getInstance().setScreen(new ConnectionMenu());
     }
 
+    /**
+     * Adding message error because of a wrong ID/Password.
+     */
+    public void addErrorMessage(){
+        errorMessage = new Label("Wrong ID or Password", skin);
+        errorMessage.setColor(new Color(1f,0.5f,0f,1f));
+        secondTable.add(errorMessage);
+        secondTable.padTop(5).row();
+    }
 
     // __________________ Extracted Methods __________________ //
 
@@ -95,12 +104,5 @@ public class LogInMenu extends ScreenMenu {
         bgPixmap.dispose();
     }
 
-    public void addErrorMessage(boolean error){
-        if (error) {
-            Label message = new Label("Wrong ID or Password", skin);
-            message.setColor(new Color(1f,0.25f,0f,1f));
-            secondTable.add(message);
-            secondTable.row();
-        }
-    }
+
 }
