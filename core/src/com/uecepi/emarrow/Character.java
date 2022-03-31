@@ -17,12 +17,14 @@ public class Character extends Actor {
     private BodyDef bodyDef;
     private Body body;
     private Animator animator;
+    private Body detectBox;
     private float speed;
 
     private long lastShotTime = 0;
     private float fireRate = 1000f;
     private List<Projectile> projectilesShooted;
     private HealthBar healthBar;
+    private int jumpLeft = 2;
 
     public Character(String nb){
         this.animator = new Animator(nb); //TODO mettre en parametre pour pouvoir chosir skin
@@ -48,6 +50,7 @@ public class Character extends Actor {
         this.body = GameEngine.getInstance().getWorld().createBody(bodyDef);
         body.setUserData(this);
 
+
         // Create a circle shape and set its radius to 6
         PolygonShape hitBox = new PolygonShape();
         //hitBox.setAsBox(4.0f, 7.0f);
@@ -60,7 +63,15 @@ public class Character extends Actor {
 
 
         // Create our fixture and attach it to the body
-        body.createFixture(fixtureDef).setUserData("Player");
+
+        this.body.createFixture(fixtureDef).setUserData("Player");
+
+        hitBox.setAsBox(4, 2, new Vector2(0f, -13f),0f);
+        fixtureDef.shape = hitBox;
+        fixtureDef.isSensor = true;
+
+        this.body.createFixture(fixtureDef).setUserData("GroundHitBox");
+
         // Remember to dispose of any shapes after you're done with them!
         // BodyDef and FixtureDef don't need disposing, but shapes do.
         hitBox.dispose();
@@ -75,6 +86,13 @@ public class Character extends Actor {
         }
     }
 
+    public int getJumpLeft() {
+        return jumpLeft;
+    }
+
+    public void setJumpLeft(int jumpLeft) {
+        this.jumpLeft = jumpLeft;
+    }
 
     public float getSpeed() {
         return speed;

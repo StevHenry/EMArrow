@@ -7,6 +7,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.uecepi.emarrow.display.Animator;
+
 import com.uecepi.emarrow.map.Map;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,11 +16,10 @@ public class GameEngine {
     private Map map;
     private World world;
     private float accumulator = 0;
-    private List<Character> players;
-    private KeyboardController controller;
-    private static GameEngine gameEngine;
+    private static List<Character> players;
+    private static GameEngine gameEngine = new GameEngine();
 
-    public static GameEngine getInstance() {
+    public static GameEngine getInstance(){
         return gameEngine;
     }
 
@@ -27,15 +27,16 @@ public class GameEngine {
         map = new Map("map1");
         this.world = new World(new Vector2(0, -150), true);
         players = new ArrayList<>();
+
         this.createGround();
-        controller = new KeyboardController();
-        Gdx.input.setInputProcessor(controller);
+        Gdx.input.setInputProcessor(Emarrow.getInstance().getController());
     }
 
     public static void start() {
         gameEngine = new GameEngine();
         gameEngine.players.add(new Character("1")); //TODO mettre en parametre pour pouvoir chosir skin));
         gameEngine.players.add(new Character("2"));
+
     }
 
     public void createGround() {
@@ -68,14 +69,13 @@ public class GameEngine {
 
     }
 
-    public void processInput() { //TODO CHANGER players.get(0) EN ACTIVE PLAYER (CELUI QUI JOUE sur le pc)
-        if (controller.left) {
+    public void processInput() {//TODO CHANGER players.get(0) EN ACTIVE PLAYER (CELUI QUI JOUE sur le pc)
+        if (Emarrow.getInstance().getController().left) {
             //TODO Ameliorer la facon de déplacer
             if (!players.get(0).getAnimator().getCurrentAnimation().equals(Animator.RUNNING_ANIMATION))
                 players.get(0).getAnimator().setCurrentAnimation(Animator.RUNNING_ANIMATION);
             players.get(0).getBody().applyLinearImpulse(new Vector2(-players.get(0).getSpeed(), 0), players.get(0).getBody().getPosition(), true);
-        }
-        else if (controller.right) {
+        } else if (Emarrow.getInstance().getController().right) {
             //TODO Ameliorer la facon de déplacer
             if (!players.get(0).getAnimator().getCurrentAnimation().equals(Animator.RUNNING_ANIMATION))
                 players.get(0).getAnimator().setCurrentAnimation(Animator.RUNNING_ANIMATION);
@@ -86,20 +86,31 @@ public class GameEngine {
             players.get(0).getAnimator().setCurrentAnimation(Animator.STANDING_ANIMATION);
             players.get(0).getBody().setLinearVelocity(0, players.get(0).getBody().getLinearVelocity().y);
         }
-        if (controller.jump){ //TODO améliorer la facon de sauter : quand on se deplace lateralement en l'air
-            //&& player.isGrounded()) {
-            players.get(0).getAnimator().setCurrentAnimation(Animator.JUMPING_ANIMATION);
-            players.get(0).getBody().applyLinearImpulse(new Vector2(0, 100), players.get(0).getBody().getPosition(), true);
-            //player.getBody().applyForceToCenter(0, 8000f, true);
 
+            //body.setTransform(body.getTransform().getPosition().x+1,body.getTransform().getPosition().y,body.getTransform().getRotation());
+            //players.get(0).getBody().applyForceToCenter(new Vector2(50, 0),true);
+
+        if (Emarrow.getInstance().getController().jump) { //TODO améliorer la facon de sauter : quand on se deplace lateralement en l'air
+            if (players.get(0).getJumpLeft() > 0) {
+                players.get(0).getAnimator().setCurrentAnimation(Animator.JUMPING_ANIMATION);
+                players.get(0).setJumpLeft(players.get(0).getJumpLeft() - 1);
+                //players.get(0).getBody().applyLinearImpulse(new Vector2(0, 150), players.get(0).getBody().getPosition(), true);
+                players.get(0).getBody().applyForceToCenter(0, 8000f, true);
+            }
+            Emarrow.getInstance().getController().jump = false;
         }
-        if (controller.dash) {
-            players.get(0).getBody().applyLinearImpulse(new Vector2(players.get(0).getBody().getLinearVelocity().x * 10, players.get(0).getBody().getLinearVelocity().y * 10), players.get(0).getBody().getPosition(), true);
+
+        if (Emarrow.getInstance().getController().dash) {
+            if (Emarrow.getInstance().getController().left && Emarrow.getInstance().getController().up) {
+                players.get(0).getBody().applyLinearImpulse(new Vector2(-8000, 8000), players.get(0).getBody().getPosition(), true);
+            }
         }
         if (controller.shoot){
             players.get(0).getAnimator().setCurrentAnimation(Animator.STANDING_SHOT_ANIMATION);
+
             players.get(0).shoot();
         }
+
     }
 
     public World getWorld() {
@@ -109,7 +120,6 @@ public class GameEngine {
     public Map getMap() {
         return map;
     }
-
     public List<Character> getPlayers() {
         return players;
     }

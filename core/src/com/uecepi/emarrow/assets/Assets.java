@@ -8,8 +8,8 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.uecepi.emarrow.display.Animator;
-
 import java.util.HashMap;
+import com.uecepi.emarrow.audio.MusicManager;
 
 public class Assets {
 
@@ -23,6 +23,7 @@ public class Assets {
 
     public static void load() {
         Animator.load();
+        MusicManager.load();
         assetManager.load(SKIN_VIS);
         assetManager.finishLoading();
 
