@@ -10,6 +10,7 @@ import com.uecepi.emarrow.display.ScreenMenu;
 
 public class ControlsMenu extends ScreenMenu {
     Label controls;
+    Label instructions;
     TextButton leftButton;
     TextButton rightButton;
     TextButton dashButton;
@@ -27,6 +28,9 @@ public class ControlsMenu extends ScreenMenu {
         controls = new Label("CONTROLS", skin);
         table.add(controls).row();
         controls.setFontScale(10);
+
+        instructions = new Label("Click on the buttons to change the controls",skin);
+        table.add(instructions).row();
 
         if (Emarrow.getInstance().getController().getLeftKey() == Input.Keys.Q){
             leftButton = new TextButton("Left : Q", skin);
@@ -90,7 +94,7 @@ public class ControlsMenu extends ScreenMenu {
         });
 
 
-        jumpButton = new TextButton("Jump : Espace", skin);
+        jumpButton = new TextButton("Jump : Space", skin);
         table.add(jumpButton).height(100).width(200).padTop(30).row();
 
         backButton = new TextButton("Back", skin);
