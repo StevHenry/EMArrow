@@ -53,7 +53,10 @@ public class Animator {
 
         // Get current frame of animation for the current stateTime
         TextureRegion currentFrame = Assets.ANIMATIONS.get(currentAnimation+characterNumber).getKeyFrame(stateTime, true);
-        if(isFlippedToLeft) {
+        if(isFlippedToLeft && !currentFrame.isFlipX()) {
+            currentFrame.flip(true,false);
+        }
+        else if (currentFrame.isFlipX() && !isFlippedToLeft){
             currentFrame.flip(true,false);
         }
         spriteBatch.draw(currentFrame, x, y);
@@ -73,6 +76,10 @@ public class Animator {
         isLooping = false;
         lastAnimation = currentAnimation;
         setCurrentAnimation(animation);
+    }
+
+    public boolean isFlippedToLeft() {
+        return isFlippedToLeft;
     }
 
     public void setFlippedToLeft(boolean flippedToLeft) {

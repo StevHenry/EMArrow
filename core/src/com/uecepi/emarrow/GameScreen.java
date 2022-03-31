@@ -69,12 +69,11 @@ public class GameScreen extends ScreenMenu {
         for (Character player : GameEngine.getInstance().getPlayers()) {
             player.getHealthBar().setPosition(player.getBody().getPosition().x-player.getAnimator().width/2,player.getBody().getPosition().y+player.getAnimator().height/2);
             player.getHealthBar().updateVisualValue();
-
             for (Projectile projectile : player.getProjectilesShooted()){
                 projectile.update();
             }
-
         }
+        System.out.println(GameEngine.getInstance().getPlayers().get(0).getAnimator().isFlippedToLeft());
     }
 
     @Override

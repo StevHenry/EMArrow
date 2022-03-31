@@ -21,10 +21,11 @@ public class Character extends Actor {
     private float speed;
 
     private long lastShotTime = 0;
-    private float fireRate = 1000f;
+    private float fireRate = 700f;
     private List<Projectile> projectilesShooted;
     private HealthBar healthBar;
     private int jumpLeft = 2;
+    private boolean isGrounded=true;
 
     public Character(String nb){
         this.animator = new Animator(nb); //TODO mettre en parametre pour pouvoir chosir skin
@@ -92,6 +93,14 @@ public class Character extends Actor {
 
     public void setJumpLeft(int jumpLeft) {
         this.jumpLeft = jumpLeft;
+    }
+
+    public boolean isGrounded() {
+        return isGrounded;
+    }
+
+    public void setGrounded(boolean grounded) {
+        isGrounded = grounded;
     }
 
     public float getSpeed() {

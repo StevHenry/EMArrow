@@ -19,8 +19,11 @@ public class Projectile {
     public Projectile(Character shooter){
         this.texture = new Texture("images/char/arrow.png");
         this.bodyDef = new BodyDef();
-        this.speed = 25f;
         this.shooter = shooter;
+        if (shooter.getAnimator().isFlippedToLeft())
+            this.speed = 25f;
+        else
+            this.speed = -25f;
         this.createHitBox();
     }
 
@@ -56,7 +59,8 @@ public class Projectile {
     }
 
     public void update() {
-        body.applyLinearImpulse(new Vector2(speed, 0), body.getPosition(), true);
+        body.applyLinearImpulse(new Vector2(-speed, 0), body.getPosition(), true);
+
         //velocity.scl(1 - (0.98f * deltaTime));
         // Linear dampening, otherwise the ball will keep going at the original velocity forever
     }
