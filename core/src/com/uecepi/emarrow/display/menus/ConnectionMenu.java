@@ -36,6 +36,7 @@ public class ConnectionMenu extends ScreenMenu {
         createBackGroundTable();
         addTitle();
         addFieldsTable();
+        addErrorMessage(true);
         addSignInButton();
     }
 
@@ -84,8 +85,17 @@ public class ConnectionMenu extends ScreenMenu {
         bgPixmap.fill();
         TextureRegionDrawable textureRegionDrawableBg = new TextureRegionDrawable(new TextureRegion(new Texture(bgPixmap)));
         secondTable.setBackground(textureRegionDrawableBg);
-        table.add(secondTable).height(270).width(400);
+        table.add(secondTable).height(300).width(400);
         bgPixmap.dispose();
+    }
+
+    public void addErrorMessage(boolean error){
+        if (error) {
+            Label message = new Label("Wrong ID", skin);
+            message.setColor(new Color(1f,0.25f,0f,1f));
+            secondTable.add(message);
+            secondTable.row();
+        }
     }
 }
 
