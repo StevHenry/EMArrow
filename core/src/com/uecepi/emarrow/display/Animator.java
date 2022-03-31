@@ -47,6 +47,10 @@ public class Animator {
 
     }
 
+    public String getCurrentAnimation() {
+        return currentAnimation;
+    }
+
     public void setCurrentAnimation(String animation) {
         currentAnimation = animation;
         stateTime = 0f;

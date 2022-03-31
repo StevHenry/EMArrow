@@ -67,4 +67,8 @@ public class Projectile {
     public float getSpeed() {
         return speed;
     }
+
+    public Character getShooter() {
+        return shooter;
+    }
 }

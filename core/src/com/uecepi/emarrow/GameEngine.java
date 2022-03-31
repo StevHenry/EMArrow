@@ -5,10 +5,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.*;
 import com.uecepi.emarrow.display.Animator;
 import com.uecepi.emarrow.map.Map;
 import java.util.ArrayList;
@@ -56,10 +53,13 @@ public class GameEngine {
 
                     // Create a polygon shape
                     PolygonShape groundBox = new PolygonShape();
+
                     // (setAsBox takes half-width and half-height as arguments)
                     groundBox.setAsBox(layer.getTileWidth() / 2f, layer.getTileHeight() / 2f);
+                    FixtureDef groundFixture = new FixtureDef();
+                    groundFixture.shape=groundBox;
                     // Create a fixture from our polygon shape and add it to our ground body
-                    groundBody.createFixture(groundBox, 0.0f);
+                    groundBody.createFixture(groundFixture).setUserData("Ground");
                     // Clean up after ourselves
                     groundBox.dispose();
                 }
@@ -71,21 +71,24 @@ public class GameEngine {
     public void processInput() { //TODO CHANGER players.get(0) EN ACTIVE PLAYER (CELUI QUI JOUE sur le pc)
         if (controller.left) {
             //TODO Ameliorer la facon de déplacer
-            //body.setTransform(body.getTransform().getPosition().x-1,body.getTransform().getPosition().y,body.getTransform().getRotation());
+            if (!players.get(0).getAnimator().getCurrentAnimation().equals(Animator.RUNNING_ANIMATION))
+                players.get(0).getAnimator().setCurrentAnimation(Animator.RUNNING_ANIMATION);
             players.get(0).getBody().applyLinearImpulse(new Vector2(-players.get(0).getSpeed(), 0), players.get(0).getBody().getPosition(), true);
         }
         else if (controller.right) {
             //TODO Ameliorer la facon de déplacer
-            //body.setTransform(body.getTransform().getPosition().x+1,body.getTransform().getPosition().y,body.getTransform().getRotation());
+            if (!players.get(0).getAnimator().getCurrentAnimation().equals(Animator.RUNNING_ANIMATION))
+                players.get(0).getAnimator().setCurrentAnimation(Animator.RUNNING_ANIMATION);
             players.get(0).getBody().applyLinearImpulse(new Vector2(players.get(0).getSpeed(), 0), players.get(0).getBody().getPosition(), true);
         }
         else {
             // Stop moving in the Y direction
+            players.get(0).getAnimator().setCurrentAnimation(Animator.STANDING_ANIMATION);
             players.get(0).getBody().setLinearVelocity(0, players.get(0).getBody().getLinearVelocity().y);
         }
         if (controller.jump){ //TODO améliorer la facon de sauter : quand on se deplace lateralement en l'air
             //&& player.isGrounded()) {
-            players.get(0).getAnimator().setCurrentAnimation(Animator.FLYING_ANIMATION);
+            players.get(0).getAnimator().setCurrentAnimation(Animator.JUMPING_ANIMATION);
             players.get(0).getBody().applyLinearImpulse(new Vector2(0, 100), players.get(0).getBody().getPosition(), true);
             //player.getBody().applyForceToCenter(0, 8000f, true);
 
@@ -94,6 +97,7 @@ public class GameEngine {
             players.get(0).getBody().applyLinearImpulse(new Vector2(players.get(0).getBody().getLinearVelocity().x * 10, players.get(0).getBody().getLinearVelocity().y * 10), players.get(0).getBody().getPosition(), true);
         }
         if (controller.shoot){
+            players.get(0).getAnimator().setCurrentAnimation(Animator.STANDING_SHOT_ANIMATION);
             players.get(0).shoot();
         }
     }
