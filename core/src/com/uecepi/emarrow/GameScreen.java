@@ -6,10 +6,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.Box2D;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.ContactListener;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.uecepi.emarrow.display.ScreenMenu;
 
@@ -65,6 +62,7 @@ public class GameScreen extends ScreenMenu {
     private void update() {
         GameEngine.getInstance().processInput();
         world.step(TIME_STEP, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
+        destroyDeadBodies();
         batch.setProjectionMatrix(GameEngine.getInstance().getMap().getCamera().combined);
         for (Character player : GameEngine.getInstance().getPlayers()) {
             player.getHealthBar().setPosition(player.getBody().getPosition().x-player.getAnimator().width/2,player.getBody().getPosition().y+player.getAnimator().height/2);
@@ -113,5 +111,14 @@ public class GameScreen extends ScreenMenu {
                 batch.draw(projectile.getTexture(), projectile.getBody().getPosition().x - (projectile.getTexture().getWidth() / 2), projectile.getBody().getPosition().y - (projectile.getTexture().getHeight() / 2));
             }
         }
+    }
+
+    private void destroyDeadBodies(){
+        for (Body deadBody : GameEngine.getInstance().getDeadBodies()){
+            //world.destroyBody(deadBody);
+            deadBody.setActive(false);
+
+        }
+        GameEngine.getInstance().getDeadBodies().clear();
     }
 }

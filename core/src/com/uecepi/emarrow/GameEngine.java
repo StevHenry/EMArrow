@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.uecepi.emarrow.audio.MusicManager;
 import com.uecepi.emarrow.display.Animator;
 
 import com.uecepi.emarrow.map.Map;
@@ -17,6 +18,7 @@ public class GameEngine {
     private World world;
     private float accumulator = 0;
     private static List<Character> players;
+    private List<Body> deadBodies;
     private static GameEngine gameEngine = new GameEngine();
 
     public static GameEngine getInstance(){
@@ -27,6 +29,7 @@ public class GameEngine {
         map = new Map("map1");
         this.world = new World(new Vector2(0, -150), true);
         players = new ArrayList<>();
+        deadBodies = new ArrayList<>();
 
         this.createGround();
         Gdx.input.setInputProcessor(Emarrow.getInstance().getController());
@@ -107,6 +110,7 @@ public class GameEngine {
         }
         if (Emarrow.getInstance().getController().jump) { //TODO améliorer la facon de sauter : quand on se deplace lateralement en l'air
             if (players.get(0).getJumpLeft() > 0) {
+                MusicManager.playSE(MusicManager.JUMP_SE);
                 players.get(0).getAnimator().setCurrentAnimation(Animator.JUMPING_ANIMATION);
                 players.get(0).setGrounded(false);
                 players.get(0).setJumpLeft(players.get(0).getJumpLeft() - 1);
@@ -117,6 +121,7 @@ public class GameEngine {
         }
 
         if (Emarrow.getInstance().getController().dash) {
+            MusicManager.playSE(MusicManager.DASH_SE);
             if (Emarrow.getInstance().getController().left && Emarrow.getInstance().getController().up) {
                 players.get(0).getBody().applyLinearImpulse(new Vector2(-8000, 8000), players.get(0).getBody().getPosition(), true);
             }
@@ -127,6 +132,7 @@ public class GameEngine {
             else
                 players.get(0).getAnimator().setCurrentAnimation(Animator.FLYING_SHOT_ANIMATION);
             players.get(0).shoot();
+            MusicManager.playSE(MusicManager.SHOT_SE);
         }
 
     }
@@ -140,5 +146,9 @@ public class GameEngine {
     }
     public List<Character> getPlayers() {
         return players;
+    }
+
+    public List<Body> getDeadBodies() {
+        return deadBodies;
     }
 }

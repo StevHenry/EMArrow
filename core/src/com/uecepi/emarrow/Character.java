@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Character extends Actor {
-    private int life;
     private BodyDef bodyDef;
     private Body body;
     private Animator animator;
@@ -87,6 +86,10 @@ public class Character extends Actor {
         }
     }
 
+    public void die(){
+        GameEngine.getInstance().getDeadBodies().add(this.body);
+    }
+
     public int getJumpLeft() {
         return jumpLeft;
     }
@@ -119,7 +122,6 @@ public class Character extends Actor {
     @Override
     public String toString() {
         return "Character{" +
-                "life=" + life +
                 ", bodyDef=" + bodyDef +
                 ", body=" + body +
                 ", speed=" + speed +
