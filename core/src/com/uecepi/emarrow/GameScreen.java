@@ -1,16 +1,18 @@
 package com.uecepi.emarrow;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.physics.box2d.Box2D;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.uecepi.emarrow.Character;
-import com.uecepi.emarrow.GameEngine;
-import com.uecepi.emarrow.ListenerClass;
-import com.uecepi.emarrow.Projectile;
 import com.uecepi.emarrow.display.menus.ScreenMenu;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class GameScreen extends ScreenMenu {
 
@@ -49,36 +51,27 @@ public class GameScreen extends ScreenMenu {
         batch.begin();
         GameEngine.getInstance().getMap().render();
         for (Character player : GameEngine.getInstance().getPlayers()) {
-            batch.draw(player.getTexture(), player.getBody().getPosition().x - (player.getTexture().getWidth() / 2), player.getBody().getPosition().y - (player.getTexture().getHeight() / 2));
-
-            player.getHealthBar().getProgressBar().draw(batch,1);
+            player.getAnimator().render(batch,(int) player.getBody().getPosition().x - (player.getAnimator().width / 2), (int) player.getBody().getPosition().y - (player.getAnimator().height / 2));
+            player.getHealthBar().draw(batch,1);
         }
         drawProjectiles();
         batch.end();
         box2DDebugRenderer.render(world, GameEngine.getInstance().getMap().getCamera().combined);
     }
 
-    @Override
-    public void dispose() {
-        box2DDebugRenderer.dispose();
-        for (Character player : GameEngine.getInstance().getPlayers()) {
-            player.getTexture().dispose();
-        }
-        batch.dispose();
-        world.dispose();
-    }
     private void update() {
         GameEngine.getInstance().processInput();
         world.step(TIME_STEP, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
+        destroyDeadBodies();
         batch.setProjectionMatrix(GameEngine.getInstance().getMap().getCamera().combined);
         for (Character player : GameEngine.getInstance().getPlayers()) {
-
-
+            player.getHealthBar().setPosition(player.getBody().getPosition().x-player.getAnimator().width/2,player.getBody().getPosition().y+player.getAnimator().height/2);
+            player.getHealthBar().updateVisualValue();
             for (Projectile projectile : player.getProjectilesShooted()){
                 projectile.update();
             }
-
         }
+        System.out.println(GameEngine.getInstance().getPlayers().get(0).getAnimator().isFlippedToLeft());
     }
 
     @Override
@@ -102,12 +95,30 @@ public class GameScreen extends ScreenMenu {
 
     }
 
+    @Override
+    public void dispose() {
+        box2DDebugRenderer.dispose();
+        for (Character player : GameEngine.getInstance().getPlayers()) {
+            //player.getAnimator().
+        }
+        batch.dispose();
+        world.dispose();
+    }
 
     private void drawProjectiles() {
         for (Character player : GameEngine.getInstance().getPlayers()) {
             for (Projectile projectile : player.getProjectilesShooted()){
-                batch.draw(projectile.getTexture(), projectile.getBody().getPosition().x - (projectile.getTexture().getWidth() / 2), projectile.getBody().getPosition().y - (projectile.getTexture().getHeight() / 2));
+                batch.draw(projectile.getTexture(), projectile.getBody().getPosition().x - (projectile.getTexture().getRegionWidth() / 2), projectile.getBody().getPosition().y - (projectile.getTexture().getRegionHeight() / 2), projectile.getTexture().getRegionWidth() / 2, projectile.getTexture().getRegionHeight() / 2, projectile.getTexture().getRegionWidth(), projectile.getTexture().getRegionHeight(), 1, 1, projectile.getRotation(), true);
             }
         }
+    }
+
+    private void destroyDeadBodies(){
+        for (Body deadBody : GameEngine.getInstance().getDeadBodies()){
+            //world.destroyBody(deadBody);
+            deadBody.setActive(false);
+
+        }
+        GameEngine.getInstance().getDeadBodies().clear();
     }
 }

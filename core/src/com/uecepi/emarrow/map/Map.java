@@ -46,6 +46,8 @@ public class Map {
         return tiledMap;
     }
 
+
+
     public OrthographicCamera getCamera() {
         return camera;
     }

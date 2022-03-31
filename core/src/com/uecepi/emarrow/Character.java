@@ -6,31 +6,33 @@ import com.badlogic.gdx.graphics.g2d.PolygonRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.uecepi.emarrow.audio.MusicManager;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.uecepi.emarrow.display.Animator;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Character {
-    private int life;
+public class Character extends Actor {
     private BodyDef bodyDef;
     private Body body;
+    private Animator animator;
     private Body detectBox;
-    private Texture texture;
     private float speed;
+
     private long lastShotTime = 0;
-    private float fireRate = 1000f;
+    private float fireRate = 700f;
     private List<Projectile> projectilesShooted;
     private HealthBar healthBar;
-    private boolean canJump;
+    private int jumpLeft = 2;
+    private boolean isGrounded=true;
 
-    public Character(Texture texture){
-        this.texture = texture; //TODO mettre en parametre pour pouvoir chosir skin
+    public Character(String nb){
+        this.animator = new Animator(nb); //TODO mettre en parametre pour pouvoir chosir skin
         this.bodyDef = new BodyDef();
         this.speed = 25f;
         this.projectilesShooted = new ArrayList<>();
         this.createHitBox();
-        this.healthBar = new HealthBar(100,body.getPosition());
+        this.healthBar = new HealthBar(animator.width,2,100,body.getPosition());
     }
 
     public Body getBody() {
@@ -46,24 +48,27 @@ public class Character {
 
         // Create our body in the world using our body definition
         this.body = GameEngine.getInstance().getWorld().createBody(bodyDef);
+        body.setUserData(this);
+
 
         // Create a circle shape and set its radius to 6
         PolygonShape hitBox = new PolygonShape();
         //hitBox.setAsBox(4.0f, 7.0f);
-        hitBox.setAsBox(texture.getWidth()/4, texture.getHeight()/2);
+        hitBox.setAsBox(animator.width/4, animator.height/2);
 
         // Create a fixture definition to apply our shape to
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = hitBox;
 
 
+
         // Create our fixture and attach it to the body
-        this.body.createFixture(fixtureDef);
+
+        this.body.createFixture(fixtureDef).setUserData("Player");
 
         hitBox.setAsBox(4, 2, new Vector2(0f, -13f),0f);
         fixtureDef.shape = hitBox;
         fixtureDef.isSensor = true;
-
 
         this.body.createFixture(fixtureDef).setUserData("GroundHitBox");
 
@@ -73,42 +78,61 @@ public class Character {
     }
 
     public void shoot(){
-        System.out.println(System.currentTimeMillis()- lastShotTime);
-        System.out.println(fireRate);
         if (System.currentTimeMillis() - lastShotTime >= fireRate)
         {
             //TODO
             projectilesShooted.add(new Projectile(this));
             lastShotTime = System.currentTimeMillis();
-            MusicManager.playSE(MusicManager.SHOT2_SE);
         }
     }
-    
-    public Texture getTexture() {
-        return texture;
+
+    public void die(){
+        GameEngine.getInstance().getDeadBodies().add(this.body);
     }
 
-    public BodyDef getBodyDef() {
-        return bodyDef;
+    public int getJumpLeft() {
+        return jumpLeft;
     }
 
-    public boolean isCanJump() {
-        return canJump;
+    public void setJumpLeft(int jumpLeft) {
+        this.jumpLeft = jumpLeft;
     }
 
-    public void setCanJump(boolean canJump) {
-        this.canJump = canJump;
+    public boolean isGrounded() {
+        return isGrounded;
+    }
+
+    public void setGrounded(boolean grounded) {
+        isGrounded = grounded;
     }
 
     public float getSpeed() {
         return speed;
     }
-
     public List<Projectile> getProjectilesShooted() {
         return projectilesShooted;
     }
 
     public HealthBar getHealthBar() {
         return healthBar;
+    }
+
+
+
+    @Override
+    public String toString() {
+        return "Character{" +
+                ", bodyDef=" + bodyDef +
+                ", body=" + body +
+                ", speed=" + speed +
+                ", lastShotTime=" + lastShotTime +
+                ", fireRate=" + fireRate +
+                ", projectilesShooted=" + projectilesShooted +
+                ", healthBar=" + healthBar +
+                '}';
+    }
+
+    public Animator getAnimator() {
+        return animator;
     }
 }
