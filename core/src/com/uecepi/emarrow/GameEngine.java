@@ -105,7 +105,7 @@ public class GameEngine {
                 players.get(0).getBody().applyLinearImpulse(new Vector2(-8000, 8000), players.get(0).getBody().getPosition(), true);
             }
         }
-        if (controller.shoot){
+        if (Emarrow.getInstance().getController().shoot){
             players.get(0).getAnimator().setCurrentAnimation(Animator.STANDING_SHOT_ANIMATION);
 
             players.get(0).shoot();
