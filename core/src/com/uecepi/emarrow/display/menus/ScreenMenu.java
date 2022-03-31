@@ -9,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.uecepi.emarrow.assets.Assets;
 
 /**
- * Classe implémentant Screen, qui permet d'avoir une uniformité des graphismes des menus
+ * Abstract class of menus.
  */
 public abstract class ScreenMenu implements Screen {
 
@@ -17,9 +17,7 @@ public abstract class ScreenMenu implements Screen {
     protected Table table;
     protected Skin skin;
 
-    /**
-     * Constructeur de ScreenMenu
-     */
+
     public ScreenMenu() {
         stage = new Stage();
 

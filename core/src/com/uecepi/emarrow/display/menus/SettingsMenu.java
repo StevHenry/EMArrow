@@ -39,7 +39,7 @@ public class SettingsMenu extends ScreenMenu {
         //Création du titre du menu
         settings = new Label("SETTINGS", skin);
         table.add(settings).row();
-        settings.setFontScale(10);
+        settings.setFontScale(3);
 
         //Création du slider permettant de changer le volume général du jeu
         generalVolumeLabel = new Label("General volume", skin);
