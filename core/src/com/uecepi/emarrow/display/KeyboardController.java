@@ -1,4 +1,4 @@
-package com.uecepi.emarrow;
+package com.uecepi.emarrow.display;
 
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;

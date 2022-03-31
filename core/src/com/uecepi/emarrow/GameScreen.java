@@ -1,20 +1,16 @@
 package com.uecepi.emarrow;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.uecepi.emarrow.display.ScreenMenu;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.uecepi.emarrow.Character;
+import com.uecepi.emarrow.GameEngine;
+import com.uecepi.emarrow.ListenerClass;
+import com.uecepi.emarrow.Projectile;
+import com.uecepi.emarrow.display.menus.ScreenMenu;
 
 public class GameScreen extends ScreenMenu {
 

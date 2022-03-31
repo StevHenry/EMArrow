@@ -1,4 +1,4 @@
-package com.uecepi.emarrow.display;
+package com.uecepi.emarrow.display.menus;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;

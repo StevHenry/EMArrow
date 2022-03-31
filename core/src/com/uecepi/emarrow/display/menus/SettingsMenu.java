@@ -1,22 +1,17 @@
-package com.uecepi.emarrow;
+package com.uecepi.emarrow.display.menus;
 
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
-import com.badlogic.gdx.utils.Align;
+import com.uecepi.emarrow.Emarrow;
 import com.uecepi.emarrow.audio.MusicManager;
-import com.uecepi.emarrow.display.MainMenu;
-import com.uecepi.emarrow.display.ScreenMenu;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import org.w3c.dom.Text;
 
-public class SettingsScreen extends ScreenMenu {
+public class SettingsMenu extends ScreenMenu {
     Label settings;
     TextButton backButton;
     Label generalVolumeLabel;
@@ -26,7 +21,7 @@ public class SettingsScreen extends ScreenMenu {
     Slider bgmVolumeButton;//Background music volume cursor
     Slider seVolumeButton;//sound effect volume cursor
 
-    public SettingsScreen(){
+    public SettingsMenu(){
         super();
         create();
     }
@@ -82,5 +77,6 @@ public class SettingsScreen extends ScreenMenu {
                 Emarrow.getInstance().setScreen(new MainMenu());
             }
         });
+
     }
 }
