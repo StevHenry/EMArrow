@@ -1,14 +1,16 @@
-package com.emarrow.uecepi.server;
+package com.emarrow.uecepi.accountserver;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
+import com.uecepi.emarrow.networking.ConnectionResponsePacket;
+import com.uecepi.emarrow.networking.CredentialsPacket;
 import com.uecepi.emarrow.networking.PingPacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ServerListener extends Listener {
+public class AccountServerListener extends Listener {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(ServerListener.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(AccountServerListener.class);
 
     @Override
     public void connected(Connection connection) {
@@ -25,6 +27,12 @@ public class ServerListener extends Listener {
             PingPacket request = (PingPacket) object;
             LOGGER.info("Received a ping!");
             connection.sendTCP(request);
+        } else if (object instanceof CredentialsPacket) {
+            CredentialsPacket credentialsPacket = (CredentialsPacket) object;
+            boolean result = DatabaseConnector.getInstance().attemptLogIn(credentialsPacket.getIdentifier(), credentialsPacket.getPassword());
+            connection.sendTCP(new ConnectionResponsePacket(result ?
+                    ConnectionResponsePacket.ResponseMeaning.CONNECTION_SUCCESS :
+                    ConnectionResponsePacket.ResponseMeaning.CONNECTION_FAILED));
         }
     }
 }

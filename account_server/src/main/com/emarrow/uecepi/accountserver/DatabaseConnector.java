@@ -1,4 +1,4 @@
-package com.emarrow.uecepi.database;
+package com.emarrow.uecepi.accountserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,11 +42,10 @@ public class DatabaseConnector {
         try {
             Map<String, String> properties = loadConfiguration();
             Connection connection = DriverManager.getConnection(
-                    "jdbc:mysql://%s:%s/emadata".formatted(properties.get("ip"), properties.get("port")),
-                    properties.get("identifier"),
-                    properties.get("password"));
-            LOGGER.info("CONNECTED");
+                    "jdbc:mysql://%s:%s/%s".formatted(properties.get("ip"), properties.get("port"),
+                            properties.get("database_name")), properties.get("identifier"), properties.get("password"));
             this.connection = connection;
+            LOGGER.info("Connection to database established");
         } catch (IOException exception) {
             LOGGER.warn("Could not load configuration! (Cause {})", exception.getMessage());
         } catch (SQLException exception) {
@@ -138,11 +137,12 @@ public class DatabaseConnector {
 
     /**
      * Verifies the provided password with the real one
+     *
      * @param identifier player's identifier
-     * @param pass player's password
-     * @return
+     * @param pass       player's password
+     * @return whether the connection is successful or not
      */
-    public boolean logIn(String identifier, String pass){
+    public boolean attemptLogIn(String identifier, String pass) {
         try {
             PreparedStatement stmt = connection.prepareStatement("SELECT pass, salt FROM accounts WHERE identifier=?");
             stmt.setString(1, identifier);
@@ -155,7 +155,7 @@ public class DatabaseConnector {
             }
             stmt.close();
         } catch (SQLException exception) {
-            LOGGER.warn("Could not create an account! (Cause = {})", exception.getMessage());
+            LOGGER.warn("Could not verify credentials! (Cause = {})", exception.getMessage());
         }
         return false;
     }

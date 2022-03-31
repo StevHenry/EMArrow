@@ -1,6 +1,6 @@
-package com.emarrow.uecepi.testserver;
+package java.com.emarrow.uecepi;
 
-import com.emarrow.uecepi.server.ServerStarter;
+import com.emarrow.uecepi.accountserver.AccountServerStarter;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -18,7 +18,7 @@ public class ServerTest {
 
     @Test
     public void testServer() throws IOException, InterruptedException {
-        new ServerStarter();
+        new AccountServerStarter();
         final boolean[] valid = {false};
 
         Client client = new Client();

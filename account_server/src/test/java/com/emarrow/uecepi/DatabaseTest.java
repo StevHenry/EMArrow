@@ -1,6 +1,6 @@
-package com.emarrow.uecepi.testserver;
+package java.com.emarrow.uecepi;
 
-import com.emarrow.uecepi.database.DatabaseConnector;
+import com.emarrow.uecepi.accountserver.DatabaseConnector;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -51,14 +51,14 @@ public class DatabaseTest {
     public void wrongLoginTest() {
         DatabaseConnector connector = DatabaseConnector.getInstance();
         connector.connect();
-        Assertions.assertFalse(connector.logIn("demoAccount", "wrongpass"));
-        Assertions.assertFalse(connector.logIn("unknownaccount", ""));
+        Assertions.assertFalse(connector.attemptLogIn("demoAccount", "wrongpass"));
+        Assertions.assertFalse(connector.attemptLogIn("unknownaccount", ""));
     }
 
     @Test
     public void goodLoginTest() {
         DatabaseConnector connector = DatabaseConnector.getInstance();
         connector.connect();
-        Assertions.assertTrue(connector.logIn("demoAccount", "demopass"));
+        Assertions.assertTrue(connector.attemptLogIn("demoAccount", "demopass"));
     }
 }
