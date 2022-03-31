@@ -108,7 +108,7 @@ public class GameScreen extends ScreenMenu {
     private void drawProjectiles() {
         for (Character player : GameEngine.getInstance().getPlayers()) {
             for (Projectile projectile : player.getProjectilesShooted()){
-                batch.draw(projectile.getTexture(), projectile.getBody().getPosition().x - (projectile.getTexture().getWidth() / 2), projectile.getBody().getPosition().y - (projectile.getTexture().getHeight() / 2));
+                batch.draw(projectile.getTexture(), projectile.getBody().getPosition().x - (projectile.getTexture().getRegionWidth() / 2), projectile.getBody().getPosition().y - (projectile.getTexture().getRegionHeight() / 2), projectile.getTexture().getRegionWidth() / 2, projectile.getTexture().getRegionHeight() / 2, projectile.getTexture().getRegionWidth(), projectile.getTexture().getRegionHeight(), 1, 1, projectile.getRotation(), true);
             }
         }
     }
