@@ -5,14 +5,11 @@ import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -22,12 +19,14 @@ public class DatabaseConnector {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(DatabaseConnector.class);
     private static DatabaseConnector instance;
-    private final Connection connection;
+    private Connection connection;
 
     protected DatabaseConnector() {
-        connection = connect();
     }
 
+    /**
+     * @return the instance of DatabaseConnector used previously, or creates a new one
+     */
     public static DatabaseConnector getInstance() {
         if (instance == null) {
             instance = new DatabaseConnector();
@@ -35,7 +34,11 @@ public class DatabaseConnector {
         return instance;
     }
 
-    public Connection connect() {
+    /**
+     * Tries to connect to the database using the configuration
+     * Sets the {@link #connection} variable
+     */
+    public void connect() {
         try {
             Map<String, String> properties = loadConfiguration();
             Connection connection = DriverManager.getConnection(
@@ -43,16 +46,18 @@ public class DatabaseConnector {
                     properties.get("identifier"),
                     properties.get("password"));
             LOGGER.info("CONNECTED");
-            return connection;
+            this.connection = connection;
         } catch (IOException exception) {
             LOGGER.warn("Could not load configuration! (Cause {})", exception.getMessage());
         } catch (SQLException exception) {
             LOGGER.warn("Could not connect to the database!");
             LOGGER.warn(exception.getMessage());
         }
-        return null;
     }
 
+    /**
+     * @return whether the connection is up or not
+     */
     public boolean isConnected() {
         try {
             return connection != null && !connection.isClosed() && connection.isValid(0);
@@ -62,45 +67,96 @@ public class DatabaseConnector {
         }
     }
 
+    /**
+     * Loads the database connection info (host, port, database_name, credentials)
+     *
+     * @return a {@link Map} with keys paired to their values using the configuration file called credentials.properties
+     * @throws IOException when the file is not found
+     */
     private Map<String, String> loadConfiguration() throws IOException {
         Map<String, String> properties = new HashMap<>();
         Properties dbProperties = new Properties();
 
         dbProperties.load(new FileInputStream("../properties/credentials.properties"));
-        for (String key : new String[]{"ip", "port", "identifier", "password"}) {
+        for (String key : new String[]{"ip", "port", "identifier", "password", "database_name"}) {
             properties.put(key, dbProperties.getProperty(key));
         }
         return properties;
     }
 
-    public void createAccount(String identifier, String pass) {
+    /**
+     * Creates an account on the database without checks
+     * Checks have to be before this method is called
+     * An entry is added to the database by generating the hash and salt
+     *
+     * @param identifier client identifier
+     * @param pass       password used by the client
+     */
+    public void createAccount(String identifier, String pass, String nickname) {
         try {
             PreparedStatement stmt = connection.prepareStatement("INSERT INTO accounts VALUES(?,?,?,?,?)");
             stmt.setString(1, UUID.randomUUID().toString());
             stmt.setString(2, identifier);
 
+            SecureRandom random = new SecureRandom();
+            byte[] salt = new byte[16];
+            random.nextBytes(salt);
+
+            stmt.setString(3, hashPassword(pass, salt));
+            stmt.setString(4, nickname);
+            stmt.setBytes(5, salt);
+            stmt.execute();
         } catch (SQLException exception) {
             LOGGER.warn("Could not create an account! (Cause = {})", exception.getMessage());
         }
     }
 
     /**
-     * @param pass : password to hash
-     * @return an array of String containing the hashed password and the salt
+     * @param pass password to hash
+     * @param salt salt used to hash this password
+     * @return a String containing the hashed password
      */
-    public String[] hashPassword(String pass) {
+    private String hashPassword(String pass, byte[] salt) {
         try {
-           /* SecureRandom random = new SecureRandom();
-            byte[] salt = new byte[16];
-            random.nextBytes(salt);
-            md.update(salt);*/
             MessageDigest md = MessageDigest.getInstance("SHA-512");
-            byte[] hashedPassword = md.digest(pass.getBytes(StandardCharsets.UTF_8));
-            return new String[]{new String(hashedPassword)};
+            md.update(salt);
+            byte[] hashedPassword = md.digest(pass.getBytes());
+            return bytesToHex(hashedPassword);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
         return null;
     }
 
+    /**
+     * @param bytes to convert into Hex String
+     * @return a string of an hex value
+     */
+    private String bytesToHex(byte[] bytes) {
+        return String.format("%x", new BigInteger(1, bytes)).toUpperCase();
+    }
+
+    /**
+     * Verifies the provided password with the real one
+     * @param identifier player's identifier
+     * @param pass player's password
+     * @return
+     */
+    public boolean logIn(String identifier, String pass){
+        try {
+            PreparedStatement stmt = connection.prepareStatement("SELECT pass, salt FROM accounts WHERE identifier=?");
+            stmt.setString(1, identifier);
+            ResultSet result = stmt.executeQuery();
+            if (result.next()) {
+                String hashedPass = result.getString("pass");
+                byte[] salt = result.getBytes("salt");
+                String currentHashedPassword = hashPassword(pass, salt);
+                return hashedPass.equals(currentHashedPassword);
+            }
+            stmt.close();
+        } catch (SQLException exception) {
+            LOGGER.warn("Could not create an account! (Cause = {})", exception.getMessage());
+        }
+        return false;
+    }
 }
