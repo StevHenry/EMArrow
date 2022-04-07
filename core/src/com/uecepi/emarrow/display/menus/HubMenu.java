@@ -12,6 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.uecepi.emarrow.Emarrow;
+import com.uecepi.emarrow.GameScreen;
 
 /**
  * Menu class to join hub queue.
@@ -53,6 +55,7 @@ public class HubMenu extends ScreenMenu {
             isInQueue = true;
             queueButton.setColor(new Color(1f,0.25f,0f,1f));
             queueButton.setText("Exit Queue");
+            Emarrow.getInstance().setScreen(new GameScreen());
         }
     }
 

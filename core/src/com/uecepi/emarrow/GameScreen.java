@@ -51,6 +51,7 @@ public class GameScreen extends ScreenMenu {
         batch.begin();
         GameEngine.getInstance().getMap().render();
         for (Character player : GameEngine.getInstance().getPlayers()) {
+            player.update();
             player.getAnimator().render(batch,(int) player.getBody().getPosition().x - (player.getAnimator().width / 2), (int) player.getBody().getPosition().y - (player.getAnimator().height / 2));
             player.getHealthBar().draw(batch,1);
         }

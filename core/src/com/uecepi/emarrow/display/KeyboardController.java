@@ -4,12 +4,13 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 
-public class KeyboardController  implements InputProcessor {
+public class KeyboardController implements InputProcessor {
     public boolean left,right,jump, dash, shoot,up,down;
     public boolean isMouse1Down, isMouse2Down,isMouse3Down;
     public boolean isDragged;
     public Vector2 mouseLocation = new Vector2(0,0);
     private int leftKey, rightKey, upKey, downKey, jumpKey, dashKey, shootKey;
+
     public KeyboardController(){
         this.upKey = Keys.Z;
         this.downKey = Keys.S;
@@ -70,7 +71,7 @@ public class KeyboardController  implements InputProcessor {
                 dash = (dashKey == Keys.SHIFT_LEFT);
                 keyProcessed = true;    //we have reacted to a keypress
                 break;
-            case Keys.A:       //if keycode is the same as Keys.LEFT a.k.a 19
+            case Keys.A :       //if keycode is the same as Keys.LEFT a.k.a 19
                 shoot = true;      //do this
                 keyProcessed = true;    //we have reacted to a keypress
                 break;
@@ -141,6 +142,7 @@ public class KeyboardController  implements InputProcessor {
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if(button == 0){
             isMouse1Down = true;
+            shoot = true;
         }else if(button == 1){
             isMouse2Down = true;
         }else if(button == 2){
@@ -148,6 +150,7 @@ public class KeyboardController  implements InputProcessor {
         }
         mouseLocation.x = screenX;
         mouseLocation.y = screenY;
+
         return false;
     }
     @Override
@@ -156,6 +159,7 @@ public class KeyboardController  implements InputProcessor {
         //System.out.println(button);
         if(button == 0){
             isMouse1Down = false;
+            shoot = false;
         }else if(button == 1){
             isMouse2Down = false;
         }else if(button == 2){

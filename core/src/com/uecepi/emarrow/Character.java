@@ -1,9 +1,5 @@
 package com.uecepi.emarrow;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.PolygonRegion;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -20,7 +16,7 @@ public class Character extends Actor {
     private float speed;
 
     private long lastShotTime = 0;
-    private float fireRate = 700f;
+    private float fireRate = 100f;
     private List<Projectile> projectilesShooted;
     private HealthBar healthBar;
     private int jumpLeft = 2;
@@ -55,7 +51,7 @@ public class Character extends Actor {
         // Create a circle shape and set its radius to 6
         PolygonShape hitBox = new PolygonShape();
         //hitBox.setAsBox(4.0f, 7.0f);
-        hitBox.setAsBox(animator.width/4, animator.height/2);
+        hitBox.setAsBox(Animator.width / 4f, Animator.height / 2f);
 
         // Create a fixture definition to apply our shape to
         FixtureDef fixtureDef = new FixtureDef();
@@ -81,9 +77,23 @@ public class Character extends Actor {
     public void shoot(){
         if (System.currentTimeMillis() - lastShotTime >= fireRate)
         {
-            //TODO
             projectilesShooted.add(new Projectile(this));
             lastShotTime = System.currentTimeMillis();
+        }
+    }
+
+    public void update() {
+        Vector2 pos = body.getPosition();
+        if(pos.x <= -5) {
+            body.setTransform(435, body.getPosition().y,0);
+        } else if(pos.x >= 440) {
+            body.setTransform(0, body.getPosition().y,0);
+        } else if(pos.y <= -5) {
+            body.setTransform(body.getPosition().x, 230,0);
+        } else if(pos.y >= 240) {
+            body.setTransform(body.getPosition().x, 10,0);
+            body.applyLinearImpulse(new Vector2(0,100000), body.getPosition(), true);
+
         }
     }
 

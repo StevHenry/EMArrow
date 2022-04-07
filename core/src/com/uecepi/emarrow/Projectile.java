@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.uecepi.emarrow.audio.MusicManager;
 
 public class Projectile {
     private float speed;
@@ -67,12 +68,23 @@ public class Projectile {
         projectileDirection = new Vector2((float) ((mouseX - projectileX)/norm), (float) ( (mouseY - projectileY)/norm));
         //body.applyLinearImpulse(new Vector2(  (-speed  * projectileDirection.x), -(-speed * projectileDirection.y)), body.getPosition(), true);
         rotation = 45 - projectileDirection.angleDeg();
+        MusicManager.playSE(MusicManager.SHOT_SE);
     }
 
     public void update() {
-        //velocity.scl(1 - (0.98f * deltaTime));
-        // Linear dampening, otherwise the ball will keep going at the original velocity forever
         body.setTransform(new Vector2(  (-speed * projectileDirection.x) + body.getPosition().x , speed *projectileDirection.y + body.getPosition().y), 0f);
+        Vector2 pos = body.getPosition();
+        if(pos.x <= -5) {
+            body.setTransform(435, body.getPosition().y,0);
+        } else if(pos.x >= 440) {
+            body.setTransform(0, body.getPosition().y,0);
+        } else if(pos.y <= -5) {
+            body.setTransform(body.getPosition().x, 230,0);
+        } else if(pos.y >= 240) {
+            body.setTransform(body.getPosition().x, 10,0);
+            body.applyLinearImpulse(new Vector2(0,100000), body.getPosition(), true);
+
+        }
     }
 
     public TextureRegion getTexture() {

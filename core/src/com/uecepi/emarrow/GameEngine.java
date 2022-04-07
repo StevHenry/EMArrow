@@ -20,6 +20,7 @@ public class GameEngine {
     private static List<Character> players;
     private List<Body> deadBodies;
     private static GameEngine gameEngine = new GameEngine();
+    private static final int DASH_IMPULSE = 42000;
 
     public static GameEngine getInstance(){
         return gameEngine;
@@ -32,7 +33,6 @@ public class GameEngine {
         deadBodies = new ArrayList<>();
 
         this.createGround();
-        this.createTPBox();
         Gdx.input.setInputProcessor(Emarrow.getInstance().getController());
     }
 
@@ -90,38 +90,6 @@ public class GameEngine {
 
     }
 
-    public void createTPBox() {
-        BodyDef groundBodyDef = new BodyDef();
-        groundBodyDef.type=BodyDef.BodyType.StaticBody;
-        groundBodyDef.position.set(0,0);
-
-        Body groundBody = world.createBody(groundBodyDef);
-        PolygonShape groundBox = new PolygonShape();
-        FixtureDef groundFixture = new FixtureDef();
-        groundFixture.isSensor = true;
-
-        groundBox.setAsBox(32f,10f,new Vector2(224f,250f),0f);
-        groundFixture.shape=groundBox;
-
-        groundBody.createFixture(groundFixture).setUserData("TPUP");
-
-        groundBox.setAsBox(32f,10f,new Vector2(224f,0f),0f);
-        groundFixture.shape=groundBox;
-
-        groundBody.createFixture(groundFixture).setUserData("TPDOWN");
-
-        groundBox.setAsBox(10f,32f,new Vector2(0f,128f),0f);
-        groundFixture.shape=groundBox;
-
-        groundBody.createFixture(groundFixture).setUserData("TPLEFT");
-
-        groundBox.setAsBox(10f,32f,new Vector2(435f,128f),0f);
-        //groundFixture.shape=groundBox;
-
-        groundBody.createFixture(groundFixture).setUserData("TPRIGHT");
-
-        groundBox.dispose();
-    }
 
     public void processInput() {//TODO CHANGER players.get(0) EN ACTIVE PLAYER (CELUI QUI JOUE sur le pc)
         if (Emarrow.getInstance().getController().left) {
@@ -183,37 +151,19 @@ public class GameEngine {
 
         if (Emarrow.getInstance().getController().dash) {
             if (players.get(0).getDashLeft() > 0) {
-                System.out.println("Joueur : " + players.get(0).getBody().getPosition());
-                System.out.println("Souris : " + Emarrow.getInstance().getController().mouseLocation);
                 MusicManager.playSE(MusicManager.DASH_SE);
                 players.get(0).setGrounded(false);
                 players.get(0).setDashLeft(players.get(0).getDashLeft() - 1);
-                Vector2 dashDirection = new Vector2(players.get(0).getBody().getPosition().sub(new Vector2(Gdx.input.getX(),Gdx.input.getY()).nor()));
-//                players.get(0).getBody().applyLinearImpulse(dashDirection.scl(8000), players.get(0).getBody().getPosition(), true);
-                if (Emarrow.getInstance().getController().left && Emarrow.getInstance().getController().up) {
-                    players.get(0).getBody().applyLinearImpulse(new Vector2(-8000, 8000), players.get(0).getBody().getPosition(), true);
-                }
-                if (Emarrow.getInstance().getController().right && Emarrow.getInstance().getController().up) {
-                    players.get(0).getBody().applyLinearImpulse(new Vector2(8000, 8000), players.get(0).getBody().getPosition(), true);
-                }
-                if (Emarrow.getInstance().getController().right && Emarrow.getInstance().getController().down) {
-                    players.get(0).getBody().applyLinearImpulse(new Vector2(8000, -8000), players.get(0).getBody().getPosition(), true);
-                }
-                if (Emarrow.getInstance().getController().left && Emarrow.getInstance().getController().down) {
-                    players.get(0).getBody().applyLinearImpulse(new Vector2(-8000, -8000), players.get(0).getBody().getPosition(), true);
-                }
-                if (Emarrow.getInstance().getController().up) {
-                    players.get(0).getBody().applyLinearImpulse(new Vector2(0, 8000), players.get(0).getBody().getPosition(), true);
-                }
-                if (Emarrow.getInstance().getController().right) {
-                    players.get(0).getBody().applyLinearImpulse(new Vector2(8000, 0), players.get(0).getBody().getPosition(), true);
-                }
-                if (Emarrow.getInstance().getController().down) {
-                    players.get(0).getBody().applyLinearImpulse(new Vector2(0, -8000), players.get(0).getBody().getPosition(), true);
-                }
-                if (Emarrow.getInstance().getController().left) {
-                    players.get(0).getBody().applyLinearImpulse(new Vector2(-8000, 0), players.get(0).getBody().getPosition(), true);
-                }
+
+                Body body = players.get(0).getBody();
+                int mouseX = Gdx.input.getX();
+                int mouseY = Gdx.input.getY();
+                double projectileX = body.getPosition().x*1740/445;
+                double projectileY = 950 - body.getPosition().y*1740/445;
+                double norm = Math.sqrt((mouseX - projectileX)*(mouseX - projectileX) + (mouseY - projectileY)*(mouseY - projectileY) );
+                Vector2 dashDirection = new Vector2((float) ((mouseX - projectileX)/norm), (float) ( (mouseY - projectileY)/norm));
+
+                body.applyLinearImpulse(new Vector2(DASH_IMPULSE * dashDirection.x, -DASH_IMPULSE * dashDirection.y), body.getPosition(), true);
             }
         }
 
@@ -223,7 +173,6 @@ public class GameEngine {
             else
                 players.get(0).getAnimator().setCurrentAnimation(Animator.FLYING_SHOT_ANIMATION);
             players.get(0).shoot();
-            MusicManager.playSE(MusicManager.SHOT_SE);
         }
 
     }
