@@ -14,8 +14,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.uecepi.emarrow.Emarrow;
-import com.uecepi.emarrow.networking.AccountClient;
-import com.uecepi.emarrow.networking.CredentialsPacket;
+import com.uecepi.emarrow.networking.account.AccountClient;
+import com.uecepi.emarrow.networking.account.CredentialsPacket;
 
 /**
  * Menu class to log in.

@@ -1,4 +1,4 @@
-package com.uecepi.emarrow.networking;
+package com.uecepi.emarrow.networking.account;
 
 import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryo.Kryo;
@@ -7,6 +7,7 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.uecepi.emarrow.display.menus.LogInMenu;
 import com.uecepi.emarrow.display.menus.SignInMenu;
+import com.uecepi.emarrow.networking.PingPacket;
 
 import java.io.IOException;
 

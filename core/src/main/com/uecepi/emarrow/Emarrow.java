@@ -6,7 +6,7 @@ import com.uecepi.emarrow.assets.Assets;
 import com.uecepi.emarrow.display.KeyboardController;
 import com.uecepi.emarrow.display.menus.MainMenu;
 import com.uecepi.emarrow.map.Map;
-import com.uecepi.emarrow.networking.AccountClient;
+import com.uecepi.emarrow.networking.account.AccountClient;
 
 public class Emarrow extends Game {
 

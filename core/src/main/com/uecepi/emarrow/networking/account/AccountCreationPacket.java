@@ -1,4 +1,4 @@
-package com.uecepi.emarrow.networking;
+package com.uecepi.emarrow.networking.account;
 
 public class AccountCreationPacket {
 
