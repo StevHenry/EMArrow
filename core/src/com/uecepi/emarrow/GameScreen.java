@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.uecepi.emarrow.display.ScreenMenu;
+import com.uecepi.emarrow.display.menus.ScreenMenu;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +57,7 @@ public class GameScreen extends ScreenMenu {
         }
         drawProjectiles();
         batch.end();
-        box2DDebugRenderer.render(world, GameEngine.getInstance().getMap().getCamera().combined);
+        //box2DDebugRenderer.render(world, GameEngine.getInstance().getMap().getCamera().combined);
     }
 
     private void update() {

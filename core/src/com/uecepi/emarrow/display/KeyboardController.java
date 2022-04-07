@@ -1,4 +1,4 @@
-package com.uecepi.emarrow;
+package com.uecepi.emarrow.display;
 
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
@@ -11,6 +11,8 @@ public class KeyboardController  implements InputProcessor {
     public Vector2 mouseLocation = new Vector2(0,0);
     private int leftKey, rightKey, upKey, downKey, jumpKey, dashKey, shootKey;
     public KeyboardController(){
+        this.upKey = Keys.UP;
+        this.downKey = Keys.DOWN;
         this.leftKey = Keys.Q;
         this.rightKey = Keys.RIGHT;
         this.dashKey = Keys.E;

@@ -1,15 +1,15 @@
-package com.uecepi.emarrow;
+package com.uecepi.emarrow.display.menus;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.uecepi.emarrow.display.MainMenu;
-import com.uecepi.emarrow.display.ScreenMenu;
+import com.uecepi.emarrow.Emarrow;
 
 public class ControlsMenu extends ScreenMenu {
     Label controls;
+    Label instructions;
     TextButton leftButton;
     TextButton rightButton;
     TextButton dashButton;
@@ -28,6 +28,9 @@ public class ControlsMenu extends ScreenMenu {
         table.add(controls).row();
         controls.setFontScale(10);
 
+        instructions = new Label("Click on the buttons to change the controls",skin);
+        table.add(instructions).row();
+
         if (Emarrow.getInstance().getController().getLeftKey() == Input.Keys.Q){
             leftButton = new TextButton("Left : Q", skin);
         }
@@ -39,11 +42,11 @@ public class ControlsMenu extends ScreenMenu {
                 public void clicked(InputEvent event, float x, float y) {
                     if (Emarrow.getInstance().getController().getLeftKey() == Input.Keys.Q){
                         leftButton.setText("Left : left arrow");
-                        Emarrow.getInstance().controller.setLeftKey(Input.Keys.LEFT);
+                        Emarrow.getInstance().getController().setLeftKey(Input.Keys.LEFT);
                     }
                     else if (Emarrow.getInstance().getController().getLeftKey() == Input.Keys.LEFT){
                         leftButton.setText("Left : Q");
-                        Emarrow.getInstance().controller.setLeftKey(Input.Keys.Q);
+                        Emarrow.getInstance().getController().setLeftKey(Input.Keys.Q);
                     }
                 }
         });
@@ -60,11 +63,11 @@ public class ControlsMenu extends ScreenMenu {
             public void clicked(InputEvent event, float x, float y) {
                 if (Emarrow.getInstance().getController().getRightKey() == Input.Keys.D){
                     rightButton.setText("Right : right arrow");
-                    Emarrow.getInstance().controller.setRightKey(Input.Keys.RIGHT);
+                    Emarrow.getInstance().getController().setRightKey(Input.Keys.RIGHT);
                 }
                 else if (Emarrow.getInstance().getController().getRightKey() == Input.Keys.RIGHT){
                     rightButton.setText("Right : D");
-                    Emarrow.getInstance().controller.setRightKey(Input.Keys.D);
+                    Emarrow.getInstance().getController().setRightKey(Input.Keys.D);
                 }
             }
         });
@@ -80,17 +83,17 @@ public class ControlsMenu extends ScreenMenu {
             public void clicked(InputEvent event, float x, float y) {
                 if (Emarrow.getInstance().getController().getDashKey() == Input.Keys.SHIFT_LEFT){
                     dashButton.setText("Dash : E");
-                    Emarrow.getInstance().controller.setDashKey(Input.Keys.E);
+                    Emarrow.getInstance().getController().setDashKey(Input.Keys.E);
                 }
                 else if (Emarrow.getInstance().getController().getDashKey() == Input.Keys.E){
                     dashButton.setText("Dash : Left Shift");
-                    Emarrow.getInstance().controller.setDashKey(Input.Keys.SHIFT_LEFT);
+                    Emarrow.getInstance().getController().setDashKey(Input.Keys.SHIFT_LEFT);
                 }
             }
         });
 
 
-        jumpButton = new TextButton("Jump : Espace", skin);
+        jumpButton = new TextButton("Jump : Space", skin);
         table.add(jumpButton).height(100).width(200).padTop(30).row();
 
         backButton = new TextButton("Back", skin);

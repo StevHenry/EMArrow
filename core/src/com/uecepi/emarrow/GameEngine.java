@@ -87,41 +87,52 @@ public class GameEngine {
 
     public void processInput() {//TODO CHANGER players.get(0) EN ACTIVE PLAYER (CELUI QUI JOUE sur le pc)
         if (Emarrow.getInstance().getController().left) {
-            //TODO Ameliorer la facon de déplacer
+            players.get(0).getBody().applyForce(new Vector2(-200, 0), players.get(0).getBody().getPosition(), true);
             players.get(0).getAnimator().setFlippedToLeft(true);
-            if (players.get(0).isGrounded()){
-                if (!players.get(0).getAnimator().getCurrentAnimation().equals(Animator.RUNNING_ANIMATION))
+            if (players.get(0).isGrounded()) {
+                if (!players.get(0).getAnimator().getCurrentAnimation().equals(Animator.RUNNING_ANIMATION)) {
                     players.get(0).getAnimator().setCurrentAnimation(Animator.RUNNING_ANIMATION);
-            }
-            else{
-                if (!players.get(0).getAnimator().getCurrentAnimation().equals(Animator.FLYING_ANIMATION))
+                }
+            } else {
+                if (!players.get(0).getAnimator().getCurrentAnimation().equals(Animator.FLYING_ANIMATION)) {
                     players.get(0).getAnimator().setCurrentAnimation(Animator.FLYING_ANIMATION);
+                }
             }
-            players.get(0).getBody().applyLinearImpulse(new Vector2(-players.get(0).getSpeed(), 0), players.get(0).getBody().getPosition(), true);
+
         } else if (Emarrow.getInstance().getController().right) {
+            players.get(0).getBody().applyForce(new Vector2(200, 0), players.get(0).getBody().getPosition(), true);
             players.get(0).getAnimator().setFlippedToLeft(false);
-            //TODO Ameliorer la facon de déplacer
-            if (players.get(0).isGrounded()){
-                if (!players.get(0).getAnimator().getCurrentAnimation().equals(Animator.RUNNING_ANIMATION))
+            if (players.get(0).isGrounded()) {
+                if (!players.get(0).getAnimator().getCurrentAnimation().equals(Animator.RUNNING_ANIMATION)) {
                     players.get(0).getAnimator().setCurrentAnimation(Animator.RUNNING_ANIMATION);
-            }
-            else{
-                if (!players.get(0).getAnimator().getCurrentAnimation().equals(Animator.FLYING_ANIMATION))
+                }
+            } else {
+                if (!players.get(0).getAnimator().getCurrentAnimation().equals(Animator.FLYING_ANIMATION)) {
                     players.get(0).getAnimator().setCurrentAnimation(Animator.FLYING_ANIMATION);
+                }
             }
-            players.get(0).getBody().applyLinearImpulse(new Vector2(players.get(0).getSpeed(), 0), players.get(0).getBody().getPosition(), true);
-        }
-        else {
-            if (players.get(0).isGrounded()){
-                if (!players.get(0).getAnimator().getCurrentAnimation().equals(Animator.STANDING_ANIMATION))
-                    players.get(0).getAnimator().setCurrentAnimation(Animator.STANDING_ANIMATION);
+
+        } else {
+            if (players.get(0).getBody().getLinearVelocity().x < -10) {
+                players.get(0).getBody().applyForce(new Vector2(150,players.get(0).getBody().getLinearVelocity().y),players.get(0).getBody().getPosition(),true);
+            } else if (players.get(0).getBody().getLinearVelocity().x > 10) {
+                players.get(0).getBody().applyForce(new Vector2(-150,players.get(0).getBody().getLinearVelocity().y),players.get(0).getBody().getPosition(),true);
+            } else {
+                players.get(0).getBody().setLinearVelocity(0, players.get(0).getBody().getLinearVelocity().y);
             }
-            else
-            if (!players.get(0).getAnimator().getCurrentAnimation().equals(Animator.FLYING_ANIMATION))
+
+            if (!players.get(0).getAnimator().getCurrentAnimation().equals(Animator.STANDING_ANIMATION)) {
+                players.get(0).getAnimator().setCurrentAnimation(Animator.STANDING_ANIMATION);
+            } else if (!players.get(0).getAnimator().getCurrentAnimation().equals(Animator.FLYING_ANIMATION)) {
                 players.get(0).getAnimator().setCurrentAnimation(Animator.FLYING_ANIMATION);            // Stop moving in the Y direction
-            players.get(0).getBody().setLinearVelocity(0, players.get(0).getBody().getLinearVelocity().y);
+            }
         }
-        if (Emarrow.getInstance().getController().jump) { //TODO améliorer la facon de sauter : quand on se deplace lateralement en l'air
+
+        if (Emarrow.getInstance().getController().down) {
+            players.get(0).getBody().applyForceToCenter(0, -500f, true);
+        }
+
+        if (Emarrow.getInstance().getController().jump) {
             if (players.get(0).getJumpLeft() > 0) {
                 MusicManager.playSE(MusicManager.JUMP_SE);
                 players.get(0).getAnimator().setCurrentAnimation(Animator.JUMPING_ANIMATION);
