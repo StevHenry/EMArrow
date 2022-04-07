@@ -91,7 +91,7 @@ public class DatabaseConnector {
      * @param identifier client identifier
      * @param pass       password used by the client
      */
-    public void createAccount(String identifier, String pass, String nickname) {
+    public boolean createAccount(String identifier, String pass, String nickname) {
         try {
             PreparedStatement stmt = connection.prepareStatement("INSERT INTO accounts VALUES(?,?,?,?,?)");
             stmt.setString(1, UUID.randomUUID().toString());
@@ -107,7 +107,31 @@ public class DatabaseConnector {
             stmt.execute();
         } catch (SQLException exception) {
             LOGGER.warn("Could not create an account! (Cause = {})", exception.getMessage());
+            return false;
         }
+        return true;
+    }
+
+    /**
+     * Deletes an account on the database with checks
+     *
+     * @param identifier client identifier
+     */
+    public boolean deleteAccount(String identifier, String pass) {
+        try {
+            if (attemptLogIn(identifier, pass)) {
+                PreparedStatement stmt = connection.prepareStatement("DELETE FROM accounts WHERE identifier = ?");
+                stmt.setString(1, identifier);
+                stmt.execute();
+            } else {
+                LOGGER.warn("Could not verify the player identity!");
+                return false;
+            }
+        } catch (SQLException exception) {
+            LOGGER.warn("Could not create an account! (Cause = {})", exception.getMessage());
+            return false;
+        }
+        return true;
     }
 
     /**

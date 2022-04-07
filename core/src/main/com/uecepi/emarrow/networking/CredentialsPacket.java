@@ -2,8 +2,10 @@ package com.uecepi.emarrow.networking;
 
 public class CredentialsPacket {
 
-    private final String identifier;
-    private final String password;
+    private String identifier;
+    private String password;
+
+    public CredentialsPacket(){}
 
     public CredentialsPacket(String identifier, String password) {
         this.identifier = identifier;

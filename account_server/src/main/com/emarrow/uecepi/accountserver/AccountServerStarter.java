@@ -2,9 +2,7 @@ package com.emarrow.uecepi.accountserver;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Server;
-import com.uecepi.emarrow.networking.ConnectionResponsePacket;
-import com.uecepi.emarrow.networking.CredentialsPacket;
-import com.uecepi.emarrow.networking.PingPacket;
+import com.uecepi.emarrow.networking.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,5 +39,7 @@ public class AccountServerStarter {
         kryo.register(PingPacket.class);
         kryo.register(CredentialsPacket.class);
         kryo.register(ConnectionResponsePacket.class);
+        kryo.register(AccountCreationPacket.class);
+        kryo.register(AccountCreationResponsePacket.class);
     }
 }
