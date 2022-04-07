@@ -69,7 +69,7 @@ public class ListenerClass implements ContactListener {
                 if (character.getHealthBar().getValue()<=0)
                     character.die();
                 projectile.getShooter().getProjectilesShooted().remove(projectile);
-                //GameEngine.getInstance().getWorld().destroyBody(projectile.getBody());
+                GameEngine.getInstance().getDeadBodies().add(projectile.getBody());
             }
         } else if (fixtureA.getUserData() != null
                 && fixtureA.getUserData().equals("Projectile")
