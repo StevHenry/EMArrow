@@ -7,28 +7,35 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.uecepi.emarrow.display.Animator;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Character extends Actor {
-    private int life;
     private BodyDef bodyDef;
     private Body body;
-    private Texture texture;
+    private Animator animator;
+    private Body detectBox;
     private float speed;
+    private String name;
+
     private long lastShotTime = 0;
-    private float fireRate = 1000f;
+    private float fireRate = 700f;
     private List<Projectile> projectilesShooted;
     private HealthBar healthBar;
+    private int jumpLeft = 2;
+    private int dashLeft = 1;
+    private boolean isGrounded=true;
 
-    public Character(Texture texture){
-        this.texture = texture; //TODO mettre en parametre pour pouvoir chosir skin
+    public Character(String nb){
+        this.animator = new Animator(nb); //TODO mettre en parametre pour pouvoir chosir skin
         this.bodyDef = new BodyDef();
         this.speed = 25f;
         this.projectilesShooted = new ArrayList<>();
+        this.name = "Player " + nb;
         this.createHitBox();
-        this.healthBar = new HealthBar(texture.getWidth(),2,100,body.getPosition());
+        this.healthBar = new HealthBar(animator.width,2,100,body.getPosition());
     }
 
     public Body getBody() {
@@ -46,10 +53,11 @@ public class Character extends Actor {
         this.body = GameEngine.getInstance().getWorld().createBody(bodyDef);
         body.setUserData(this);
 
+
         // Create a circle shape and set its radius to 6
         PolygonShape hitBox = new PolygonShape();
         //hitBox.setAsBox(4.0f, 7.0f);
-        hitBox.setAsBox(texture.getWidth()/4, texture.getHeight()/2);
+        hitBox.setAsBox(animator.width/4, animator.height/2);
 
         // Create a fixture definition to apply our shape to
         FixtureDef fixtureDef = new FixtureDef();
@@ -58,7 +66,15 @@ public class Character extends Actor {
 
 
         // Create our fixture and attach it to the body
-        body.createFixture(fixtureDef).setUserData("Player");
+
+        this.body.createFixture(fixtureDef).setUserData("Player");
+
+        hitBox.setAsBox(4, 2, new Vector2(0f, -13f),0f);
+        fixtureDef.shape = hitBox;
+        fixtureDef.isSensor = true;
+
+        this.body.createFixture(fixtureDef).setUserData("GroundHitBox");
+
         // Remember to dispose of any shapes after you're done with them!
         // BodyDef and FixtureDef don't need disposing, but shapes do.
         hitBox.dispose();
@@ -72,14 +88,45 @@ public class Character extends Actor {
             lastShotTime = System.currentTimeMillis();
         }
     }
-    public Texture getTexture() {
-        return texture;
+
+    public void die(){
+        System.out.println("DIED");
+        GameEngine.getInstance().getDeadBodies().add(this.body);
+
+        // TODO PLAY DIE ANIM
+        // this.animator.setCurrentAnimation(Animator.STANDING_ANIMATION);
+        if (GameEngine.getInstance().isRoundDone())
+            System.out.println("FINISH ROUND");
+            GameEngine.getInstance().finishRound();
+    }
+
+    public int getJumpLeft() {
+        return jumpLeft;
+    }
+
+    public void setJumpLeft(int jumpLeft) {
+        this.jumpLeft = jumpLeft;
+    }
+
+    public int getDashLeft() {
+        return dashLeft;
+    }
+
+    public void setDashLeft(int dashLeft) {
+        this.dashLeft = dashLeft;
+    }
+
+    public boolean isGrounded() {
+        return isGrounded;
+    }
+
+    public void setGrounded(boolean grounded) {
+        isGrounded = grounded;
     }
 
     public float getSpeed() {
         return speed;
     }
-
     public List<Projectile> getProjectilesShooted() {
         return projectilesShooted;
     }
@@ -93,15 +140,17 @@ public class Character extends Actor {
     @Override
     public String toString() {
         return "Character{" +
-                "life=" + life +
                 ", bodyDef=" + bodyDef +
                 ", body=" + body +
-                ", texture=" + texture +
                 ", speed=" + speed +
                 ", lastShotTime=" + lastShotTime +
                 ", fireRate=" + fireRate +
                 ", projectilesShooted=" + projectilesShooted +
                 ", healthBar=" + healthBar +
                 '}';
+    }
+
+    public Animator getAnimator() {
+        return animator;
     }
 }
