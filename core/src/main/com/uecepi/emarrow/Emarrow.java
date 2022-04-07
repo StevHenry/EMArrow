@@ -6,16 +6,15 @@ import com.uecepi.emarrow.assets.Assets;
 import com.uecepi.emarrow.display.KeyboardController;
 import com.uecepi.emarrow.display.menus.MainMenu;
 import com.uecepi.emarrow.map.Map;
+import com.uecepi.emarrow.networking.AccountClient;
 
 public class Emarrow extends Game {
 
     private static final Emarrow instance = new Emarrow();
+    private AccountClient client;
     private KeyboardController controller;
     private Map map;
 
-    private Emarrow() {
-
-    }
 
     public static Emarrow getInstance() {
         return instance;
@@ -29,6 +28,7 @@ public class Emarrow extends Game {
         Emarrow.getInstance().getController().setRightKey(Input.Keys.RIGHT);
         Emarrow.getInstance().getController().setDashKey(Input.Keys.SHIFT_LEFT);
         setScreen(new MainMenu());
+        client = new AccountClient();
     }
 
     @Override
@@ -42,5 +42,9 @@ public class Emarrow extends Game {
 
     public void setController(KeyboardController Controller) {
         this.controller = controller;
+    }
+
+    public AccountClient getAccountClient() {
+        return client;
     }
 }

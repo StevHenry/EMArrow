@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.uecepi.emarrow.*;
+import com.uecepi.emarrow.Emarrow;
 import com.uecepi.emarrow.audio.MusicManager;
 
 /**
@@ -21,15 +21,15 @@ public class MainMenu extends ScreenMenu {
     TextButton controlButton;
     TextButton settingsButton;
     TextButton exitButton;
-    
-    public MainMenu(){
+
+    public MainMenu() {
         super();
         create();
     }
-    
+
     private void create() {
         MusicManager.setMusic(MusicManager.MUSIC1_BGM);
-        
+
         addTitle();
         addSignInButton();
         addLogInButton();
@@ -45,8 +45,8 @@ public class MainMenu extends ScreenMenu {
         //Création du bouton qui permet de fermer le jeu
         exitButton = new TextButton("Exit", skin);
         table.add(exitButton).height(80).width(200).padTop(20).row();
-        exitButton.setColor(new Color(1f,0.25f,0f,1f));
-        exitButton.addListener(new ClickListener(){
+        exitButton.setColor(new Color(1f, 0.25f, 0f, 1f));
+        exitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.exit();
@@ -69,10 +69,10 @@ public class MainMenu extends ScreenMenu {
         //Création du bouton redirigeant vers le ControlsMen, menu qui change les commandes
         controlButton = new TextButton("Controls", skin);
         table.add(controlButton).height(80).width(200).padTop(20).row();
-        controlButton.addListener(new ClickListener(){
-            public void clicked(InputEvent event, float x, float y){
+        controlButton.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
                 Emarrow.getInstance().setScreen(new ControlsMenu());
-                }
+            }
 
         });
     }
@@ -81,11 +81,13 @@ public class MainMenu extends ScreenMenu {
         //Création du bouton redirigeant vers le LogInMenu
         logInButton = new TextButton("Log In", skin);
         table.add(logInButton).height(80).width(200).padTop(20).row();
-        logInButton.setColor(new Color(0.5f,0.25f,1f,1f));
-        logInButton.addListener(new ClickListener(){
+        logInButton.setColor(new Color(0.5f, 0.25f, 1f, 1f));
+        logInButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Emarrow.getInstance().setScreen(new LogInMenu());
+                LogInMenu menu = new LogInMenu();
+                Emarrow.getInstance().setScreen(menu);
+                Emarrow.getInstance().getAccountClient().setLogInMenuInstance(menu);
             }
         });
     }
@@ -94,19 +96,21 @@ public class MainMenu extends ScreenMenu {
         //Création du bouton redirigeant vers le SignInMenu
         signInButton = new TextButton("Sign In", skin);
         table.add(signInButton).height(80).width(200).padTop(20).row();
-        signInButton.setColor(new Color(0.25f,1f,0f,1f));
-        signInButton.addListener(new ClickListener(){
+        signInButton.setColor(new Color(0.25f, 1f, 0f, 1f));
+        signInButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Emarrow.getInstance().setScreen(new SignInMenu());
-                
+                SignInMenu signInMenu = new SignInMenu();
+                Emarrow.getInstance().getAccountClient().setSignInMenuInstance(signInMenu);
+                Emarrow.getInstance().setScreen(signInMenu);
+
             }
         });
     }
 
     private void addTitle() {
         //Titre du menu : Image au nom du jeu
-        titleImage = new Image(new Texture("images/title.png") );
+        titleImage = new Image(new Texture("images/title.png"));
         table.add(titleImage).row();
     }
 
