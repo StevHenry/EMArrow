@@ -18,6 +18,7 @@ public class Character extends Actor {
     private Animator animator;
     private Body detectBox;
     private float speed;
+    private String name;
 
     private long lastShotTime = 0;
     private float fireRate = 700f;
@@ -32,6 +33,7 @@ public class Character extends Actor {
         this.bodyDef = new BodyDef();
         this.speed = 25f;
         this.projectilesShooted = new ArrayList<>();
+        this.name = "Player " + nb;
         this.createHitBox();
         this.healthBar = new HealthBar(animator.width,2,100,body.getPosition());
     }
@@ -88,7 +90,14 @@ public class Character extends Actor {
     }
 
     public void die(){
+        System.out.println("DIED");
         GameEngine.getInstance().getDeadBodies().add(this.body);
+
+        // TODO PLAY DIE ANIM
+        // this.animator.setCurrentAnimation(Animator.STANDING_ANIMATION);
+        if (GameEngine.getInstance().isRoundDone())
+            System.out.println("FINISH ROUND");
+            GameEngine.getInstance().finishRound();
     }
 
     public int getJumpLeft() {
