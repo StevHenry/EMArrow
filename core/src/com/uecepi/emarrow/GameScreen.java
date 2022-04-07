@@ -56,7 +56,7 @@ public class GameScreen extends ScreenMenu {
         }
         drawProjectiles();
         batch.end();
-        box2DDebugRenderer.render(world, GameEngine.getInstance().getMap().getCamera().combined);
+        //box2DDebugRenderer.render(world, GameEngine.getInstance().getMap().getCamera().combined);
     }
 
     private void update() {

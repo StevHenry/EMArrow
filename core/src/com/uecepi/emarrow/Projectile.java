@@ -71,6 +71,7 @@ public class Projectile {
         //velocity.scl(1 - (0.98f * deltaTime));
         // Linear dampening, otherwise the ball will keep going at the original velocity forever
     }
+
     public TextureRegion getTexture() {
         return texture;
     }

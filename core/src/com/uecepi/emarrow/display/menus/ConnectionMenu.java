@@ -45,7 +45,7 @@ public class ConnectionMenu extends ScreenMenu {
      */
     private void connection() {
 
-        Emarrow.getInstance().setScreen(new HubMenu());
+        Emarrow.getInstance().setScreen(new GameScreen());
     }
 
     /**
