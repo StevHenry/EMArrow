@@ -1,4 +1,4 @@
-package com.uecepi.emarrow.display;
+package com.uecepi.emarrow.display.menus;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -8,11 +8,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.uecepi.emarrow.assets.Assets;
 
+/**
+ * Abstract class of menus.
+ */
 public abstract class ScreenMenu implements Screen {
 
     protected Stage stage;
     protected Table table;
     protected Skin skin;
+
 
     public ScreenMenu() {
         stage = new Stage();

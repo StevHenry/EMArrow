@@ -1,22 +1,20 @@
-package com.uecepi.emarrow;
+package com.uecepi.emarrow.display.menus;
 
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
-import com.badlogic.gdx.utils.Align;
+import com.uecepi.emarrow.Emarrow;
 import com.uecepi.emarrow.audio.MusicManager;
-import com.uecepi.emarrow.display.MainMenu;
-import com.uecepi.emarrow.display.ScreenMenu;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import org.w3c.dom.Text;
 
-public class SettingsScreen extends ScreenMenu {
+/**
+ * Classe qui permet de modifier les paramètres de son
+ */
+public class SettingsMenu extends ScreenMenu {
     Label settings;
     TextButton backButton;
     Label generalVolumeLabel;
@@ -26,16 +24,24 @@ public class SettingsScreen extends ScreenMenu {
     Slider bgmVolumeButton;//Background music volume cursor
     Slider seVolumeButton;//sound effect volume cursor
 
-    public SettingsScreen(){
+    /**
+     * Constructeur de SettingsMenu
+     */
+    public SettingsMenu(){
         super();
         create();
     }
 
+    /**
+     * Gère la création des éléments de Settings menu
+     */
     private void create(){
+        //Création du titre du menu
         settings = new Label("SETTINGS", skin);
         table.add(settings).row();
-        settings.setFontScale(10);
+        settings.setFontScale(3);
 
+        //Création du slider permettant de changer le volume général du jeu
         generalVolumeLabel = new Label("General volume", skin);
         table.add(generalVolumeLabel).padTop(30).row();
         generalVolumeButton = new Slider(0, 100,1, false, skin);
@@ -49,6 +55,7 @@ public class SettingsScreen extends ScreenMenu {
             }
         });
 
+        //Création du slider permettant de changer le volume de la musique de fond du jeu
         bgmVolumeLabel = new Label("Music volume", skin);
         table.add(bgmVolumeLabel).padTop(30).row();
         bgmVolumeButton = new Slider(0, 100,1, false, skin);
@@ -62,6 +69,7 @@ public class SettingsScreen extends ScreenMenu {
             }
         });
 
+        //Création du slider permettant de changer le volume du son des effets du jeu
         seVolumeLabel = new Label("Sound effects volume", skin);
         table.add(seVolumeLabel).padTop(30).row();
         seVolumeButton = new Slider(0, 100,1, false, skin);
@@ -71,11 +79,11 @@ public class SettingsScreen extends ScreenMenu {
             @Override
             public boolean handle(Event event) {
                 MusicManager.setSEVolume(seVolumeButton.getValue()/100f);
-                MusicManager.playSE(MusicManager.SHOT_SE);
                 return false;
             }
         });
 
+        //Création d'un bouton permettant d'aller sur un nouveau MainMenu
         backButton = new TextButton("Back", skin);
         table.add(backButton).width(200).height(100).padTop(30).row();
         backButton.addListener(new ClickListener(){
@@ -83,5 +91,6 @@ public class SettingsScreen extends ScreenMenu {
                 Emarrow.getInstance().setScreen(new MainMenu());
             }
         });
+
     }
 }

@@ -2,10 +2,9 @@ package com.uecepi.emarrow;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Screen;
 import com.uecepi.emarrow.assets.Assets;
-import com.uecepi.emarrow.display.MainMenu;
-import com.uecepi.emarrow.display.ScreenMenu;
+import com.uecepi.emarrow.display.KeyboardController;
+import com.uecepi.emarrow.display.menus.MainMenu;
 import com.uecepi.emarrow.map.Map;
 
 public class Emarrow extends Game {
@@ -19,14 +18,15 @@ public class Emarrow extends Game {
         return instance;
     }
 
-    KeyboardController controller = new KeyboardController();
+    private KeyboardController controller;
     private Map map;
 
     @Override
     public void create() {
+        controller = new KeyboardController();
         Assets.load();
-        Emarrow.getInstance().getController().setLeftKey(Input.Keys.LEFT);
-        Emarrow.getInstance().getController().setRightKey(Input.Keys.RIGHT);
+        Emarrow.getInstance().getController().setLeftKey(Input.Keys.Q);
+        Emarrow.getInstance().getController().setRightKey(Input.Keys.D);
         Emarrow.getInstance().getController().setDashKey(Input.Keys.SHIFT_LEFT);
         setScreen(new MainMenu());
     }
@@ -43,5 +43,4 @@ public class Emarrow extends Game {
     public KeyboardController getController() {
         return controller;
     }
-
 }
