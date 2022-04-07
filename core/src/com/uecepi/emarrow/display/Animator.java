@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.uecepi.emarrow.assets.Assets;
 
 import java.util.ArrayList;
@@ -30,7 +31,35 @@ public class Animator {
     private String characterNumber;
     private boolean isLooping = true;
     private boolean isFlippedToLeft = false;
+    private boolean hurt =false;
+    String vertexShader = "attribute vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
+            + "attribute vec4 " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
+            + "attribute vec2 " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
+            + "uniform mat4 u_projTrans;\n" //
+            + "varying vec4 v_color;\n" //
+            + "varying vec2 v_texCoords;\n" //
+            + "\n" //
+            + "void main()\n" //
+            + "{\n" //
+            + "   v_color = " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
+            + "   v_texCoords = " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
+            + "   gl_Position =  u_projTrans * " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
+            + "}\n";
+    String fragmentShader = "#ifdef GL_ES\n" //
+            + "#define LOWP lowp\n" //
+            + "precision mediump float;\n" //
+            + "#else\n" //
+            + "#define LOWP \n" //
+            + "#endif\n" //
+            + "varying LOWP vec4 v_color;\n" //
+            + "varying vec2 v_texCoords;\n" //
+            + "uniform sampler2D u_texture;\n" //
+            + "void main()\n"//
+            + "{\n" //
+            + "  gl_FragColor = v_color * texture2D(u_texture, v_texCoords).a;\n" //
+            + "}";
 
+    ShaderProgram shader = new ShaderProgram(vertexShader, fragmentShader);
 
     public static void load() {
         loadAnimation("1");
@@ -59,6 +88,10 @@ public class Animator {
         else if (currentFrame.isFlipX() && !isFlippedToLeft){
             currentFrame.flip(true,false);
         }
+        if (hurt)
+            spriteBatch.setShader(shader);
+        else
+            spriteBatch.setShader(null);
         spriteBatch.draw(currentFrame, x, y);
 
     }
@@ -128,5 +161,13 @@ public class Animator {
 
     public static int getHeight() {
         return height;
+    }
+
+    public boolean isHurt() {
+        return hurt;
+    }
+
+    public void setHurt(boolean hurt) {
+        this.hurt = hurt;
     }
 }

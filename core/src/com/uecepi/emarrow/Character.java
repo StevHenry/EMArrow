@@ -1,12 +1,16 @@
 package com.uecepi.emarrow;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.uecepi.emarrow.display.Animator;
+import com.uecepi.emarrow.display.menus.MainMenu;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Character extends Actor {
     private BodyDef bodyDef;
@@ -39,7 +43,7 @@ public class Character extends Actor {
         return body;
     }
 
-    public void createHitBox(){
+    private void createHitBox(){
         // First we create a body definition
         // We set our body to dynamic, for something like ground which doesn't move we would set it to StaticBody
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -111,6 +115,21 @@ public class Character extends Actor {
         if (GameEngine.getInstance().isRoundDone())
             System.out.println("FINISH ROUND");
             GameEngine.getInstance().finishRound();
+    }
+    public void setHurt(){
+        animator.setHurt(true);
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Gdx.app.postRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        animator.setHurt(false);
+                    }
+                });
+            }
+        },60);
+
     }
 
     public int getJumpLeft() {

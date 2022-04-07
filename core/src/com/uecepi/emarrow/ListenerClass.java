@@ -36,6 +36,7 @@ public class ListenerClass implements ContactListener {
             if (!projectile.getShooter().equals(character)) {
                 MusicManager.playSE(MusicManager.TOUCHED_SE);
                 character.getHealthBar().setValue(character.getHealthBar().getValue() - projectile.damage);
+                character.setHurt();
                 if (character.getHealthBar().getValue()<=0)
                     character.die();
                 projectile.getShooter().getProjectilesShooted().remove(projectile);
@@ -50,7 +51,7 @@ public class ListenerClass implements ContactListener {
 
             if (!projectile.getShooter().equals(character)) {
                 MusicManager.playSE(MusicManager.TOUCHED_SE);
-
+                character.setHurt();
                 character.getHealthBar().setValue(character.getHealthBar().getValue() - projectile.damage);
                 if (character.getHealthBar().getValue()<=0)
                     character.die();
