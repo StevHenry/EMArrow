@@ -1,0 +1,12 @@
+sourceCompatibility = 1.15
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+project.ext.mainClassName = "com.uecepi.emarrow.server.EmarrowServer"
+eclipse.project.ext.name = appName + "-server"
+
+sourceSets.main.java.srcDirs = [ "src/main/" ]
+sourceSets.test.java.srcDirs = [ "src/test/" ]
+
+sourceSets.main.resources.srcDirs = ["resources/"]
+sourceSets.test.resources.srcDirs = [ "resources/" ]
+project.ext.assetsDir = new File("resources")
+
