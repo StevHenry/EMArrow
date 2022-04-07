@@ -24,10 +24,7 @@ public class Projectile {
         this.texture = new Sprite(new Texture(Gdx.files.internal("images/char/arrow.png")));
         this.bodyDef = new BodyDef();
         this.shooter = shooter;
-        if (shooter.getAnimator().isFlippedToLeft())
-            this.speed = 6;
-        else
-            this.speed = -6;
+        this.speed = -6;
         this.createHitBox();
         this.damage = 25f;
     }
@@ -75,7 +72,7 @@ public class Projectile {
     public void update() {
         //velocity.scl(1 - (0.98f * deltaTime));
         // Linear dampening, otherwise the ball will keep going at the original velocity forever
-        body.setTransform(new Vector2(  (-speed * projectileDirection.x) + body.getPosition().x , - (-speed *projectileDirection.y) + body.getPosition().y), 0f);
+        body.setTransform(new Vector2(  (-speed * projectileDirection.x) + body.getPosition().x , speed *projectileDirection.y + body.getPosition().y), 0f);
     }
 
     public TextureRegion getTexture() {
