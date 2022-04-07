@@ -24,6 +24,7 @@ public class Character extends Actor {
     private List<Projectile> projectilesShooted;
     private HealthBar healthBar;
     private int jumpLeft = 2;
+    private int dashLeft = 1;
     private boolean isGrounded=true;
 
     public Character(String nb){
@@ -96,6 +97,14 @@ public class Character extends Actor {
 
     public void setJumpLeft(int jumpLeft) {
         this.jumpLeft = jumpLeft;
+    }
+
+    public int getDashLeft() {
+        return dashLeft;
+    }
+
+    public void setDashLeft(int dashLeft) {
+        this.dashLeft = dashLeft;
     }
 
     public boolean isGrounded() {

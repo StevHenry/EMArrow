@@ -12,11 +12,11 @@ public class ControlsMenu extends ScreenMenu {
     Label instructions;
     TextButton leftButton;
     TextButton rightButton;
+    TextButton upButton;
+    TextButton downButton;
     TextButton dashButton;
     TextButton jumpButton;
     TextButton backButton;
-
-
 
     public ControlsMenu(){
         super();
@@ -37,7 +37,7 @@ public class ControlsMenu extends ScreenMenu {
         else{
             leftButton = new TextButton("Left : left arrow", skin);
         }
-        table.add(leftButton).height(100).width(200).padTop(30).row();
+        table.add(leftButton).height(60).width(200).padTop(30).row();
         leftButton.addListener(new ClickListener(){
                 public void clicked(InputEvent event, float x, float y) {
                     if (Emarrow.getInstance().getController().getLeftKey() == Input.Keys.Q){
@@ -58,7 +58,7 @@ public class ControlsMenu extends ScreenMenu {
         else{
             rightButton = new TextButton("Right : right arrow", skin);
         }
-        table.add(rightButton).height(100).width(200).padTop(30).row();
+        table.add(rightButton).height(60).width(200).padTop(30).row();
         rightButton.addListener(new ClickListener(){
             public void clicked(InputEvent event, float x, float y) {
                 if (Emarrow.getInstance().getController().getRightKey() == Input.Keys.D){
@@ -72,13 +72,53 @@ public class ControlsMenu extends ScreenMenu {
             }
         });
 
+        if (Emarrow.getInstance().getController().getUpKey() == Input.Keys.Z){
+            upButton = new TextButton("Up : Z", skin);
+        }
+        else{
+            upButton = new TextButton("Up : up arrow", skin);
+        }
+        table.add(upButton).height(60).width(200).padTop(30).row();
+        upButton.addListener(new ClickListener(){
+            public void clicked(InputEvent event, float x, float y) {
+                if (Emarrow.getInstance().getController().getUpKey() == Input.Keys.Z){
+                    upButton.setText("Up : up arrow");
+                    Emarrow.getInstance().getController().setUpKey(Input.Keys.UP);
+                }
+                else if (Emarrow.getInstance().getController().getUpKey() == Input.Keys.UP){
+                    upButton.setText("Up : Z");
+                    Emarrow.getInstance().getController().setUpKey(Input.Keys.Z);
+                }
+            }
+        });
+
+        if (Emarrow.getInstance().getController().getDownKey() == Input.Keys.S){
+            downButton = new TextButton("Down : S", skin);
+        }
+        else{
+            downButton = new TextButton("Down : down arrow", skin);
+        }
+        table.add(downButton).height(60).width(200).padTop(30).row();
+        downButton.addListener(new ClickListener(){
+            public void clicked(InputEvent event, float x, float y) {
+                if (Emarrow.getInstance().getController().getDownKey() == Input.Keys.S){
+                    downButton.setText("Down : down arrow");
+                    Emarrow.getInstance().getController().setDownKey(Input.Keys.DOWN);
+                }
+                else if (Emarrow.getInstance().getController().getDownKey() == Input.Keys.DOWN){
+                    downButton.setText("Down : S");
+                    Emarrow.getInstance().getController().setDownKey(Input.Keys.S);
+                }
+            }
+        });
+
         if (Emarrow.getInstance().getController().getDashKey() == Input.Keys.SHIFT_LEFT){
             dashButton = new TextButton("Dash : Left Shift", skin);
         }
         else{
             dashButton = new TextButton("Dash : E", skin);
         }
-        table.add(dashButton).height(100).width(200).padTop(30).row();
+        table.add(dashButton).height(60).width(200).padTop(30).row();
         dashButton.addListener(new ClickListener(){
             public void clicked(InputEvent event, float x, float y) {
                 if (Emarrow.getInstance().getController().getDashKey() == Input.Keys.SHIFT_LEFT){
@@ -94,7 +134,7 @@ public class ControlsMenu extends ScreenMenu {
 
 
         jumpButton = new TextButton("Jump : Space", skin);
-        table.add(jumpButton).height(100).width(200).padTop(30).row();
+        table.add(jumpButton).height(60).width(200).padTop(30).row();
 
         backButton = new TextButton("Back", skin);
         table.add(backButton).height(100).width(200).padTop(30).row();
