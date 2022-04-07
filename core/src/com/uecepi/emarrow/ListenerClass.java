@@ -63,13 +63,13 @@ public class ListenerClass implements ContactListener {
             Character character = (Character) fixtureA.getBody().getUserData();
             Projectile projectile = (Projectile) fixtureB.getBody().getUserData();
 
-            if (!character.getProjectilesShooted().contains(projectile)) {
+            if (!projectile.getShooter().equals(character)) {
                 MusicManager.playSE(MusicManager.TOUCHED_SE);
                 character.getHealthBar().setValue(character.getHealthBar().getValue() - projectile.damage);
                 if (character.getHealthBar().getValue()<=0)
                     character.die();
                 projectile.getShooter().getProjectilesShooted().remove(projectile);
-                //GameEngine.getInstance().getWorld().destroyBody(projectile.getBody());
+                GameEngine.getInstance().getDeadBodies().add(projectile.getBody());
             }
         } else if (fixtureA.getUserData() != null
                 && fixtureA.getUserData().equals("Projectile")
@@ -78,7 +78,7 @@ public class ListenerClass implements ContactListener {
             Character character = (Character) fixtureB.getBody().getUserData();
             Projectile projectile = (Projectile) fixtureA.getBody().getUserData();
 
-            if (!character.getProjectilesShooted().contains(projectile)) {
+            if (!projectile.getShooter().equals(character)) {
                 MusicManager.playSE(MusicManager.TOUCHED_SE);
 
                 character.getHealthBar().setValue(character.getHealthBar().getValue() - projectile.damage);
@@ -86,6 +86,8 @@ public class ListenerClass implements ContactListener {
                     character.die();
                 projectile.getShooter().getProjectilesShooted().remove(projectile);
                 GameEngine.getInstance().getDeadBodies().add(projectile.getBody());
+                System.out.println("dead bodies" + GameEngine.getInstance().getDeadBodies());
+
             }
         } else if (fixtureA.getUserData() != null
                 && fixtureA.getUserData().equals("Projectile")
@@ -101,7 +103,7 @@ public class ListenerClass implements ContactListener {
                 && fixtureB.getUserData().equals("Projectile")) {
             Projectile projectile = (Projectile) fixtureB.getBody().getUserData();
             projectile.getShooter().getProjectilesShooted().remove(projectile);
-            //GameEngine.getInstance().getWorld().destroyBody(projectile.getBody());
+            GameEngine.getInstance().getDeadBodies().add(projectile.getBody());
         }
     }
 
