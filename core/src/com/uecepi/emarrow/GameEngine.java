@@ -6,13 +6,16 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.uecepi.emarrow.audio.MusicManager;
 import com.uecepi.emarrow.display.Animator;
 
-import com.uecepi.emarrow.display.MainMenu;
+import com.uecepi.emarrow.display.menus.MainMenu;
 import com.uecepi.emarrow.map.Map;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class GameEngine {
     private Map map;
@@ -20,6 +23,8 @@ public class GameEngine {
     private float accumulator = 0;
     private static List<Character> players;
     private List<Body> deadBodies;
+    private Label gameFinished;
+
     private static GameEngine gameEngine = new GameEngine();
 
     public static GameEngine getInstance(){
@@ -48,12 +53,21 @@ public class GameEngine {
             if (character.getHealthBar().getValue()>0)
                 playersAlive++;
         }
-        System.out.println(playersAlive);
         return playersAlive>1;
     }
 
     public void finishRound(){
-        Emarrow.getInstance().setScreen(new MainMenu());
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Gdx.app.postRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        Emarrow.getInstance().setScreen(new MainMenu());
+                    }
+                });
+            }
+        },3000);
     }
 
     public void createGround() {
@@ -174,5 +188,13 @@ public class GameEngine {
 
     public List<Body> getDeadBodies() {
         return deadBodies;
+    }
+
+    public Label getGameFinished() {
+        return gameFinished;
+    }
+
+    public void setGameFinished(Label gameFinished) {
+        this.gameFinished = gameFinished;
     }
 }
