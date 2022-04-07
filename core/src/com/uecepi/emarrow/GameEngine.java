@@ -6,12 +6,16 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.uecepi.emarrow.audio.MusicManager;
 import com.uecepi.emarrow.display.Animator;
 
+import com.uecepi.emarrow.display.menus.MainMenu;
 import com.uecepi.emarrow.map.Map;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class GameEngine {
     private Map map;
@@ -19,6 +23,8 @@ public class GameEngine {
     private float accumulator = 0;
     private static List<Character> players;
     private List<Body> deadBodies;
+    private Label gameFinished;
+
     private static GameEngine gameEngine = new GameEngine();
     private static final int DASH_IMPULSE = 42000;
 
@@ -40,7 +46,29 @@ public class GameEngine {
         gameEngine = new GameEngine();
         gameEngine.players.add(new Character("1")); //TODO mettre en parametre pour pouvoir chosir skin));
         gameEngine.players.add(new Character("2"));
+    }
 
+    public boolean isRoundDone(){
+        int playersAlive =0;
+        for (Character character : players){
+            if (character.getHealthBar().getValue()>0)
+                playersAlive++;
+        }
+        return playersAlive>1;
+    }
+
+    public void finishRound(){
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Gdx.app.postRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        Emarrow.getInstance().setScreen(new MainMenu());
+                    }
+                });
+            }
+        },3000);
     }
 
     public void createGround() {
@@ -144,6 +172,7 @@ public class GameEngine {
                 players.get(0).getAnimator().setCurrentAnimation(Animator.JUMPING_ANIMATION);
                 players.get(0).setGrounded(false);
                 players.get(0).setJumpLeft(players.get(0).getJumpLeft() - 1);
+                //players.get(0).getBody().applyLinearImpulse(new Vector2(0, 150), players.get(0).getBody().getPosition(), true);
                 players.get(0).getBody().applyForceToCenter(0, 8000f, true);
             }
             Emarrow.getInstance().getController().jump = false;
@@ -190,5 +219,13 @@ public class GameEngine {
 
     public List<Body> getDeadBodies() {
         return deadBodies;
+    }
+
+    public Label getGameFinished() {
+        return gameFinished;
+    }
+
+    public void setGameFinished(Label gameFinished) {
+        this.gameFinished = gameFinished;
     }
 }

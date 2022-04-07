@@ -5,12 +5,15 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.uecepi.emarrow.display.menus.ScreenMenu;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -23,6 +26,7 @@ public class GameScreen extends ScreenMenu {
     private Box2DDebugRenderer box2DDebugRenderer;
     private World world;
     private SpriteBatch batch;
+    private long startingTimeGameOver=0;
 
     public GameScreen() {
         super();
@@ -35,6 +39,8 @@ public class GameScreen extends ScreenMenu {
         box2DDebugRenderer = new Box2DDebugRenderer();
         world = GameEngine.getInstance().getWorld();
         world.setContactListener(new ListenerClass());
+        //Création du titre du menu
+
     }
 
     @Override
@@ -51,11 +57,19 @@ public class GameScreen extends ScreenMenu {
         batch.begin();
         GameEngine.getInstance().getMap().render();
         for (Character player : GameEngine.getInstance().getPlayers()) {
-            player.update();
-            player.getAnimator().render(batch,(int) player.getBody().getPosition().x - (player.getAnimator().width / 2), (int) player.getBody().getPosition().y - (player.getAnimator().height / 2));
-            player.getHealthBar().draw(batch,1);
+            player.getAnimator().render(batch, (int) player.getBody().getPosition().x - (player.getAnimator().width / 2), (int) player.getBody().getPosition().y - (player.getAnimator().height / 2));
+            player.getHealthBar().draw(batch, 1);
         }
         drawProjectiles();
+        if (!GameEngine.getInstance().isRoundDone()) {
+            if (startingTimeGameOver==0)
+                startingTimeGameOver = new Date().getTime();
+            GameEngine.getInstance().setGameFinished(new Label("Game is over ! Player 1 won !\n \tBack to the menu in " + (3-((new Date().getTime() - startingTimeGameOver)/1000)), skin));
+            table.add(GameEngine.getInstance().getGameFinished()).row();
+            GameEngine.getInstance().getGameFinished().setFontScale(1);
+            GameEngine.getInstance().getGameFinished().setBounds(100,0,500,260);
+            GameEngine.getInstance().getGameFinished().draw(batch, 1f);
+        }
         batch.end();
         box2DDebugRenderer.render(world, GameEngine.getInstance().getMap().getCamera().combined);
     }
@@ -66,9 +80,9 @@ public class GameScreen extends ScreenMenu {
         destroyDeadBodies();
         batch.setProjectionMatrix(GameEngine.getInstance().getMap().getCamera().combined);
         for (Character player : GameEngine.getInstance().getPlayers()) {
-            player.getHealthBar().setPosition(player.getBody().getPosition().x-player.getAnimator().width/2,player.getBody().getPosition().y+player.getAnimator().height/2);
+            player.getHealthBar().setPosition(player.getBody().getPosition().x - player.getAnimator().width / 2, player.getBody().getPosition().y + player.getAnimator().height / 2);
             player.getHealthBar().updateVisualValue();
-            for (Projectile projectile : player.getProjectilesShooted()){
+            for (Projectile projectile : player.getProjectilesShooted()) {
                 projectile.update();
             }
         }
@@ -107,19 +121,16 @@ public class GameScreen extends ScreenMenu {
 
     private void drawProjectiles() {
         for (Character player : GameEngine.getInstance().getPlayers()) {
-            for (Projectile projectile : player.getProjectilesShooted()){
+            for (Projectile projectile : player.getProjectilesShooted()) {
                 batch.draw(projectile.getTexture(), projectile.getBody().getPosition().x - (projectile.getTexture().getRegionWidth() / 2), projectile.getBody().getPosition().y - (projectile.getTexture().getRegionHeight() / 2), projectile.getTexture().getRegionWidth() / 2, projectile.getTexture().getRegionHeight() / 2, projectile.getTexture().getRegionWidth(), projectile.getTexture().getRegionHeight(), 1, 1, projectile.getRotation(), true);
             }
         }
     }
 
-    private void destroyDeadBodies(){
-        for (Body deadBody : GameEngine.getInstance().getDeadBodies()){
-            //world.destroyBody(deadBody);
-            deadBody.setActive(false);
-
+    private void destroyDeadBodies() {
+        for (Body deadBody : GameEngine.getInstance().getDeadBodies()) {
+            world.destroyBody(deadBody);
         }
         GameEngine.getInstance().getDeadBodies().clear();
     }
-
 }
