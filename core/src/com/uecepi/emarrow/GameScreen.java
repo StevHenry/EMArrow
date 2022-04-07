@@ -57,6 +57,7 @@ public class GameScreen extends ScreenMenu {
         batch.begin();
         GameEngine.getInstance().getMap().render();
         for (Character player : GameEngine.getInstance().getPlayers()) {
+            player.update();
             player.getAnimator().render(batch, (int) player.getBody().getPosition().x - (player.getAnimator().width / 2), (int) player.getBody().getPosition().y - (player.getAnimator().height / 2));
             player.getHealthBar().draw(batch, 1);
         }
@@ -128,9 +129,18 @@ public class GameScreen extends ScreenMenu {
     }
 
     private void destroyDeadBodies() {
+        ArrayList<Body> bodyToRemove = new ArrayList<>();
         for (Body deadBody : GameEngine.getInstance().getDeadBodies()) {
-            world.destroyBody(deadBody);
+            for (Character player : GameEngine.getInstance().getPlayers()) {
+                if (player.getProjectilesShooted().contains(deadBody)) {
+                    player.getProjectilesShooted().remove(deadBody);
+                }
+            }
+            //world.destroyBody(deadBody);
         }
+
         GameEngine.getInstance().getDeadBodies().clear();
+
+
     }
 }

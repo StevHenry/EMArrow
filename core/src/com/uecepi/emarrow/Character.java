@@ -22,7 +22,8 @@ public class Character extends Actor {
     private HealthBar healthBar;
     private int jumpLeft = 2;
     private int dashLeft = 1;
-    private boolean isGrounded=true;
+    private boolean isGrounded = true;
+    private boolean canShoot = true;
 
     public Character(String nb){
         this.animator = new Animator(nb); //TODO mettre en parametre pour pouvoir chosir skin
@@ -31,7 +32,7 @@ public class Character extends Actor {
         this.projectilesShooted = new ArrayList<>();
         this.name = "Player " + nb;
         this.createHitBox();
-        this.healthBar = new HealthBar(animator.width,2,100,body.getPosition());
+        this.healthBar = new HealthBar(Animator.width,2,100,body.getPosition());
     }
 
     public Body getBody() {
@@ -77,7 +78,7 @@ public class Character extends Actor {
     }
 
     public void shoot(){
-        if (System.currentTimeMillis() - lastShotTime >= fireRate)
+        if (System.currentTimeMillis() - lastShotTime >= fireRate && canShoot)
         {
             projectilesShooted.add(new Projectile(this));
             lastShotTime = System.currentTimeMillis();
@@ -100,8 +101,10 @@ public class Character extends Actor {
     }
 
     public void die(){
-        System.out.println("DIED");
-        GameEngine.getInstance().getDeadBodies().add(this.body);
+
+        for(Character b : GameEngine.getInstance().getPlayers()) {
+            b.setCanShoot(false);
+        }
 
         // TODO PLAY DIE ANIM
         // this.animator.setCurrentAnimation(Animator.STANDING_ANIMATION);
@@ -162,5 +165,9 @@ public class Character extends Actor {
 
     public Animator getAnimator() {
         return animator;
+    }
+
+    public void setCanShoot(boolean canShoot) {
+        this.canShoot = canShoot;
     }
 }
