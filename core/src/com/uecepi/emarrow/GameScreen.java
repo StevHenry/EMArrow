@@ -5,6 +5,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -71,7 +72,6 @@ public class GameScreen extends ScreenMenu {
                 projectile.update();
             }
         }
-        System.out.println(GameEngine.getInstance().getPlayers().get(0).getAnimator().isFlippedToLeft());
     }
 
     @Override
@@ -121,4 +121,5 @@ public class GameScreen extends ScreenMenu {
         }
         GameEngine.getInstance().getDeadBodies().clear();
     }
+
 }

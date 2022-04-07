@@ -87,7 +87,11 @@ public class Character extends Actor {
     }
 
     public void die(){
+        System.out.println("DIED");
         GameEngine.getInstance().getDeadBodies().add(this.body);
+        if (GameEngine.getInstance().isRoundDone())
+            System.out.println("FINISH ROUND");
+            GameEngine.getInstance().finishRound();
     }
 
     public int getJumpLeft() {
