@@ -34,10 +34,6 @@ public class KeyboardController  implements InputProcessor {
                 right = (rightKey == Keys.RIGHT);
                 keyProcessed = true;    //we have reacted to a keypress
                 break;
-            case Keys.UP:    //if keycode is the same as Keys.LEFT a.k.a 22
-                up = (upKey == Keys.UP);
-                keyProcessed = true;    //we have reacted to a keypress
-                break;
             case Keys.DOWN:    //if keycode is the same as Keys.LEFT a.k.a 22
                 down = (downKey == Keys.DOWN);
                 keyProcessed = true;    //we have reacted to a keypress
@@ -48,10 +44,6 @@ public class KeyboardController  implements InputProcessor {
                 break;
             case Keys.D:    //if keycode is the same as Keys.LEFT a.k.a 22
                 right = (rightKey == Keys.D);
-                keyProcessed = true;    //we have reacted to a keypress
-                break;
-            case Keys.Z:     //if keycode is the same as Keys.LEFT a.k.a 21
-                up =  (upKey == Keys.Z);
                 keyProcessed = true;    //we have reacted to a keypress
                 break;
             case Keys.S:    //if keycode is the same as Keys.LEFT a.k.a 22

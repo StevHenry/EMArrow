@@ -1,5 +1,6 @@
 package com.uecepi.emarrow.display.menus;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -91,6 +92,7 @@ public class SettingsMenu extends ScreenMenu {
                 Emarrow.getInstance().setScreen(new MainMenu());
             }
         });
+        backButton.setColor(new Color(1f,0.25f,0f,1f));
 
     }
 }
