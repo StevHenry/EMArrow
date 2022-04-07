@@ -21,6 +21,7 @@ public class Projectile {
     private Vector2 projectileDirection;
     private float rotation;
 
+
     public Projectile(Character shooter){
         this.texture = new Sprite(new Texture(Gdx.files.internal("images/char/arrow.png")));
         this.bodyDef = new BodyDef();
@@ -28,6 +29,7 @@ public class Projectile {
         this.speed = -6;
         this.createHitBox();
         this.damage = 25f;
+
     }
 
     public Body getBody() {

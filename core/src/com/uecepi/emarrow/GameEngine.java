@@ -98,6 +98,7 @@ public class GameEngine {
                 }
             }
         }
+
         BodyDef groundBodyDef = new BodyDef();
         groundBodyDef.type=BodyDef.BodyType.StaticBody;
         groundBodyDef.position.set(187,230);

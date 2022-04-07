@@ -106,7 +106,6 @@ public class GameScreen extends ScreenMenu {
 
     @Override
     public void hide() {
-
     }
 
     @Override

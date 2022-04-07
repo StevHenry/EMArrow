@@ -42,7 +42,7 @@ public class Character extends Actor {
         return body;
     }
 
-    public void createHitBox(){
+    private void createHitBox(){
         // First we create a body definition
         // We set our body to dynamic, for something like ground which doesn't move we would set it to StaticBody
         bodyDef.type = BodyDef.BodyType.DynamicBody;
