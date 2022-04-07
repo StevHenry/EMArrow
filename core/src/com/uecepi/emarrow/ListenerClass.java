@@ -1,12 +1,15 @@
 package com.uecepi.emarrow;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 
 import com.badlogic.gdx.physics.box2d.*;
 import com.uecepi.emarrow.audio.MusicManager;
+
+import javax.swing.*;
 
 public class ListenerClass implements ContactListener {
 
@@ -17,15 +20,39 @@ public class ListenerClass implements ContactListener {
         if(fixtureA.getUserData() == "Ground"){
             if(fixtureB.getUserData() == "GroundHitBox") {
                 GameEngine.getInstance().getPlayers().get(0).setJumpLeft(2);
+                GameEngine.getInstance().getPlayers().get(0).setDashLeft(1);
                 GameEngine.getInstance().getPlayers().get(0).setGrounded(true);
             }
-        }
-        else{
-            GameEngine.getInstance().getPlayers().get(0).setGrounded(false);
-        }
-        if(fixtureA.getUserData() == "GroundHitBox"){
+        } else if (fixtureA.getUserData() == "GroundHitBox"){
             if(fixtureB.getUserData() == "Player") {
                 GameEngine.getInstance().getPlayers().get(0).setJumpLeft(2);
+                GameEngine.getInstance().getPlayers().get(0).setDashLeft(1);
+                GameEngine.getInstance().getPlayers().get(0).setGrounded(true);
+            }
+        } else {
+            GameEngine.getInstance().getPlayers().get(0).setGrounded(false);
+        }
+
+        if (fixtureA.getUserData() == "TPLEFT"){
+            if(fixtureB.getUserData() == "Player") {
+                System.out.println("TPLEFT");
+                Body body = GameEngine.getInstance().getPlayers().get(0).getBody();
+                //body.setTransform(435,body.getPosition().y,0);
+            }
+        } else if (fixtureA.getUserData() == "TPRIGHT"){
+            if(fixtureB.getUserData() == "Player") {
+                System.out.println("TPRIGHT");
+                //GameEngine.getInstance().getPlayers().get(0).setPosition(-10f,GameEngine.getInstance().getPlayers().get(0).getBody().getPosition().y);
+            }
+        } else if (fixtureA.getUserData() == "TPUP"){
+            if(fixtureB.getUserData() == "Player") {
+                System.out.println("TPUP");
+                //GameEngine.getInstance().getPlayers().get(0).setPosition(-10f,GameEngine.getInstance().getPlayers().get(0).getBody().getPosition().y);
+            }
+        } else if (fixtureA.getUserData() == "TPDOWN"){
+            if(fixtureB.getUserData() == "Player") {
+                System.out.println("TPDOWN");
+                //GameEngine.getInstance().getPlayers().get(0).setPosition(-10f,GameEngine.getInstance().getPlayers().get(0).getBody().getPosition().y);
             }
         }
 
@@ -82,11 +109,9 @@ public class ListenerClass implements ContactListener {
 
     @Override
     public void endContact(Contact contact) {
-
     }
 
     @Override
-
     public void preSolve(Contact contact, Manifold manifold) {
     }
 

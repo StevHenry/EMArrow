@@ -38,6 +38,7 @@ public class GameEngine {
         deadBodies = new ArrayList<>();
 
         this.createGround();
+        this.createTPBox();
         Gdx.input.setInputProcessor(Emarrow.getInstance().getController());
     }
 
@@ -97,6 +98,57 @@ public class GameEngine {
                 }
             }
         }
+        BodyDef groundBodyDef = new BodyDef();
+        groundBodyDef.type=BodyDef.BodyType.StaticBody;
+        groundBodyDef.position.set(187,230);
+
+        Body groundBody = world.createBody(groundBodyDef);
+        PolygonShape groundBox = new PolygonShape();
+        FixtureDef groundFixture = new FixtureDef();
+
+        groundBox.setAsBox(72f,10f,new Vector2(-67f,20f),0f);
+        groundFixture.shape=groundBox;
+
+        groundBody.createFixture(groundFixture).setUserData("Ground");
+
+        groundBox.setAsBox(72f,10f,new Vector2(141f,20f),0f);
+        groundFixture.shape=groundBox;
+
+        groundBody.createFixture(groundFixture).setUserData("Ground");
+
+    }
+
+    public void createTPBox() {
+        BodyDef groundBodyDef = new BodyDef();
+        groundBodyDef.type=BodyDef.BodyType.StaticBody;
+        groundBodyDef.position.set(0,0);
+
+        Body groundBody = world.createBody(groundBodyDef);
+        PolygonShape groundBox = new PolygonShape();
+        FixtureDef groundFixture = new FixtureDef();
+        groundFixture.isSensor = true;
+
+        groundBox.setAsBox(32f,10f,new Vector2(224f,250f),0f);
+        groundFixture.shape=groundBox;
+
+        groundBody.createFixture(groundFixture).setUserData("TPUP");
+
+        groundBox.setAsBox(32f,10f,new Vector2(224f,0f),0f);
+        groundFixture.shape=groundBox;
+
+        groundBody.createFixture(groundFixture).setUserData("TPDOWN");
+
+        groundBox.setAsBox(10f,32f,new Vector2(0f,128f),0f);
+        groundFixture.shape=groundBox;
+
+        groundBody.createFixture(groundFixture).setUserData("TPLEFT");
+
+        groundBox.setAsBox(10f,32f,new Vector2(435f,128f),0f);
+        //groundFixture.shape=groundBox;
+
+        groundBody.createFixture(groundFixture).setUserData("TPRIGHT");
+
+        groundBox.dispose();
     }
 
     public void processInput() {//TODO CHANGER players.get(0) EN ACTIVE PLAYER (CELUI QUI JOUE sur le pc)
@@ -152,18 +204,47 @@ public class GameEngine {
                 players.get(0).getAnimator().setCurrentAnimation(Animator.JUMPING_ANIMATION);
                 players.get(0).setGrounded(false);
                 players.get(0).setJumpLeft(players.get(0).getJumpLeft() - 1);
-                //players.get(0).getBody().applyLinearImpulse(new Vector2(0, 150), players.get(0).getBody().getPosition(), true);
                 players.get(0).getBody().applyForceToCenter(0, 8000f, true);
             }
             Emarrow.getInstance().getController().jump = false;
         }
 
         if (Emarrow.getInstance().getController().dash) {
-            MusicManager.playSE(MusicManager.DASH_SE);
-            if (Emarrow.getInstance().getController().left && Emarrow.getInstance().getController().up) {
-                players.get(0).getBody().applyLinearImpulse(new Vector2(-8000, 8000), players.get(0).getBody().getPosition(), true);
+            if (players.get(0).getDashLeft() > 0) {
+                System.out.println("Joueur : " + players.get(0).getBody().getPosition());
+                System.out.println("Souris : " + Emarrow.getInstance().getController().mouseLocation);
+                MusicManager.playSE(MusicManager.DASH_SE);
+                players.get(0).setGrounded(false);
+                players.get(0).setDashLeft(players.get(0).getDashLeft() - 1);
+                Vector2 dashDirection = new Vector2(players.get(0).getBody().getPosition().sub(new Vector2(Gdx.input.getX(),Gdx.input.getY()).nor()));
+//                players.get(0).getBody().applyLinearImpulse(dashDirection.scl(8000), players.get(0).getBody().getPosition(), true);
+                if (Emarrow.getInstance().getController().left && Emarrow.getInstance().getController().up) {
+                    players.get(0).getBody().applyLinearImpulse(new Vector2(-8000, 8000), players.get(0).getBody().getPosition(), true);
+                }
+                if (Emarrow.getInstance().getController().right && Emarrow.getInstance().getController().up) {
+                    players.get(0).getBody().applyLinearImpulse(new Vector2(8000, 8000), players.get(0).getBody().getPosition(), true);
+                }
+                if (Emarrow.getInstance().getController().right && Emarrow.getInstance().getController().down) {
+                    players.get(0).getBody().applyLinearImpulse(new Vector2(8000, -8000), players.get(0).getBody().getPosition(), true);
+                }
+                if (Emarrow.getInstance().getController().left && Emarrow.getInstance().getController().down) {
+                    players.get(0).getBody().applyLinearImpulse(new Vector2(-8000, -8000), players.get(0).getBody().getPosition(), true);
+                }
+                if (Emarrow.getInstance().getController().up) {
+                    players.get(0).getBody().applyLinearImpulse(new Vector2(0, 8000), players.get(0).getBody().getPosition(), true);
+                }
+                if (Emarrow.getInstance().getController().right) {
+                    players.get(0).getBody().applyLinearImpulse(new Vector2(8000, 0), players.get(0).getBody().getPosition(), true);
+                }
+                if (Emarrow.getInstance().getController().down) {
+                    players.get(0).getBody().applyLinearImpulse(new Vector2(0, -8000), players.get(0).getBody().getPosition(), true);
+                }
+                if (Emarrow.getInstance().getController().left) {
+                    players.get(0).getBody().applyLinearImpulse(new Vector2(-8000, 0), players.get(0).getBody().getPosition(), true);
+                }
             }
         }
+
         if (Emarrow.getInstance().getController().shoot){
             if (players.get(0).isGrounded())
                 players.get(0).getAnimator().setCurrentAnimation(Animator.STANDING_SHOT_ANIMATION);

@@ -11,14 +11,13 @@ public class KeyboardController  implements InputProcessor {
     public Vector2 mouseLocation = new Vector2(0,0);
     private int leftKey, rightKey, upKey, downKey, jumpKey, dashKey, shootKey;
     public KeyboardController(){
-        this.upKey = Keys.UP;
-        this.downKey = Keys.DOWN;
+        this.upKey = Keys.Z;
+        this.downKey = Keys.S;
         this.leftKey = Keys.Q;
-        this.rightKey = Keys.RIGHT;
-        this.dashKey = Keys.E;
+        this.rightKey = Keys.D;
+        this.dashKey = Keys.SHIFT_LEFT;
         this.jumpKey = Keys.SPACE;
         this.shootKey = Keys.A;
-
     }
 
 
@@ -49,6 +48,14 @@ public class KeyboardController  implements InputProcessor {
                 break;
             case Keys.D:    //if keycode is the same as Keys.LEFT a.k.a 22
                 right = (rightKey == Keys.D);
+                keyProcessed = true;    //we have reacted to a keypress
+                break;
+            case Keys.Z:     //if keycode is the same as Keys.LEFT a.k.a 21
+                up =  (upKey == Keys.Z);
+                keyProcessed = true;    //we have reacted to a keypress
+                break;
+            case Keys.S:    //if keycode is the same as Keys.LEFT a.k.a 22
+                down = (downKey == Keys.S);
                 keyProcessed = true;    //we have reacted to a keypress
                 break;
             case Keys.SPACE:       //if keycode is the same as Keys.LEFT a.k.a 19
@@ -97,6 +104,14 @@ public class KeyboardController  implements InputProcessor {
                 break;
             case Keys.D:    //if keycode is the same as Keys.LEFT a.k.a 22
                 right = false;  //do this
+                keyProcessed = true;    //we have reacted to a keypress
+                break;
+            case Keys.Z:     //if keycode is the same as Keys.LEFT a.k.a 21
+                up = false;   //do this
+                keyProcessed = true;    //we have reacted to a keypress
+                break;
+            case Keys.S:    //if keycode is the same as Keys.LEFT a.k.a 22
+                down = false;  //do this
                 keyProcessed = true;    //we have reacted to a keypress
                 break;
             case Keys.SPACE:       //if keycode is the same as Keys.LEFT a.k.a 19

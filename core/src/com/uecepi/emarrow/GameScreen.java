@@ -86,7 +86,6 @@ public class GameScreen extends ScreenMenu {
                 projectile.update();
             }
         }
-
     }
 
     @Override
@@ -134,4 +133,5 @@ public class GameScreen extends ScreenMenu {
         }
         GameEngine.getInstance().getDeadBodies().clear();
     }
+
 }
