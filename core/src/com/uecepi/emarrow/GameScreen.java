@@ -56,7 +56,7 @@ public class GameScreen extends ScreenMenu {
         }
         drawProjectiles();
         batch.end();
-        //box2DDebugRenderer.render(world, GameEngine.getInstance().getMap().getCamera().combined);
+        box2DDebugRenderer.render(world, GameEngine.getInstance().getMap().getCamera().combined);
     }
 
     private void update() {
@@ -71,7 +71,6 @@ public class GameScreen extends ScreenMenu {
                 projectile.update();
             }
         }
-        System.out.println(GameEngine.getInstance().getPlayers().get(0).getAnimator().isFlippedToLeft());
     }
 
     @Override
@@ -121,4 +120,5 @@ public class GameScreen extends ScreenMenu {
         }
         GameEngine.getInstance().getDeadBodies().clear();
     }
+
 }
