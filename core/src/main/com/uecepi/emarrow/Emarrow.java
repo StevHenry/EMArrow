@@ -24,8 +24,8 @@ public class Emarrow extends Game {
     public void create() {
         controller = new KeyboardController();
         Assets.load();
-        Emarrow.getInstance().getController().setLeftKey(Input.Keys.LEFT);
-        Emarrow.getInstance().getController().setRightKey(Input.Keys.RIGHT);
+        Emarrow.getInstance().getController().setLeftKey(Input.Keys.Q);
+        Emarrow.getInstance().getController().setRightKey(Input.Keys.D);
         Emarrow.getInstance().getController().setDashKey(Input.Keys.SHIFT_LEFT);
         setScreen(new MainMenu());
         client = new AccountClient();

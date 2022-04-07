@@ -1,43 +1,49 @@
 package com.uecepi.emarrow;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.PolygonRegion;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.uecepi.emarrow.audio.MusicManager;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.uecepi.emarrow.display.Animator;
+import com.uecepi.emarrow.display.menus.MainMenu;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
-public class Character {
-    private int life;
+public class Character extends Actor {
     private BodyDef bodyDef;
     private Body body;
+    private Animator animator;
     private Body detectBox;
-    private Texture texture;
     private float speed;
+    private String name;
+
     private long lastShotTime = 0;
-    private float fireRate = 1000f;
+    private float fireRate = 100f;
     private List<Projectile> projectilesShooted;
     private HealthBar healthBar;
-    private boolean canJump;
+    private int jumpLeft = 2;
+    private int dashLeft = 1;
+    private boolean isGrounded = true;
+    private boolean canShoot = true;
 
-    public Character(Texture texture){
-        this.texture = texture; //TODO mettre en parametre pour pouvoir chosir skin
+    public Character(String nb){
+        this.animator = new Animator(nb); //TODO mettre en parametre pour pouvoir chosir skin
         this.bodyDef = new BodyDef();
         this.speed = 25f;
         this.projectilesShooted = new ArrayList<>();
+        this.name = "Player " + nb;
         this.createHitBox();
-        this.healthBar = new HealthBar(100,body.getPosition());
+        this.healthBar = new HealthBar(Animator.width,2,100,body.getPosition());
     }
 
     public Body getBody() {
         return body;
     }
 
-    public void createHitBox(){
+    private void createHitBox(){
         // First we create a body definition
         // We set our body to dynamic, for something like ground which doesn't move we would set it to StaticBody
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -46,24 +52,27 @@ public class Character {
 
         // Create our body in the world using our body definition
         this.body = GameEngine.getInstance().getWorld().createBody(bodyDef);
+        body.setUserData(this);
+
 
         // Create a circle shape and set its radius to 6
         PolygonShape hitBox = new PolygonShape();
         //hitBox.setAsBox(4.0f, 7.0f);
-        hitBox.setAsBox(texture.getWidth()/4, texture.getHeight()/2);
+        hitBox.setAsBox(Animator.width / 4f, Animator.height / 2f);
 
         // Create a fixture definition to apply our shape to
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = hitBox;
 
 
+
         // Create our fixture and attach it to the body
-        this.body.createFixture(fixtureDef);
+
+        this.body.createFixture(fixtureDef).setUserData("Player");
 
         hitBox.setAsBox(4, 2, new Vector2(0f, -13f),0f);
         fixtureDef.shape = hitBox;
         fixtureDef.isSensor = true;
-
 
         this.body.createFixture(fixtureDef).setUserData("GroundHitBox");
 
@@ -73,42 +82,111 @@ public class Character {
     }
 
     public void shoot(){
-        System.out.println(System.currentTimeMillis()- lastShotTime);
-        System.out.println(fireRate);
-        if (System.currentTimeMillis() - lastShotTime >= fireRate)
+        if (System.currentTimeMillis() - lastShotTime >= fireRate && canShoot)
         {
-            //TODO
             projectilesShooted.add(new Projectile(this));
             lastShotTime = System.currentTimeMillis();
-            MusicManager.playSE(MusicManager.SHOT2_SE);
         }
     }
-    
-    public Texture getTexture() {
-        return texture;
+
+    public void update() {
+        Vector2 pos = body.getPosition();
+        if(pos.x <= -5) {
+            body.setTransform(435, body.getPosition().y,0);
+        } else if(pos.x >= 440) {
+            body.setTransform(0, body.getPosition().y,0);
+        } else if(pos.y <= -5) {
+            body.setTransform(body.getPosition().x, 230,0);
+        } else if(pos.y >= 240) {
+            body.setTransform(body.getPosition().x, 10,0);
+            body.applyLinearImpulse(new Vector2(0,100000), body.getPosition(), true);
+
+        }
     }
 
-    public BodyDef getBodyDef() {
-        return bodyDef;
+    public void die(){
+
+        for(Character b : GameEngine.getInstance().getPlayers()) {
+            b.setCanShoot(false);
+        }
+
+        // TODO PLAY DIE ANIM
+        // this.animator.setCurrentAnimation(Animator.STANDING_ANIMATION);
+        if (GameEngine.getInstance().isRoundDone())
+            System.out.println("FINISH ROUND");
+            GameEngine.getInstance().finishRound();
+    }
+    public void setHurt(){
+        animator.setHurt(true);
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Gdx.app.postRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        animator.setHurt(false);
+                    }
+                });
+            }
+        },60);
+
     }
 
-    public boolean isCanJump() {
-        return canJump;
+    public int getJumpLeft() {
+        return jumpLeft;
     }
 
-    public void setCanJump(boolean canJump) {
-        this.canJump = canJump;
+    public void setJumpLeft(int jumpLeft) {
+        this.jumpLeft = jumpLeft;
+    }
+
+    public int getDashLeft() {
+        return dashLeft;
+    }
+
+    public void setDashLeft(int dashLeft) {
+        this.dashLeft = dashLeft;
+    }
+
+    public boolean isGrounded() {
+        return isGrounded;
+    }
+
+    public void setGrounded(boolean grounded) {
+        isGrounded = grounded;
     }
 
     public float getSpeed() {
         return speed;
     }
-
     public List<Projectile> getProjectilesShooted() {
         return projectilesShooted;
     }
 
     public HealthBar getHealthBar() {
         return healthBar;
+    }
+
+
+
+    @Override
+    public String toString() {
+        return "Character{" +
+                ", bodyDef=" + bodyDef +
+                ", body=" + body +
+                ", speed=" + speed +
+                ", lastShotTime=" + lastShotTime +
+                ", fireRate=" + fireRate +
+                ", projectilesShooted=" + projectilesShooted +
+                ", healthBar=" + healthBar +
+                '}';
+    }
+
+    public Animator getAnimator() {
+        return animator;
+    }
+
+    public void setCanShoot(boolean canShoot) {
+        this.canShoot = canShoot;
     }
 }

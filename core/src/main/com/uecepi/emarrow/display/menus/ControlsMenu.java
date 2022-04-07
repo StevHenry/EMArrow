@@ -1,6 +1,7 @@
 package com.uecepi.emarrow.display.menus;
 
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -12,11 +13,11 @@ public class ControlsMenu extends ScreenMenu {
     Label instructions;
     TextButton leftButton;
     TextButton rightButton;
+    TextButton upButton;
+    TextButton downButton;
     TextButton dashButton;
     TextButton jumpButton;
     TextButton backButton;
-
-
 
     public ControlsMenu(){
         super();
@@ -72,6 +73,26 @@ public class ControlsMenu extends ScreenMenu {
             }
         });
 
+        if (Emarrow.getInstance().getController().getDownKey() == Input.Keys.S){
+            downButton = new TextButton("Down : S", skin);
+        }
+        else{
+            downButton = new TextButton("Down : down arrow", skin);
+        }
+        table.add(downButton).height(100).width(200).padTop(30).row();
+        downButton.addListener(new ClickListener(){
+            public void clicked(InputEvent event, float x, float y) {
+                if (Emarrow.getInstance().getController().getDownKey() == Input.Keys.S){
+                    downButton.setText("Down : down arrow");
+                    Emarrow.getInstance().getController().setDownKey(Input.Keys.DOWN);
+                }
+                else if (Emarrow.getInstance().getController().getDownKey() == Input.Keys.DOWN){
+                    downButton.setText("Down : S");
+                    Emarrow.getInstance().getController().setDownKey(Input.Keys.S);
+                }
+            }
+        });
+
         if (Emarrow.getInstance().getController().getDashKey() == Input.Keys.SHIFT_LEFT){
             dashButton = new TextButton("Dash : Left Shift", skin);
         }
@@ -93,9 +114,6 @@ public class ControlsMenu extends ScreenMenu {
         });
 
 
-        jumpButton = new TextButton("Jump : Space", skin);
-        table.add(jumpButton).height(100).width(200).padTop(30).row();
-
         backButton = new TextButton("Back", skin);
         table.add(backButton).height(100).width(200).padTop(30).row();
         backButton.addListener(new ClickListener(){
@@ -103,6 +121,7 @@ public class ControlsMenu extends ScreenMenu {
                 Emarrow.getInstance().setScreen(new MainMenu());
             }
         });
+        backButton.setColor(new Color(1f,0.25f,0f,1f));
 
 
     }
