@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.uecepi.emarrow.Emarrow;
+import com.uecepi.emarrow.display.Screens;
 import com.uecepi.emarrow.audio.MusicManager;
 
 /**
@@ -15,19 +16,19 @@ import com.uecepi.emarrow.audio.MusicManager;
  */
 public class MainMenu extends ScreenMenu {
 
-    Image titleImage;
-    TextButton signInButton;
-    TextButton logInButton;
-    TextButton controlButton;
-    TextButton settingsButton;
-    TextButton exitButton;
+    private Image titleImage;
+    private TextButton signInButton;
+    private TextButton logInButton;
+    private TextButton controlButton;
+    private TextButton settingsButton;
+    private TextButton exitButton;
 
     public MainMenu() {
         super();
-        create();
     }
 
-    private void create() {
+    @Override
+    protected void create() {
         MusicManager.setMusic(MusicManager.MUSIC1_BGM);
 
         addTitle();
@@ -60,7 +61,7 @@ public class MainMenu extends ScreenMenu {
         table.add(settingsButton).height(80).width(200).padTop(20).row();
         settingsButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
-                Emarrow.getInstance().setScreen(new SettingsMenu());
+                Screens.setScreen(Screens.SETTINGS_MENU);
             }
         });
     }
@@ -69,9 +70,10 @@ public class MainMenu extends ScreenMenu {
         //Création du bouton redirigeant vers le ControlsMen, menu qui change les commandes
         controlButton = new TextButton("Controls", skin);
         table.add(controlButton).height(80).width(200).padTop(20).row();
+        controlButton.setColor(new Color(0.5f, 0.4f, 0.2f, 1f));
         controlButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
-                Emarrow.getInstance().setScreen(new ControlsMenu());
+                Screens.setScreen(Screens.CONTROLS_MENU);
             }
 
         });
@@ -80,16 +82,16 @@ public class MainMenu extends ScreenMenu {
     private void addLogInButton() {
         //Création du bouton redirigeant vers le LogInMenu
         logInButton = new TextButton("Log In", skin);
-        table.add(logInButton).height(80).width(200).padTop(20).row();
         logInButton.setColor(new Color(0.5f, 0.25f, 1f, 1f));
         logInButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                LogInMenu menu = new LogInMenu();
-                Emarrow.getInstance().setScreen(menu);
-                Emarrow.getInstance().getAccountClient().setLogInMenuInstance(menu);
+                Screens.setScreen(Screens.LOG_IN_MENU);
+                Emarrow.getInstance().getAccountClient()
+                        .setLogInMenuInstance((LogInMenu) Screens.LOG_IN_MENU.getScreenMenu());
             }
         });
+        table.add(logInButton).height(80).width(200).padTop(20).row();
     }
 
     private void addSignInButton() {
@@ -100,10 +102,9 @@ public class MainMenu extends ScreenMenu {
         signInButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                SignInMenu signInMenu = new SignInMenu();
-                Emarrow.getInstance().getAccountClient().setSignInMenuInstance(signInMenu);
-                Emarrow.getInstance().setScreen(signInMenu);
-
+                Screens.setScreen(Screens.SIGN_IN_MENU);
+                Emarrow.getInstance().getAccountClient()
+                        .setSignInMenuInstance((SignInMenu) Screens.SIGN_IN_MENU.getScreenMenu());
             }
         });
     }
@@ -113,6 +114,4 @@ public class MainMenu extends ScreenMenu {
         titleImage = new Image(new Texture("images/title.png"));
         table.add(titleImage).row();
     }
-
-
 }

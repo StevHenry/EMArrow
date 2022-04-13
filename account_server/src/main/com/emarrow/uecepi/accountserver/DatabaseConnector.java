@@ -124,11 +124,11 @@ public class DatabaseConnector {
                 stmt.setString(1, identifier);
                 stmt.execute();
             } else {
-                LOGGER.warn("Could not verify the player identity!");
+                LOGGER.warn("Could not delete the account!");
                 return false;
             }
         } catch (SQLException exception) {
-            LOGGER.warn("Could not create an account! (Cause = {})", exception.getMessage());
+            LOGGER.warn("Could not delete an account! (Cause = {})", exception.getMessage());
             return false;
         }
         return true;
@@ -182,5 +182,26 @@ public class DatabaseConnector {
             LOGGER.warn("Could not verify credentials! (Cause = {})", exception.getMessage());
         }
         return false;
+    }
+
+    /**
+     * @param identifier player account identifier
+     * @return a String array containing [uuid, nickname]
+     */
+    public String[] getPlayerData(String identifier){
+        String[] data = {"00000000-0000-0000-0000-00000", ""};
+        try {
+            PreparedStatement stmt = connection.prepareStatement("SELECT uuid, nickname FROM accounts WHERE identifier=?");
+            stmt.setString(1, identifier);
+            ResultSet result = stmt.executeQuery();
+            if (result.next()){
+                data[0] = result.getString("uuid");
+                data[1] = result.getString("nickname");
+            }
+            stmt.close();
+        } catch (SQLException exception) {
+            LOGGER.warn("Could not get player data! (Cause = {})", exception.getMessage());
+        }
+        return data;
     }
 }

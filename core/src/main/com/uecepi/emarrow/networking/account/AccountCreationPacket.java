@@ -20,7 +20,7 @@ public class AccountCreationPacket {
         return identifier;
     }
 
-    public String getPass() {
+    public String getPassword() {
         return pass;
     }
 

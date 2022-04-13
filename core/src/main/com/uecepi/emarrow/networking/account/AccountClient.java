@@ -5,11 +5,15 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
+import com.uecepi.emarrow.Character;
+import com.uecepi.emarrow.GameEngine;
+import com.uecepi.emarrow.PlayerInfo;
 import com.uecepi.emarrow.display.menus.LogInMenu;
 import com.uecepi.emarrow.display.menus.SignInMenu;
 import com.uecepi.emarrow.networking.PingPacket;
 
 import java.io.IOException;
+import java.util.UUID;
 
 public class AccountClient {
 
@@ -23,7 +27,7 @@ public class AccountClient {
 
     private void create() {
         client = new Client();
-        Gdx.app.log("client", "Account server starting...");
+        Gdx.app.log("client", "Account client starting...");
         client.start();
         registerPackets();
 
@@ -41,10 +45,14 @@ public class AccountClient {
             @Override
             public void received(Connection connection, Object object) {
                 Gdx.app.log("account_client", "Received a packet!");
-                if (object instanceof ConnectionResponsePacket) {
-                    logInMenu.responseReceived(((ConnectionResponsePacket) object).getResponse());
+                if (object instanceof IdentificationResponsePacket) {
+                    logInMenu.responseReceived(((IdentificationResponsePacket) object).getResponse());
                 } else if (object instanceof AccountCreationResponsePacket) {
                     signInMenu.responseReceived(((AccountCreationResponsePacket) object).getResponseValue());
+                } else if (object instanceof PlayerDataPacket) {
+                    PlayerDataPacket packet = (PlayerDataPacket) object;
+                    Gdx.app.postRunnable(() -> GameEngine.getInstance().setSelfPlayer(
+                            new PlayerInfo(new Character(1), UUID.randomUUID(), packet.getNickname())));
                 }
             }
         });
@@ -53,10 +61,11 @@ public class AccountClient {
     private void registerPackets() {
         Kryo kryo = client.getKryo();
         kryo.register(PingPacket.class);
-        kryo.register(CredentialsPacket.class);
-        kryo.register(ConnectionResponsePacket.class);
+        kryo.register(IdentificationPacket.class);
+        kryo.register(IdentificationResponsePacket.class);
         kryo.register(AccountCreationPacket.class);
         kryo.register(AccountCreationResponsePacket.class);
+        kryo.register(PlayerDataPacket.class);
     }
 
     public boolean isConnected() {
@@ -71,7 +80,7 @@ public class AccountClient {
         this.logInMenu = menu;
     }
 
-    public void sendTCP(Object object) {
+    public void sendTCP(Object object){
         client.sendTCP(object);
     }
 
@@ -89,5 +98,9 @@ public class AccountClient {
         } catch (IOException exception) {
             exception.printStackTrace();
         }
+    }
+
+    public void disconnect(){
+        client.close();
     }
 }

@@ -1,20 +1,14 @@
 package com.uecepi.emarrow;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Input;
 import com.uecepi.emarrow.assets.Assets;
-import com.uecepi.emarrow.display.KeyboardController;
-import com.uecepi.emarrow.display.menus.MainMenu;
-import com.uecepi.emarrow.map.Map;
+import com.uecepi.emarrow.display.Screens;
 import com.uecepi.emarrow.networking.account.AccountClient;
 
 public class Emarrow extends Game {
 
     private static final Emarrow instance = new Emarrow();
-    private AccountClient client;
-    private KeyboardController controller;
-    private Map map;
-
+    private AccountClient accountClient;
 
     public static Emarrow getInstance() {
         return instance;
@@ -22,13 +16,9 @@ public class Emarrow extends Game {
 
     @Override
     public void create() {
-        controller = new KeyboardController();
+        accountClient = new AccountClient();
         Assets.load();
-        Emarrow.getInstance().getController().setLeftKey(Input.Keys.Q);
-        Emarrow.getInstance().getController().setRightKey(Input.Keys.D);
-        Emarrow.getInstance().getController().setDashKey(Input.Keys.SHIFT_LEFT);
-        setScreen(new MainMenu());
-        client = new AccountClient();
+        Screens.setScreen(Screens.MAIN_MENU);
     }
 
     @Override
@@ -36,15 +26,7 @@ public class Emarrow extends Game {
         super.render();
     }
 
-    public KeyboardController getController() {
-        return controller;
-    }
-
-    public void setController(KeyboardController Controller) {
-        this.controller = controller;
-    }
-
     public AccountClient getAccountClient() {
-        return client;
+        return accountClient;
     }
 }

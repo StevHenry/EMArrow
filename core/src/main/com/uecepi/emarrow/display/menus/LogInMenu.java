@@ -14,8 +14,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.uecepi.emarrow.Emarrow;
+import com.uecepi.emarrow.display.Screens;
 import com.uecepi.emarrow.networking.account.AccountClient;
-import com.uecepi.emarrow.networking.account.CredentialsPacket;
+import com.uecepi.emarrow.networking.account.IdentificationPacket;
 
 /**
  * Menu class to log in.
@@ -27,37 +28,43 @@ public class LogInMenu extends ScreenMenu {
     TextField id;
     TextField password;
     TextButton logInButton;
+    TextButton backButton;
     Label title;
     Label idLabel;
     Label passwordLabel;
     Label errorMessage;
+    private boolean logged = false;
+
 
     public LogInMenu() {
         super();
-        create();
         Emarrow.getInstance().getAccountClient().connect();
     }
 
-    private void create() {
-        createBackGroundTable();
-        addTitle();
-        addFieldsTable();
-        addSignInButton();
+    @Override
+    protected void create() {
+        if (!logged) {
+            createBackGroundTable();
+            addTitle();
+            addFieldsTable();
+            addLogInButton();
+            secondTable.add(createBackToMainMenuButton()).width(200).height(40).padTop(20).row();
+        } else {
+            Screens.setScreen(Screens.CONNECTION_MENU);
+        }
     }
+
 
     /**
      * Method called to check the account before logging in.
      */
     private void logIn() {
-        Gdx.app.log("account_client", "logging in");
         AccountClient accountClient = Emarrow.getInstance().getAccountClient();
         if (!accountClient.isConnected()) {
-        Gdx.app.log("account_client", "tchoin");
             addErrorMessage("Account verifier server is not connected! Please check your connection!");
             accountClient.reconnect();
         } else {
-
-            accountClient.sendTCP(new CredentialsPacket(id.getText(), password.getText()));
+            accountClient.sendTCP(new IdentificationPacket(id.getText(), password.getText()));
         }
     }
 
@@ -73,7 +80,7 @@ public class LogInMenu extends ScreenMenu {
 
     // __________________ Extracted Methods __________________ //
 
-    private void addSignInButton() {
+    private void addLogInButton() {
         logInButton = new TextButton("Log In", skin);
         logInButton.setColor(new Color(0.5f, 0.25f, 1f, 1f));
         secondTable.add(logInButton).height(80).width(200).padTop(40).row();
@@ -97,6 +104,7 @@ public class LogInMenu extends ScreenMenu {
         passwordLabel = new Label("Password :", skin);
         fieldsTable.add(passwordLabel).padRight(10);
         password = new TextField("", skin);
+        password.setPasswordMode(true);
         fieldsTable.add(password).height(40).width(200).padTop(20).row();
     }
 
@@ -112,16 +120,22 @@ public class LogInMenu extends ScreenMenu {
         bgPixmap.fill();
         TextureRegionDrawable textureRegionDrawableBg = new TextureRegionDrawable(new TextureRegion(new Texture(bgPixmap)));
         secondTable.setBackground(textureRegionDrawableBg);
-        table.add(secondTable).height(350).width(400);
+        table.add(secondTable).height(400).width(400);
         bgPixmap.dispose();
     }
 
     public void responseReceived(boolean response) {
         if (response) {
             Gdx.app.log("login", "Client logged in!");
-            Gdx.app.postRunnable(() -> Emarrow.getInstance().setScreen(new ConnectionMenu()));
+            setLoggedIn();
+            Gdx.app.postRunnable(() -> Screens.setScreen(Screens.CONNECTION_MENU));
         } else {
             addErrorMessage("Wrong ID or Password");
         }
+    }
+
+    public void setLoggedIn(){
+        logged = true;
+        Emarrow.getInstance().getAccountClient().disconnect();
     }
 }

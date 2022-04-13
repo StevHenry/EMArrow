@@ -12,28 +12,29 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.uecepi.emarrow.Emarrow;
-import com.uecepi.emarrow.GameScreen;
+import com.uecepi.emarrow.GameEngine;
+import com.uecepi.emarrow.display.Screens;
 
 /**
  * Menu class to connect to server.
  */
 public class ConnectionMenu extends ScreenMenu {
 
-    Table secondTable;
-    Table fieldsTable;
-    TextField connection;
-    TextButton connectionButton;
-    Label title;
-    Label connectionLabel;
-    Label errorMessage;
+    private Table secondTable;
+    private Table fieldsTable;
+    private TextField connection;
+    private TextButton connectionButton;
+    private Label title;
+    private Label connectionLabel;
+    private Label errorMessage;
+    private String lastIP = "127.0.0.1";
 
     public ConnectionMenu(){
         super();
-        create();
     }
 
-    private void create() {
+    @Override
+    protected  void create() {
         createBackGroundTable();
         addTitle();
         addFieldsTable();
@@ -44,8 +45,16 @@ public class ConnectionMenu extends ScreenMenu {
      * Method called to check the account before connecting to server.
      */
     private void connection() {
-
-        Emarrow.getInstance().setScreen(new GameScreen());
+        GameEngine gameEngine = GameEngine.getInstance();
+        gameEngine.getGameClient().connect(connection.getText());
+        lastIP = connection.getText();
+        gameEngine.gameClientProcedure();
+        //Resets the inputs
+        gameEngine.getInputManager().resetInputs();
+        //Resets the game
+        gameEngine.startGame();
+        //Shows the Game Screen
+        Screens.setScreen(Screens.GAME_SCREEN);
     }
 
     /**
@@ -78,7 +87,7 @@ public class ConnectionMenu extends ScreenMenu {
 
         connectionLabel = new Label("Connection IP :", skin);
         fieldsTable.add(connectionLabel).padRight(10);
-        connection = new TextField("", skin);
+        connection = new TextField(lastIP, skin);
         fieldsTable.add(connection).height(40).width(200).padTop(20).row();
     }
 
@@ -97,7 +106,4 @@ public class ConnectionMenu extends ScreenMenu {
         table.add(secondTable).height(300).width(400);
         bgPixmap.dispose();
     }
-
-
 }
-

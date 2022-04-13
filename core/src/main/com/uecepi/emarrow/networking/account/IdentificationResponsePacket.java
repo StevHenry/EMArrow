@@ -1,13 +1,13 @@
 package com.uecepi.emarrow.networking.account;
 
-public class ConnectionResponsePacket {
+public class IdentificationResponsePacket {
 
     private boolean responseValue;
 
-    public ConnectionResponsePacket() {
+    public IdentificationResponsePacket() {
     }
 
-    public ConnectionResponsePacket(boolean response) {
+    public IdentificationResponsePacket(boolean response) {
         this.responseValue = response;
     }
 

@@ -1,13 +1,13 @@
 package com.uecepi.emarrow.networking.account;
 
-public class CredentialsPacket {
+public class IdentificationPacket {
 
     private String identifier;
     private String password;
 
-    public CredentialsPacket(){}
+    public IdentificationPacket(){}
 
-    public CredentialsPacket(String identifier, String password) {
+    public IdentificationPacket(String identifier, String password) {
         this.identifier = identifier;
         this.password = password;
     }

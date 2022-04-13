@@ -9,100 +9,134 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.uecepi.emarrow.audio.MusicManager;
 
 public class Projectile {
-    private float speed;
-    public float damage;
-    private BodyDef bodyDef;
+
+    private final float speed;
+    private final int damage;
+    private final Sprite texture;
+    private final Character shooter;
     private Body body;
-    private Sprite texture;
-    private Character shooter;
-    private Vector2 projectileDirection;
-    private float rotation;
 
+    private Vector2 initialDirection;
 
-    public Projectile(Character shooter){
+    /**
+     * @param shooter {@link Character} who launches the projectile
+     */
+    public Projectile(Character shooter) {
         this.texture = new Sprite(new Texture(Gdx.files.internal("images/char/arrow.png")));
-        this.bodyDef = new BodyDef();
         this.shooter = shooter;
-        this.speed = -6;
+        this.speed = 6;
+        this.damage = 25;
         this.createHitBox();
-        this.damage = 25f;
+        this.calculateDirection();
+        body.setBullet(true);
 
     }
 
-    public Body getBody() {
-        return body;
+    /**
+     * Constructor used when a packet needs to recreate the projectile launched externally
+     * @param shooter  {@link Character} who launches the projectile
+     * @param direction normalized vector of the initial direction of the projectile
+     */
+    public Projectile(Character shooter, Vector2 direction) {
+        this(shooter);
+        this.initialDirection = direction;
     }
 
-    public void createHitBox(){
-        // First we create a body definition
-        // We set our body to dynamic, for something like ground which doesn't move we would set it to StaticBody
+    /**
+     * Creates the physical object
+     */
+    public void createHitBox() {
+        BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
-        // Set our body's starting position in the world
         bodyDef.position.set(shooter.getBody().getPosition());
 
-        // Create our body in the world using our body definition
         this.body = GameEngine.getInstance().getWorld().createBody(bodyDef);
         body.setUserData(this);
-        // Create a circle shape and set its radius to 6
-        PolygonShape hitBox = new PolygonShape();
-        //hitBox.setAsBox(4.0f, 7.0f);
-        hitBox.setAsBox(texture.getRegionWidth()/2f, texture.getRegionHeight()/2f);
 
-        // Create a fixture definition to apply our shape to
+        PolygonShape hitBox = new PolygonShape();
+        hitBox.setAsBox(texture.getRegionWidth() / 2f, texture.getRegionHeight() / 2f);
+
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = hitBox;
         fixtureDef.isSensor = true;
-
-        // Create our fixture and attach it to the body
         body.createFixture(fixtureDef).setUserData("Projectile");
-        // Remember to dispose of any shapes after you're done with them!
-        // BodyDef and FixtureDef don't need disposing, but shapes do.
         hitBox.dispose();
-        this.body.setGravityScale(0.1f);
-        int mouseX = Gdx.input.getX();
-        int mouseY = Gdx.input.getY();
-        double projectileX = body.getPosition().x*1740/445;
-        double projectileY = 950 - body.getPosition().y*1740/445;
-        double norm = Math.sqrt((mouseX - projectileX)*(mouseX - projectileX) + (mouseY - projectileY)*(mouseY - projectileY) );
-        projectileDirection = new Vector2((float) ((mouseX - projectileX)/norm), (float) ( (mouseY - projectileY)/norm));
+
+        body.setGravityScale(0.1f);
         //body.applyLinearImpulse(new Vector2(  (-speed  * projectileDirection.x), -(-speed * projectileDirection.y)), body.getPosition(), true);
-        rotation = 45 - projectileDirection.angleDeg();
-        MusicManager.playSE(MusicManager.SHOT_SE);
     }
 
-    public void update() {
-        body.setTransform(new Vector2(  (-speed * projectileDirection.x) + body.getPosition().x , speed *projectileDirection.y + body.getPosition().y), 0f);
-        Vector2 pos = body.getPosition();
-        if(pos.x <= -5) {
-            body.setTransform(435, body.getPosition().y,0);
-        } else if(pos.x >= 440) {
-            body.setTransform(0, body.getPosition().y,0);
-        } else if(pos.y <= -5) {
-            body.setTransform(body.getPosition().x, 230,0);
-        } else if(pos.y >= 240) {
-            body.setTransform(body.getPosition().x, 10,0);
-            body.applyLinearImpulse(new Vector2(0,100000), body.getPosition(), true);
+    /**
+     * Calculates the initial direction for the projectile
+     */
+    private void calculateDirection() {
+        int mouseX = Gdx.input.getX();
+        int mouseY = Gdx.input.getY();
+        float projectileX = body.getPosition().x * 1740 / 445;
+        float projectileY = 950 - body.getPosition().y * 1740 / 445;
+        initialDirection = new Vector2(projectileX - mouseX, projectileY - mouseY);
+        initialDirection.nor();
+    }
 
+    /**
+     * Updates the projectile movement
+     */
+    public void update() {
+        body.setTransform(new Vector2((-speed * initialDirection.x) + body.getPosition().x, speed * initialDirection.y + body.getPosition().y), 0f);
+        Vector2 pos = body.getPosition();
+        if (pos.x <= -5) {
+            body.setTransform(435, body.getPosition().y, 0);
+        } else if (pos.x >= 440) {
+            body.setTransform(0, body.getPosition().y, 0);
+        } else if (pos.y <= -5) {
+            body.setTransform(body.getPosition().x, 230, 0);
+        } else if (pos.y >= 240) {
+            body.setTransform(body.getPosition().x, 10, 0);
+            body.applyLinearImpulse(new Vector2(0, 100000), body.getPosition(), true);
         }
     }
 
+    /**
+     * @return the projectile texture
+     */
     public TextureRegion getTexture() {
         return texture;
     }
 
-    public float getSpeed() {
-        return speed;
-    }
-
+    /**
+     * @return the Character who shot the projectile
+     */
     public Character getShooter() {
         return shooter;
     }
 
-    public float getRotation(){
-        return rotation;
+    /**
+     * @return the rotation in order to rotate the image for the rendering
+     */
+    public float getRotation() {
+        return 225 - initialDirection.angleDeg();
+    }
 
+    /**
+     * @return a normalized Vector2 of the projectile initial direction
+     */
+    public Vector2 getInitialDirection() {
+        return initialDirection;
+    }
+
+    /**
+     * @return the life amount removed after a hit
+     */
+    public int getDamage() {
+        return damage;
+    }
+
+    /**
+     * @return the physical object controlling the movement
+     */
+    public Body getBody() {
+        return body;
     }
 }

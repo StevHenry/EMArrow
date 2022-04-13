@@ -23,7 +23,7 @@ public class MusicManager {
 
     // Attributes //
     private static Music currentMusic;
-    private static float volume = 1.0f;
+    private static float volume = 0f;
     private static float BGMVolume = 1.0f;
     private static float SEVolume = 1.0f;
 

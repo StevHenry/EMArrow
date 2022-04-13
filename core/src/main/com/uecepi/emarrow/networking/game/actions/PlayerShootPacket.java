@@ -1,4 +1,4 @@
-package com.uecepi.emarrow.networking;
+package com.uecepi.emarrow.networking.game.actions;
 
 import com.badlogic.gdx.math.Vector2;
 
@@ -9,10 +9,10 @@ public class PlayerShootPacket {
 
     public PlayerShootPacket(){}
 
-    public PlayerShootPacket(String uuid, Vector2 direction){
+    public PlayerShootPacket(String playerUid, Vector2 direction){
 
         this.direction = direction ;
-        this.uuid = uuid ;
+        this.uuid = playerUid ;
 
     }
 

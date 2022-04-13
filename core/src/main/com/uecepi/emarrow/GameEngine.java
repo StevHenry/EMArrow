@@ -1,232 +1,99 @@
 package com.uecepi.emarrow;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.uecepi.emarrow.audio.MusicManager;
-import com.uecepi.emarrow.display.Animator;
-
-import com.uecepi.emarrow.display.menus.MainMenu;
+import com.badlogic.gdx.physics.box2d.World;
 import com.uecepi.emarrow.map.Map;
+import com.uecepi.emarrow.networking.account.PlayerDataPacket;
+import com.uecepi.emarrow.networking.game.GameClient;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.stream.Collectors;
 
 public class GameEngine {
+
+    private static final GameEngine instance = new GameEngine();
+    private final InputManager inputManager;
+    private final ArrayList<Projectile> deadBodies;
+    private final List<PlayerInfo> players;
+    private final GameClient gameClient;
+    private PlayerInfo self;
+
     private Map map;
-    private World world;
-    private float accumulator = 0;
-    private static List<Character> players;
-    private List<Body> deadBodies;
-    private Label gameFinished;
-
-    private static GameEngine gameEngine = new GameEngine();
-    private static final int DASH_IMPULSE = 42000;
-
-    public static GameEngine getInstance(){
-        return gameEngine;
-    }
 
     public GameEngine() {
-        map = new Map("map1");
-        this.world = new World(new Vector2(0, -150), true);
-        players = new ArrayList<>();
-        deadBodies = new ArrayList<>();
-
-        this.createGround();
-        Gdx.input.setInputProcessor(Emarrow.getInstance().getController());
+        this.inputManager = new InputManager();
+        this.deadBodies = new ArrayList<>();
+        this.players = new ArrayList<>();
+        this.map = new Map("map1");
+        this.gameClient = new GameClient();
     }
 
-    public static void start() {
-        gameEngine = new GameEngine();
-        gameEngine.players.add(new Character("1")); //TODO mettre en parametre pour pouvoir chosir skin));
-        gameEngine.players.add(new Character("2"));
+    public static GameEngine getInstance() {
+        return instance;
     }
 
-    public boolean isRoundDone(){
-        int playersAlive =0;
-        for (Character character : players){
-            if (character.getHealthBar().getValue()>0)
-                playersAlive++;
+    /**
+     * Creates the self player
+     */
+    public void startGame() {
+        for (PlayerInfo player : players) {
+            player.getClientConnection().close();
+            map.getWorld().destroyBody(player.getCharacter().getBody());
         }
-        return playersAlive>1;
+        deadBodies.clear();
+        players.clear();
+        players.add(self);
+        //players.add(new PlayerInfo(new Character(2), UUID.randomUUID(), "second"));
     }
 
-    public void finishRound(){
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                Gdx.app.postRunnable(new Runnable() {
-                    @Override
-                    public void run() {
-                        Emarrow.getInstance().setScreen(new MainMenu());
-                    }
-                });
-            }
-        },3000);
-    }
-
-    public void createGround() {
-        TiledMapTileLayer layer = (TiledMapTileLayer)map.getTiledMap().getLayers().get(2);  // assuming the layer at index on contains tiles
-        for (int i=0; i<layer.getWidth();i++){
-            for (int j=0; j< layer.getHeight();j++){
-                if (layer.getCell(i,j)!=null)
-                {
-                    // Create our body definition
-                    BodyDef groundBodyDef = new BodyDef();
-                    // Set its world position
-                    groundBodyDef.position.set(i*layer.getTileWidth() + layer.getTileWidth()*.5f,j*layer.getTileHeight()+ layer.getTileHeight()*.5f);
-
-                    Body groundBody = world.createBody(groundBodyDef);
-
-                    // Create a polygon shape
-                    PolygonShape groundBox = new PolygonShape();
-
-                    // (setAsBox takes half-width and half-height as arguments)
-                    groundBox.setAsBox(layer.getTileWidth() / 2f, layer.getTileHeight() / 2f);
-                    FixtureDef groundFixture = new FixtureDef();
-                    groundFixture.shape=groundBox;
-                    // Create a fixture from our polygon shape and add it to our ground body
-                    groundBody.createFixture(groundFixture).setUserData("Ground");
-                    // Clean up after ourselves
-                    groundBox.dispose();
-                }
-            }
+    /**
+     * @return whether the round is finished or not
+     */
+    public boolean isRoundFinished() {
+        int playersAlive = 0;
+        for (PlayerInfo player : players) {
+            if (player.getCharacter().getLife() > 0) playersAlive++;
         }
-
-        BodyDef groundBodyDef = new BodyDef();
-        groundBodyDef.type=BodyDef.BodyType.StaticBody;
-        groundBodyDef.position.set(187,230);
-
-        Body groundBody = world.createBody(groundBodyDef);
-        PolygonShape groundBox = new PolygonShape();
-        FixtureDef groundFixture = new FixtureDef();
-
-        groundBox.setAsBox(72f,10f,new Vector2(-67f,20f),0f);
-        groundFixture.shape=groundBox;
-
-        groundBody.createFixture(groundFixture).setUserData("Ground");
-
-        groundBox.setAsBox(72f,10f,new Vector2(141f,20f),0f);
-        groundFixture.shape=groundBox;
-
-        groundBody.createFixture(groundFixture).setUserData("Ground");
-
-    }
-
-
-    public void processInput() {//TODO CHANGER players.get(0) EN ACTIVE PLAYER (CELUI QUI JOUE sur le pc)
-        if (Emarrow.getInstance().getController().left) {
-            players.get(0).getBody().applyForce(new Vector2(-200, 0), players.get(0).getBody().getPosition(), true);
-            players.get(0).getAnimator().setFlippedToLeft(true);
-            if (players.get(0).isGrounded()) {
-                if (!players.get(0).getAnimator().getCurrentAnimation().equals(Animator.RUNNING_ANIMATION)) {
-                    players.get(0).getAnimator().setCurrentAnimation(Animator.RUNNING_ANIMATION);
-                }
-            } else {
-                if (!players.get(0).getAnimator().getCurrentAnimation().equals(Animator.FLYING_ANIMATION)) {
-                    players.get(0).getAnimator().setCurrentAnimation(Animator.FLYING_ANIMATION);
-                }
-            }
-
-        } else if (Emarrow.getInstance().getController().right) {
-            players.get(0).getBody().applyForce(new Vector2(200, 0), players.get(0).getBody().getPosition(), true);
-            players.get(0).getAnimator().setFlippedToLeft(false);
-            if (players.get(0).isGrounded()) {
-                if (!players.get(0).getAnimator().getCurrentAnimation().equals(Animator.RUNNING_ANIMATION)) {
-                    players.get(0).getAnimator().setCurrentAnimation(Animator.RUNNING_ANIMATION);
-                }
-            } else {
-                if (!players.get(0).getAnimator().getCurrentAnimation().equals(Animator.FLYING_ANIMATION)) {
-                    players.get(0).getAnimator().setCurrentAnimation(Animator.FLYING_ANIMATION);
-                }
-            }
-
-        } else {
-            if (players.get(0).getBody().getLinearVelocity().x < -10) {
-                players.get(0).getBody().applyForce(new Vector2(150,players.get(0).getBody().getLinearVelocity().y),players.get(0).getBody().getPosition(),true);
-            } else if (players.get(0).getBody().getLinearVelocity().x > 10) {
-                players.get(0).getBody().applyForce(new Vector2(-150,players.get(0).getBody().getLinearVelocity().y),players.get(0).getBody().getPosition(),true);
-            } else {
-                players.get(0).getBody().setLinearVelocity(0, players.get(0).getBody().getLinearVelocity().y);
-            }
-
-            if (!players.get(0).getAnimator().getCurrentAnimation().equals(Animator.STANDING_ANIMATION)) {
-                players.get(0).getAnimator().setCurrentAnimation(Animator.STANDING_ANIMATION);
-            } else if (!players.get(0).getAnimator().getCurrentAnimation().equals(Animator.FLYING_ANIMATION)) {
-                players.get(0).getAnimator().setCurrentAnimation(Animator.FLYING_ANIMATION);            // Stop moving in the Y direction
-            }
-        }
-
-        if (Emarrow.getInstance().getController().down) {
-            players.get(0).getBody().applyForceToCenter(0, -500f, true);
-        }
-
-        if (Emarrow.getInstance().getController().jump) {
-            if (players.get(0).getJumpLeft() > 0) {
-                MusicManager.playSE(MusicManager.JUMP_SE);
-                players.get(0).getAnimator().setCurrentAnimation(Animator.JUMPING_ANIMATION);
-                players.get(0).setGrounded(false);
-                players.get(0).setJumpLeft(players.get(0).getJumpLeft() - 1);
-                //players.get(0).getBody().applyLinearImpulse(new Vector2(0, 150), players.get(0).getBody().getPosition(), true);
-                players.get(0).getBody().applyForceToCenter(0, 8000f, true);
-            }
-            Emarrow.getInstance().getController().jump = false;
-        }
-
-        if (Emarrow.getInstance().getController().dash) {
-            if (players.get(0).getDashLeft() > 0) {
-                MusicManager.playSE(MusicManager.DASH_SE);
-                players.get(0).setGrounded(false);
-                players.get(0).setDashLeft(players.get(0).getDashLeft() - 1);
-
-                Body body = players.get(0).getBody();
-                int mouseX = Gdx.input.getX();
-                int mouseY = Gdx.input.getY();
-                double projectileX = body.getPosition().x*1740/445;
-                double projectileY = 950 - body.getPosition().y*1740/445;
-                double norm = Math.sqrt((mouseX - projectileX)*(mouseX - projectileX) + (mouseY - projectileY)*(mouseY - projectileY) );
-                Vector2 dashDirection = new Vector2((float) ((mouseX - projectileX)/norm), (float) ( (mouseY - projectileY)/norm));
-
-                body.applyLinearImpulse(new Vector2(DASH_IMPULSE * dashDirection.x, -DASH_IMPULSE * dashDirection.y), body.getPosition(), true);
-            }
-        }
-
-        if (Emarrow.getInstance().getController().shoot){
-            if (players.get(0).isGrounded())
-                players.get(0).getAnimator().setCurrentAnimation(Animator.STANDING_SHOT_ANIMATION);
-            else
-                players.get(0).getAnimator().setCurrentAnimation(Animator.FLYING_SHOT_ANIMATION);
-            players.get(0).shoot();
-        }
-
-    }
-
-    public World getWorld() {
-        return world;
+        return players.size() > 1 && playersAlive <= 1;
     }
 
     public Map getMap() {
         return map;
     }
-    public List<Character> getPlayers() {
+
+    public World getWorld() {
+        return map.getWorld();
+    }
+
+    public List<PlayerInfo> getPlayers() {
         return players;
     }
 
-    public List<Body> getDeadBodies() {
+    public void addPlayer(PlayerInfo newPlayer) {
+        players.add(newPlayer);
+    }
+
+    public List<Character> getCharacters() {
+        return players.stream().map(PlayerInfo::getCharacter).collect(Collectors.toList());
+    }
+
+    public InputManager getInputManager() {
+        return inputManager;
+    }
+
+    public ArrayList<Projectile> getDeadBodies() {
         return deadBodies;
     }
 
-    public Label getGameFinished() {
-        return gameFinished;
+    public void setSelfPlayer(PlayerInfo info) {
+        this.self = info;
     }
 
-    public void setGameFinished(Label gameFinished) {
-        this.gameFinished = gameFinished;
+    public GameClient getGameClient() {
+        return gameClient;
+    }
+
+    public void gameClientProcedure() {
+        gameClient.sendTCP(new PlayerDataPacket(self.getUuid().toString(), self.getName()));
     }
 }

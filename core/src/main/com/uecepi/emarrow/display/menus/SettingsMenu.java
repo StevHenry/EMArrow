@@ -30,13 +30,13 @@ public class SettingsMenu extends ScreenMenu {
      */
     public SettingsMenu(){
         super();
-        create();
     }
 
     /**
      * Gère la création des éléments de Settings menu
      */
-    private void create(){
+    @Override
+    protected  void create(){
         //Création du titre du menu
         settings = new Label("SETTINGS", skin);
         table.add(settings).row();
@@ -84,15 +84,6 @@ public class SettingsMenu extends ScreenMenu {
             }
         });
 
-        //Création d'un bouton permettant d'aller sur un nouveau MainMenu
-        backButton = new TextButton("Back", skin);
-        table.add(backButton).width(200).height(100).padTop(30).row();
-        backButton.addListener(new ClickListener(){
-            public void clicked(InputEvent event, float x, float y){
-                Emarrow.getInstance().setScreen(new MainMenu());
-            }
-        });
-        backButton.setColor(new Color(1f,0.25f,0f,1f));
-
+        table.add(createBackToMainMenuButton()).width(200).height(100).padTop(30).row();
     }
 }

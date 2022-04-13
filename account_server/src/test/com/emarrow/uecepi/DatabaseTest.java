@@ -99,4 +99,16 @@ public class DatabaseTest {
         Assertions.assertTrue(connector.deleteAccount("demoAccount", "demopass"));
         LOGGER.debug("End of deleteAccountTest.");
     }
+
+    /**
+     * Unit test that ensures that a UUID is well gettable
+     */
+    @Test
+    public void getUUIDTest() {
+        LOGGER.debug("Start of getUUIDTest");
+        DatabaseConnector connector = DatabaseConnector.getInstance();
+        connector.connect();
+        Assertions.assertNotEquals(connector.getPlayerData("demoAccount"), "00000000-0000-0000-0000-00000");
+        LOGGER.debug("End of getUUIDTest.");
+    }
 }

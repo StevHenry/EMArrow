@@ -2,7 +2,11 @@ package com.uecepi.emarrow.server;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Server;
-import com.uecepi.emarrow.networking.*;
+import com.uecepi.emarrow.networking.SkinIndexPacket;
+import com.uecepi.emarrow.networking.account.PlayerDataPacket;
+import com.uecepi.emarrow.networking.game.actions.ForceAppliedPacket;
+import com.uecepi.emarrow.networking.game.actions.PlayerPositionPacket;
+import com.uecepi.emarrow.networking.game.actions.PlayerShootPacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +35,10 @@ public class ServerStarter {
 
     private void registerPackets() {
         Kryo kryo = server.getKryo();
-
+        kryo.register(PlayerDataPacket.class);
+        kryo.register(PlayerPositionPacket.class);
+        kryo.register(PlayerShootPacket.class);
+        kryo.register(ForceAppliedPacket.class);
+        kryo.register(SkinIndexPacket.class);
     }
 }

@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.uecepi.emarrow.Emarrow;
+import com.uecepi.emarrow.display.Screens;
 import com.uecepi.emarrow.networking.account.AccountClient;
 import com.uecepi.emarrow.networking.account.AccountCreationPacket;
 
@@ -22,28 +23,30 @@ import com.uecepi.emarrow.networking.account.AccountCreationPacket;
  */
 public class SignInMenu extends ScreenMenu {
 
-    Table secondTable;
-    Table fieldsTable;
-    TextField pseudo;
-    TextField id;
-    TextField password;
-    TextButton signInButton;
-    Label title;
-    Label pseudoLabel;
-    Label idLabel;
-    Label passwordLabel;
-    Label errorMessage;
+    private Table secondTable;
+    private Table fieldsTable;
+    private TextField pseudo;
+    private TextField id;
+    private TextField password;
+    private TextButton signInButton;
+    private TextButton backButton;
+    private Label title;
+    private Label pseudoLabel;
+    private Label idLabel;
+    private Label passwordLabel;
+    private Label errorMessage;
 
     public SignInMenu() {
         super();
-        create();
     }
 
-    private void create() {
+    @Override
+    protected void create() {
         createBackGroundTable();
         addTitle();
         addFieldsTable();
         addSignInButton();
+        secondTable.add(createBackToMainMenuButton()).width(200).height(40).padTop(20).row();
         Emarrow.getInstance().getAccountClient().connect();
     }
 
@@ -62,12 +65,10 @@ public class SignInMenu extends ScreenMenu {
     }
 
     public void responseReceived(boolean response) {
-        Gdx.app.log("response", "went here");
         if (response) {
             Gdx.app.log("signin", "Client registered!");
-            Gdx.app.postRunnable(() ->
-                    Emarrow.getInstance().setScreen(new ConnectionMenu())
-            );
+            ((LogInMenu)Screens.LOG_IN_MENU.getScreenMenu()).setLoggedIn();
+            Gdx.app.postRunnable(() -> Screens.setScreen(Screens.CONNECTION_MENU));
         } else {
             addErrorMessage("Cannot create an account!");
         }
@@ -132,9 +133,7 @@ public class SignInMenu extends ScreenMenu {
         bgPixmap.fill();
         TextureRegionDrawable textureRegionDrawableBg = new TextureRegionDrawable(new TextureRegion(new Texture(bgPixmap)));
         secondTable.setBackground(textureRegionDrawableBg);
-        table.add(secondTable).height(400).width(400);
+        table.add(secondTable).height(450).width(400);
         bgPixmap.dispose();
     }
-
-
 }

@@ -11,10 +11,9 @@ public class DesktopLauncher {
 	public static final int WIDTH = 1740;
 	public static final int HEIGHT = 950;
 
-
-	public static void main (String[] arg) {
+	public static void main(String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		configure(config);;
+		configure(config);
 		Emarrow game = Emarrow.getInstance();
 		new LwjglApplication(game, config);
 	}
@@ -28,5 +27,4 @@ public class DesktopLauncher {
 		config.x = 80;
 		config.y = 0;
 	}
-
 }
