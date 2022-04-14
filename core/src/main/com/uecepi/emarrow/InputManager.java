@@ -108,9 +108,9 @@ public class InputManager {
             self.getBody().setLinearVelocity(0, self.getBody().getLinearVelocity().y);
         }
 
-        if (!self.getAnimator().getCurrentAnimation().equals(Animator.STANDING_ANIMATION)) {
+        if (!self.getAnimator().getCurrentAnimation().equals(Animator.STANDING_ANIMATION) && self.isGrounded()) {
             self.getAnimator().setCurrentAnimation(Animator.STANDING_ANIMATION);
-        } else if (!self.getAnimator().getCurrentAnimation().equals(Animator.FLYING_ANIMATION)) {
+        } else if (!self.getAnimator().getCurrentAnimation().equals(Animator.FLYING_ANIMATION) && !self.isGrounded()) {
             self.getAnimator().setCurrentAnimation(Animator.FLYING_ANIMATION);            // Stop moving in the Y direction
         }
     }
@@ -122,11 +122,11 @@ public class InputManager {
         self.applyForce(force, point, wake);
         self.setFlippedToLeft(b);
         if (self.isGrounded()) {
-            if (!self.getAnimator().getCurrentAnimation().equals(Animator.RUNNING_ANIMATION)) {
+            if (!self.getAnimator().getCurrentAnimation().equals(Animator.RUNNING_ANIMATION) && self.isGrounded()) {
                 self.getAnimator().setCurrentAnimation(Animator.RUNNING_ANIMATION);
             }
         } else {
-            if (!self.getAnimator().getCurrentAnimation().equals(Animator.FLYING_ANIMATION)) {
+            if (!self.getAnimator().getCurrentAnimation().equals(Animator.FLYING_ANIMATION) && !self.isGrounded()) {
                 self.getAnimator().setCurrentAnimation(Animator.FLYING_ANIMATION);
             }
         }
