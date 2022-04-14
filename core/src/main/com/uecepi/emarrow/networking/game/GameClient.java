@@ -1,13 +1,8 @@
 package com.uecepi.emarrow.networking.game;
 
 import com.badlogic.gdx.Gdx;
-import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
-import com.uecepi.emarrow.networking.SkinIndexPacket;
-import com.uecepi.emarrow.networking.game.actions.ForceAppliedPacket;
-import com.uecepi.emarrow.networking.game.actions.PlayerPositionPacket;
-import com.uecepi.emarrow.networking.game.actions.PlayerShootPacket;
-import com.uecepi.emarrow.networking.account.PlayerDataPacket;
+import com.uecepi.emarrow.networking.PacketManager;
 
 import java.io.IOException;
 
@@ -20,20 +15,12 @@ public class GameClient {
     }
 
     private void create() {
-        client = new Client();
         Gdx.app.log("game_client", "Game client starting...");
+        client = new Client();
         client.start();
-        registerPackets();
+        PacketManager.registerGamePackets(client.getKryo());
         client.addListener(new GameListener());
-    }
-
-    private void registerPackets() {
-        Kryo kryo = client.getKryo();
-        kryo.register(PlayerDataPacket.class);
-        kryo.register(PlayerPositionPacket.class);
-        kryo.register(PlayerShootPacket.class);
-        kryo.register(ForceAppliedPacket.class);
-        kryo.register(SkinIndexPacket.class);
+        Gdx.app.log("game_client", "Game client started.");
     }
 
     public boolean isConnected() {
@@ -45,11 +32,13 @@ public class GameClient {
     }
 
 
-    public void connect(String ip) {
+    public boolean connect(String ip) {
         try {
             client.connect(5000, ip, 54556, 54778);
+            return true;
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
@@ -59,6 +48,10 @@ public class GameClient {
         } catch (IOException exception) {
             exception.printStackTrace();
         }
+    }
+
+    public void disconnect() {
+        client.close();
     }
 }
 

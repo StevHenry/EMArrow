@@ -2,26 +2,24 @@ package com.uecepi.emarrow.networking.game.actions;
 
 import com.badlogic.gdx.math.Vector2;
 
-public class PlayerShootPacket {
+import java.util.UUID;
 
-    private String uuid ;
-    private Vector2 direction ;
+public class PlayerShootPacket extends PlayerAssignedAction {
 
-    public PlayerShootPacket(){}
+    private float directionX, directionY;
 
-    public PlayerShootPacket(String playerUid, Vector2 direction){
-
-        this.direction = direction ;
-        this.uuid = playerUid ;
-
+    public PlayerShootPacket() {
     }
 
-    public String getUuid() {
-        return uuid;
+    public PlayerShootPacket(UUID playerUid, Vector2 direction) {
+        super(playerUid);
+        this.directionX = direction.x;
+        this.directionY = direction.y;
+
     }
 
     public Vector2 getDirection() {
-        return direction;
+        return new Vector2(directionX, directionY);
     }
 
 }

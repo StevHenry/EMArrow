@@ -62,9 +62,8 @@ public abstract class ScreenMenu implements Screen {
     @Override
     public void show() {
         table.clear();
-        create();
         Gdx.input.setInputProcessor(stage);
-        Gdx.app.log("screen_menu", "Changed input processor");
+        create();
     }
 
     @Override

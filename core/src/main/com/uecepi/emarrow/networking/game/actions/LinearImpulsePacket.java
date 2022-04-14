@@ -4,26 +4,27 @@ import com.badlogic.gdx.math.Vector2;
 
 import java.util.UUID;
 
-public class ForceAppliedPacket extends PlayerAssignedAction {
+public class LinearImpulsePacket extends PlayerAssignedAction {
 
-    private float forceX, forceY;
+    private float impulseX, impulseY;
     private float pointX, pointY;
     private boolean wake;
 
-    public ForceAppliedPacket() {
+
+    public LinearImpulsePacket() {
     }
 
-    public ForceAppliedPacket(UUID playerUid, Vector2 force, Vector2 point, boolean wake) {
+    public LinearImpulsePacket(UUID playerUid, Vector2 impulse, Vector2 point, boolean wake) {
         super(playerUid);
-        this.forceX = force.x;
-        this.forceY = force.y;
+        this.impulseX = impulse.x;
+        this.impulseY = impulse.y;
         this.pointX = point.x;
         this.pointY = point.y;
         this.wake = wake;
     }
 
-    public Vector2 getForce() {
-        return new Vector2(forceX, forceY);
+    public Vector2 getImpulse() {
+        return new Vector2(impulseX, impulseY);
     }
 
     public Vector2 getApplicationPoint() {

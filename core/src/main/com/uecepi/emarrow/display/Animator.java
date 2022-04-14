@@ -22,7 +22,6 @@ public class Animator {
     public static final int height = 20;
     private static final int FRAME_COLS = 4, FRAME_ROWS = 1;
     private static final float frameDuration = 0.1f;
-    private int characterNumber;
     String vertexShader = "attribute vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
             + "attribute vec4 " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
             + "attribute vec2 " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
@@ -50,16 +49,13 @@ public class Animator {
             + "  gl_FragColor = v_color * texture2D(u_texture, v_texCoords).a;\n" //
             + "}";
     ShaderProgram shader = new ShaderProgram(vertexShader, fragmentShader);
+    private int characterNumber = 1;
     private float stateTime = 0f;
     private String currentAnimation = "standing";
     private String lastAnimation = "standing";
     private boolean isLooping = true;
     private boolean isFlippedToLeft = false;
     private boolean hurt = false;
-
-    public Animator(int characterNumber) {
-        this.characterNumber = characterNumber;
-    }
 
     public static void load() {
         loadAnimation("1");
@@ -121,7 +117,7 @@ public class Animator {
         }
 
         // Get current frame of animation for the current stateTime
-        TextureRegion currentFrame = Assets.ANIMATIONS.get(currentAnimation + characterNumber).getKeyFrame(stateTime, true);
+        TextureRegion currentFrame = Assets.ANIMATIONS.get(currentAnimation + (characterNumber % 2 == 1 ? 1 : 2)).getKeyFrame(stateTime, true);
         if (isFlippedToLeft && !currentFrame.isFlipX()) {
             currentFrame.flip(true, false);
         } else if (currentFrame.isFlipX() && !isFlippedToLeft) {
@@ -166,11 +162,11 @@ public class Animator {
         this.hurt = hurt;
     }
 
-    public void setCharacterNumber(int characterNumber){
-        this.characterNumber = characterNumber;
-    }
-
     public int getCharacterNumber() {
         return characterNumber;
+    }
+
+    public void setCharacterNumber(int characterNumber) {
+        this.characterNumber = characterNumber;
     }
 }

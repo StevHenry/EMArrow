@@ -1,5 +1,7 @@
 package com.uecepi.emarrow;
 
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.uecepi.emarrow.map.Map;
 import com.uecepi.emarrow.networking.account.PlayerDataPacket;
@@ -7,18 +9,22 @@ import com.uecepi.emarrow.networking.game.GameClient;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class GameEngine {
 
     private static final GameEngine instance = new GameEngine();
+    private static final Vector2[] initialPositions = {new Vector2(25, 110), new Vector2(225, 150)
+            , new Vector2(425, 110), new Vector2(50, 100f)};
     private final InputManager inputManager;
-    private final ArrayList<Projectile> deadBodies;
+    private final ArrayList<Body> deadBodies;
     private final List<PlayerInfo> players;
     private final GameClient gameClient;
+    private final Map map;
     private PlayerInfo self;
-
-    private Map map;
 
     public GameEngine() {
         this.inputManager = new InputManager();
@@ -43,7 +49,7 @@ public class GameEngine {
         deadBodies.clear();
         players.clear();
         players.add(self);
-        //players.add(new PlayerInfo(new Character(2), UUID.randomUUID(), "second"));
+        //players.add(new PlayerInfo(new Character(), UUID.randomUUID(), "second"));
     }
 
     /**
@@ -54,7 +60,7 @@ public class GameEngine {
         for (PlayerInfo player : players) {
             if (player.getCharacter().getLife() > 0) playersAlive++;
         }
-        return players.size() > 1 && playersAlive <= 1;
+        return GameState.isState(GameState.PLAYING) && playersAlive <= 1;
     }
 
     public Map getMap() {
@@ -65,12 +71,25 @@ public class GameEngine {
         return map.getWorld();
     }
 
-    public List<PlayerInfo> getPlayers() {
-        return players;
+    public Optional<PlayerInfo> seekWinner() {
+        if (players.stream().filter(pl -> pl.getCharacter().getLife() > 0).count() == 1) {
+            return players.stream().filter(pl -> pl.getCharacter().getLife() > 0).findFirst();
+        } else {
+            return Optional.empty();
+        }
     }
 
     public void addPlayer(PlayerInfo newPlayer) {
         players.add(newPlayer);
+    }
+
+    public void removePlayer(PlayerInfo player) {
+        deadBodies.add(player.getCharacter().getBody());
+        players.remove(player);
+    }
+
+    public int getPlayersCount() {
+        return players.size();
     }
 
     public List<Character> getCharacters() {
@@ -81,12 +100,20 @@ public class GameEngine {
         return inputManager;
     }
 
-    public ArrayList<Projectile> getDeadBodies() {
+    public ArrayList<Body> getDeadBodies() {
         return deadBodies;
+    }
+
+    public PlayerInfo getSelfPlayer() {
+        return self;
     }
 
     public void setSelfPlayer(PlayerInfo info) {
         this.self = info;
+    }
+
+    public Optional<PlayerInfo> getPlayerByUUID(UUID uuid) {
+        return players.stream().filter(playerInfo -> playerInfo.getUuid().equals(uuid)).findFirst();
     }
 
     public GameClient getGameClient() {
@@ -94,6 +121,19 @@ public class GameEngine {
     }
 
     public void gameClientProcedure() {
-        gameClient.sendTCP(new PlayerDataPacket(self.getUuid().toString(), self.getName()));
+        gameClient.sendTCP(new PlayerDataPacket(self.getUuid(), self.getName()));
+    }
+
+    public void preparingProcedure() {
+        for (int i = 0; i < players.size(); i++) {
+            if (i < initialPositions.length) {
+                int index = players.get(i).getCharacter().getAnimator().getCharacterNumber() - 1;
+                players.get(i).getCharacter().setTransform(initialPositions[index].x, initialPositions[index].y, 0);
+            } else {
+                int last = initialPositions.length - 1;
+                players.get(i).getCharacter().setTransform(initialPositions[last].x, initialPositions[last].y, 0);
+            }
+        }
+        GameState.setState(GameState.PLAYING);
     }
 }

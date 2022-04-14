@@ -41,7 +41,7 @@ public class CollisionListener implements ContactListener {
 
     private void destroyProjectile(Projectile projectile) {
         projectile.getShooter().getProjectilesShot().remove(projectile);
-        GameEngine.getInstance().getDeadBodies().add(projectile);
+        GameEngine.getInstance().getDeadBodies().add(projectile.getBody());
     }
 
     /**

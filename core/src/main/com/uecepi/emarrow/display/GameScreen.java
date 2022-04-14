@@ -15,6 +15,7 @@ import com.uecepi.emarrow.display.menus.ScreenMenu;
 import com.uecepi.emarrow.map.Map;
 
 import java.util.Date;
+import java.util.Optional;
 
 public class GameScreen extends ScreenMenu {
 
@@ -89,19 +90,22 @@ public class GameScreen extends ScreenMenu {
             if (startingTimeGameOver == 0)
                 startingTimeGameOver = new Date().getTime();
             long remainingTime = (3 - ((new Date().getTime() - startingTimeGameOver) / 1000));
-            PlayerInfo winner = gameEngine.getPlayers().get(gameEngine.getCharacters().get(0).getLife() > 0 ? 0 : 1);
-            Label gameFinished = new Label("Game is over ! Player %s won !\nBack to the main menu in %d"
-                    .formatted(winner.getName(), remainingTime), skin);
-            gameFinished.setWrap(true);
-            table.add(gameFinished).row();
-            gameFinished.setFontScale(1);
-            gameFinished.setBounds(100, 0, 500, 260);
-            gameFinished.draw(batch, 1f);
-            if (remainingTime <= 0) {
-                Gdx.app.postRunnable(() -> {
-                    Screens.setScreen(Screens.MAIN_MENU);
-                    Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
-                });
+            Optional<PlayerInfo> winner = gameEngine.seekWinner();
+            if(winner.isPresent()){
+                Label gameFinished = new Label("Game is over ! Player %s won !\nBack to the main menu in %d"
+                        .formatted(winner.get().getName(), remainingTime), skin);
+                gameFinished.setWrap(true);
+                table.add(gameFinished).row();
+                gameFinished.setFontScale(1);
+                gameFinished.setBounds(100, 0, 500, 260);
+                gameFinished.draw(batch, 1f);
+                if (remainingTime <= 0) {
+                    Gdx.app.postRunnable(() -> {
+                        GameEngine.getInstance().getGameClient().disconnect();
+                        Screens.setScreen(Screens.MAIN_MENU);
+                        Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
+                    });
+                }
             }
         }
         batch.end();
@@ -159,7 +163,7 @@ public class GameScreen extends ScreenMenu {
     private void destroyDeadBodies() {
         Gdx.app.postRunnable(() -> {
             for (int i = GameEngine.getInstance().getDeadBodies().size() - 1; i >= 0; i--) {
-                GameEngine.getInstance().getDeadBodies().get(i).getBody().setActive(false);
+                GameEngine.getInstance().getDeadBodies().get(i).setActive(false);
                 //world.destroyBody(GameEngine.getInstance().getDeadBodies().get(i).getBody());
             }
             GameEngine.getInstance().getDeadBodies().clear();

@@ -7,7 +7,8 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.uecepi.emarrow.audio.MusicManager;
 import com.uecepi.emarrow.display.Animator;
 import com.uecepi.emarrow.display.KeyboardController;
-import com.uecepi.emarrow.networking.game.actions.ForceAppliedPacket;
+import com.uecepi.emarrow.networking.game.actions.PlayerShootPacket;
+import com.uecepi.emarrow.networking.game.actions.TransformationPacket;
 
 public class InputManager {
 
@@ -23,6 +24,8 @@ public class InputManager {
     }
 
     public void processInput() {//TODO CHANGER players.get(0) EN ACTIVE PLAYER (CELUI QUI JOUE sur le pc)
+        if (GameState.isState(GameState.PREPARING))
+            return;
         Character self = GameEngine.getInstance().getCharacters().get(0);
         if (controller.left) {
             movePlayer(self, -200, true);
@@ -33,7 +36,7 @@ public class InputManager {
         }
 
         if (controller.down)
-            self.getBody().applyForceToCenter(0, -500f, true);
+            self.applyForceToCenter(0, -500f, true);
 
         if (controller.jump)
             jump(self);
@@ -41,9 +44,12 @@ public class InputManager {
         if (controller.dash)
             dash(self);
 
-        if (controller.shoot)
+        if (GameState.isState(GameState.PLAYING) && controller.shoot)
             shoot(self);
 
+        Vector2 position = self.getBody().getPosition();
+        GameEngine.getInstance().getGameClient().sendTCP(
+                new TransformationPacket(GameEngine.getInstance().getSelfPlayer().getUuid(), position.x, position.y, 0));
     }
 
     public void resetInputs() {
@@ -56,7 +62,11 @@ public class InputManager {
             self.getAnimator().setCurrentAnimation(Animator.STANDING_SHOT_ANIMATION);
         else
             self.getAnimator().setCurrentAnimation(Animator.FLYING_SHOT_ANIMATION);
-        self.shoot();
+
+        Projectile projectile = new Projectile(self);
+        self.shoot(projectile);
+        GameEngine.getInstance().getGameClient()
+                .sendTCP(new PlayerShootPacket(GameEngine.getInstance().getSelfPlayer().getUuid(), projectile.getInitialDirection()));
     }
 
     private void dash(Character self) {
@@ -73,7 +83,7 @@ public class InputManager {
             double norm = Math.sqrt((mouseX - projectileX) * (mouseX - projectileX) + (mouseY - projectileY) * (mouseY - projectileY));
             Vector2 dashDirection = new Vector2((float) ((mouseX - projectileX) / norm), (float) ((mouseY - projectileY) / norm));
 
-            body.applyLinearImpulse(new Vector2(DASH_IMPULSE * dashDirection.x, -DASH_IMPULSE * dashDirection.y), body.getPosition(), true);
+            self.applyLinearImpulse(new Vector2(DASH_IMPULSE * dashDirection.x, -DASH_IMPULSE * dashDirection.y), body.getPosition(), true);
         }
     }
 
@@ -84,16 +94,16 @@ public class InputManager {
             self.setGrounded(false);
             self.setJumpLeft(self.getJumpLeft() - 1);
             //self.getBody().applyLinearImpulse(new Vector2(0, 150), self.getBody().getPosition(), true);
-            self.getBody().applyForceToCenter(0, 8000f, true);
+            self.applyForceToCenter(0, 8000f, true);
         }
         controller.jump = false;
     }
 
     private void stopPlayer(Character self) {
         if (self.getBody().getLinearVelocity().x < -10) {
-            self.getBody().applyForce(new Vector2(150, self.getBody().getLinearVelocity().y), self.getBody().getPosition(), true);
+            self.applyForce(new Vector2(150, self.getBody().getLinearVelocity().y), self.getBody().getPosition(), true);
         } else if (self.getBody().getLinearVelocity().x > 10) {
-            self.getBody().applyForce(new Vector2(-150, self.getBody().getLinearVelocity().y), self.getBody().getPosition(), true);
+            self.applyForce(new Vector2(-150, self.getBody().getLinearVelocity().y), self.getBody().getPosition(), true);
         } else {
             self.getBody().setLinearVelocity(0, self.getBody().getLinearVelocity().y);
         }
@@ -109,10 +119,8 @@ public class InputManager {
         Vector2 force = new Vector2(i, 0), point = self.getBody().getPosition();
         boolean wake = true;
 
-        self.getBody().applyForce(force, point, wake);
-        GameEngine.getInstance().getGameClient().sendTCP(
-                new ForceAppliedPacket(GameEngine.getInstance().getPlayers().get(0).getUuid(), force, point, wake));
-        self.getAnimator().setFlippedToLeft(b);
+        self.applyForce(force, point, wake);
+        self.setFlippedToLeft(b);
         if (self.isGrounded()) {
             if (!self.getAnimator().getCurrentAnimation().equals(Animator.RUNNING_ANIMATION)) {
                 self.getAnimator().setCurrentAnimation(Animator.RUNNING_ANIMATION);

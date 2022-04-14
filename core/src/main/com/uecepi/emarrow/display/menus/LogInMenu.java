@@ -33,17 +33,16 @@ public class LogInMenu extends ScreenMenu {
     Label idLabel;
     Label passwordLabel;
     Label errorMessage;
-    private boolean logged = false;
-
+    private boolean logged = false; //TODO: change to false
 
     public LogInMenu() {
         super();
-        Emarrow.getInstance().getAccountClient().connect();
     }
 
     @Override
     protected void create() {
         if (!logged) {
+            Emarrow.getInstance().getAccountClient().connect();
             createBackGroundTable();
             addTitle();
             addFieldsTable();

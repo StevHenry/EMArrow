@@ -1,9 +1,7 @@
 package com.emarrow.uecepi.accountserver;
 
-import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Server;
-import com.uecepi.emarrow.networking.*;
-import com.uecepi.emarrow.networking.account.*;
+import com.uecepi.emarrow.networking.PacketManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,16 +13,16 @@ public class AccountServerStarter {
 
     private final Server server;
 
-    public AccountServerStarter() {
+    public AccountServerStarter(int tcpPort, int udpPort) {
         server = new Server();
         LOGGER.info("Account server starting...");
         server.start();
-        registerPackets();
+        PacketManager.registerAccountPackets(server.getKryo());
 
         server.addListener(new AccountServerListener());
         try {
-            server.bind(54555, 54777);
-            LOGGER.info("Server bound on ports: 54555 (TCP) and 54777 (UDP)");
+            server.bind(tcpPort, udpPort);
+            LOGGER.info("Server bound on ports: {} (TCP) and {} (UDP)", tcpPort, udpPort);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -33,15 +31,5 @@ public class AccountServerStarter {
             LOGGER.error("Account server closing.");
             System.exit(0);
         }
-    }
-
-    private void registerPackets() {
-        Kryo kryo = server.getKryo();
-        kryo.register(PingPacket.class);
-        kryo.register(IdentificationPacket.class);
-        kryo.register(IdentificationResponsePacket.class);
-        kryo.register(AccountCreationPacket.class);
-        kryo.register(AccountCreationResponsePacket.class);
-        kryo.register(PlayerDataPacket.class);
     }
 }

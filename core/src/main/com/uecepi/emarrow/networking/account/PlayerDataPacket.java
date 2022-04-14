@@ -11,8 +11,8 @@ public class PlayerDataPacket {
 
     }
 
-    public PlayerDataPacket(String uuid, String nickname) {
-        this.uuid = uuid;
+    public PlayerDataPacket(UUID uuid, String nickname) {
+        this.uuid = uuid.toString();
         this.nickname = nickname;
     }
 

@@ -7,6 +7,8 @@ import com.uecepi.emarrow.networking.account.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.UUID;
+
 public class AccountServerListener extends Listener {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(AccountServerListener.class);
@@ -14,15 +16,14 @@ public class AccountServerListener extends Listener {
     @Override
     public void connected(Connection connection) {
         super.connected(connection);
-        LOGGER.info("Connection of a client on {} (TCP) and {} (UDP)",
+        LOGGER.info("Connection of a client on {} ({} (TCP) and {} (UDP))", connection.getRemoteAddressTCP().getAddress(),
                 connection.getRemoteAddressTCP(), connection.getRemoteAddressUDP());
     }
 
     @Override
     public void disconnected(Connection connection) {
         super.connected(connection);
-        LOGGER.info("Disconnection of a client on {} (TCP) and {} (UDP)",
-                connection.getRemoteAddressTCP(), connection.getRemoteAddressUDP());
+        LOGGER.info("Disconnection of a client");
     }
 
     @Override
@@ -37,10 +38,16 @@ public class AccountServerListener extends Listener {
         }
     }
 
+    /**
+     * Action performed when a ping packet is received
+     */
     private void pingPacketReceived(PingPacket packet, Connection connection) {
         connection.sendTCP(packet);
     }
 
+    /**
+     * Action performed when a credentials' packet is received
+     */
     private void credentialsPacketReceived(IdentificationPacket packet, Connection connection) {
         LOGGER.info("Received account credentials packet!");
         boolean result = DatabaseConnector.getInstance()
@@ -50,6 +57,9 @@ public class AccountServerListener extends Listener {
         connection.sendTCP(new IdentificationResponsePacket(result));
     }
 
+    /**
+     * Action performed when an account creation packet is received
+     */
     private void accountCreationPacketReceived(AccountCreationPacket creationPacket, Connection connection) {
         LOGGER.info("Received account creation packet!");
         boolean response = DatabaseConnector.getInstance().createAccount(creationPacket.getIdentifier(),
@@ -59,8 +69,11 @@ public class AccountServerListener extends Listener {
         connection.sendTCP(new AccountCreationResponsePacket(response));
     }
 
+    /**
+     * Sends players' data to the connection
+     */
     private void sendPlayerData(String identifier, Connection connection) {
         String[] data = DatabaseConnector.getInstance().getPlayerData(identifier);
-        connection.sendTCP(new PlayerDataPacket(data[0], data[1]));
+        connection.sendTCP(new PlayerDataPacket(UUID.fromString(data[0]), data[1]));
     }
 }

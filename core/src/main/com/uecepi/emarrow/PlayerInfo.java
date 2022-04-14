@@ -6,10 +6,10 @@ import java.util.UUID;
 
 public class PlayerInfo {
 
-    private Character character;
     private final Client clientConnection;
     private final String name;
     private final UUID uuid;
+    private final Character character;
 
     public PlayerInfo(Character character, UUID uuid, String name) {
         this.character = character;
@@ -20,10 +20,6 @@ public class PlayerInfo {
 
     public Character getCharacter() {
         return character;
-    }
-
-    public void setCharacter(Character newCharacter){
-        character = newCharacter;
     }
 
     public Client getClientConnection() {

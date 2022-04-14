@@ -10,6 +10,7 @@ import com.uecepi.emarrow.GameEngine;
 import com.uecepi.emarrow.PlayerInfo;
 import com.uecepi.emarrow.display.menus.LogInMenu;
 import com.uecepi.emarrow.display.menus.SignInMenu;
+import com.uecepi.emarrow.networking.PacketManager;
 import com.uecepi.emarrow.networking.PingPacket;
 
 import java.io.IOException;
@@ -29,7 +30,7 @@ public class AccountClient {
         client = new Client();
         Gdx.app.log("client", "Account client starting...");
         client.start();
-        registerPackets();
+        PacketManager.registerAccountPackets(client.getKryo());
 
         client.addListener(new Listener() {
             @Override
@@ -52,20 +53,10 @@ public class AccountClient {
                 } else if (object instanceof PlayerDataPacket) {
                     PlayerDataPacket packet = (PlayerDataPacket) object;
                     Gdx.app.postRunnable(() -> GameEngine.getInstance().setSelfPlayer(
-                            new PlayerInfo(new Character(1), UUID.randomUUID(), packet.getNickname())));
+                            new PlayerInfo(new Character(), UUID.randomUUID(), packet.getNickname())));
                 }
             }
         });
-    }
-
-    private void registerPackets() {
-        Kryo kryo = client.getKryo();
-        kryo.register(PingPacket.class);
-        kryo.register(IdentificationPacket.class);
-        kryo.register(IdentificationResponsePacket.class);
-        kryo.register(AccountCreationPacket.class);
-        kryo.register(AccountCreationResponsePacket.class);
-        kryo.register(PlayerDataPacket.class);
     }
 
     public boolean isConnected() {

@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.uecepi.emarrow.audio.MusicManager;
 import com.uecepi.emarrow.display.Animator;
+import com.uecepi.emarrow.networking.game.actions.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +18,9 @@ import java.util.TimerTask;
 
 public class Character extends Actor {
 
+    public static final int MAX_HP = 100;
     private final static float FIRE_RATE = 100f;
     private final static float SPEED = 25f;
-    public static final int MAX_HP = 100;
-
     //Animation
     private final Animator animator;
     private final List<Projectile> projectilesShot;
@@ -37,8 +37,8 @@ public class Character extends Actor {
     private long lastShotTime = 0;
     private int life = MAX_HP;
 
-    public Character(int skinNumber) {
-        this.animator = new Animator(skinNumber); //TODO mettre en parametre pour pouvoir chosir skin
+    public Character() {
+        this.animator = new Animator();
         this.projectilesShot = new ArrayList<>();
         this.createHitBox();
         this.healthBar = new HealthBar(Animator.width, 2, MAX_HP, body.getPosition());
@@ -75,9 +75,9 @@ public class Character extends Actor {
     /**
      * Shoots a new {@link Projectile}
      */
-    public void shoot() {
+    public void shoot(Projectile projectile) {
         if (canShoot && System.currentTimeMillis() - lastShotTime >= FIRE_RATE) {
-            projectilesShot.add(new Projectile(this));
+            projectilesShot.add(projectile);
             MusicManager.playSE(MusicManager.SHOT_SE);
             lastShotTime = System.currentTimeMillis();
         }
@@ -89,14 +89,14 @@ public class Character extends Actor {
     public void update() {
         Vector2 pos = body.getPosition();
         if (pos.x <= -5) {
-            body.setTransform(435, pos.y, 0);
+            setTransform(435, pos.y, 0);
         } else if (pos.x >= 440) {
-            body.setTransform(0, pos.y, 0);
+            setTransform(0, pos.y, 0);
         } else if (pos.y <= -5) {
-            body.setTransform(pos.x, 230, 0);
+            setTransform(pos.x, 230, 0);
         } else if (pos.y >= 240) {
-            body.setTransform(pos.x, 10, 0);
-            body.applyLinearImpulse(new Vector2(0, 100000), pos, true);
+            setTransform(pos.x, 10, 0);
+            applyLinearImpulse(new Vector2(0, 100000), pos, true);
         }
     }
 
@@ -104,9 +104,11 @@ public class Character extends Actor {
      * Called when the character dies
      */
     private void die() {
-        for (Character character : GameEngine.getInstance().getCharacters()) {
-            character.setCanShoot(false);
-        }
+
+        setCanShoot(false);
+        //body.setActive(false);
+        body.getFixtureList().removeIndex(0);
+        GameEngine.getInstance().getDeadBodies().add(body);
 
         // TODO PLAY DIE ANIM
         // this.animator.setCurrentAnimation(Animator.STANDING_ANIMATION);
@@ -118,10 +120,11 @@ public class Character extends Actor {
      * Plays the hurt animation
      * Updates the HealthBar
      * Dies if life is zero
+     *
      * @param damage specified damage
      */
     public void damage(int damage) {
-        life = life >= damage ? life -= damage : 0;
+        life = life >= damage ? life - damage : 0;
         healthBar.setValue(life);
         animator.setHurt(true);
         new Timer().schedule(new TimerTask() {
@@ -180,5 +183,47 @@ public class Character extends Actor {
 
     public HealthBar getHealthBar() {
         return healthBar;
+    }
+
+    /**
+     * Method from {@link Body#setTransform(float, float, float)} and packet sending
+     */
+    public void setTransform(float x, float y, float angle) {
+        body.setTransform(x, y, angle);
+        GameEngine.getInstance().getGameClient().sendTCP(
+                new TransformationPacket(GameEngine.getInstance().getSelfPlayer().getUuid(), x, y, angle));
+    }
+
+    /**
+     * Method from {@link Body#applyLinearImpulse(Vector2, Vector2, boolean)} and packet sending
+     */
+    public void applyLinearImpulse(Vector2 impulse, Vector2 point, boolean wake) {
+        body.applyLinearImpulse(impulse, point, wake);
+        GameEngine.getInstance().getGameClient().sendTCP(
+                new LinearImpulsePacket(GameEngine.getInstance().getSelfPlayer().getUuid(), impulse, point, wake));
+    }
+
+    /**
+     * Method from {@link Body#applyForce(Vector2, Vector2, boolean)} and packet sending
+     */
+    public void applyForce(Vector2 force, Vector2 point, boolean wake) {
+        body.applyForce(force, point, wake);
+        GameEngine.getInstance().getGameClient().sendTCP(
+                new ForceAppliedPacket(GameEngine.getInstance().getSelfPlayer().getUuid(), force, point, wake));
+    }
+
+    /**
+     * Method from {@link Body#applyForceToCenter(float, float, boolean)} and packet sending
+     */
+    public void applyForceToCenter(float forceX, float forceY, boolean wake) {
+        body.applyForceToCenter(forceX, forceY, wake);
+        GameEngine.getInstance().getGameClient().sendTCP(
+                new ForceToCenterPacket(GameEngine.getInstance().getSelfPlayer().getUuid(), forceX, forceY, wake));
+    }
+
+    public void setFlippedToLeft(boolean flip) {
+        animator.setFlippedToLeft(flip);
+        GameEngine.getInstance().getGameClient().sendTCP(
+                new CharacterFlipPacket(GameEngine.getInstance().getSelfPlayer().getUuid(), flip));
     }
 }
