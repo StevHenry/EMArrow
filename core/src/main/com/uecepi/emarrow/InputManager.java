@@ -7,8 +7,11 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.uecepi.emarrow.audio.MusicManager;
 import com.uecepi.emarrow.display.Animator;
 import com.uecepi.emarrow.display.KeyboardController;
-import com.uecepi.emarrow.networking.game.actions.PlayerShootPacket;
-import com.uecepi.emarrow.networking.game.actions.TransformationPacket;
+import com.uecepi.emarrow.network.GameState;
+import com.uecepi.emarrow.network.game.player_action.PlayerShootPacket;
+import com.uecepi.emarrow.network.game.player_action.TransformationPacket;
+
+import java.util.UUID;
 
 public class InputManager {
 
@@ -23,10 +26,17 @@ public class InputManager {
         controller.setDashKey(Input.Keys.SHIFT_LEFT);
     }
 
-    public void processInput() {//TODO CHANGER players.get(0) EN ACTIVE PLAYER (CELUI QUI JOUE sur le pc)
-        if (GameState.isState(GameState.PREPARING))
+    public void processInput() {
+        Character self = GameEngine.getInstance().getSelfPlayer().getCharacter();
+        Vector2 position = self.getBody().getPosition();
+        if (GameEngine.getInstance().isState(GameState.PREPARING)) {
+            stopPlayer(self);
+            sendPosition(position);
             return;
-        Character self = GameEngine.getInstance().getCharacters().get(0);
+        }
+        if (!self.isAlive())
+            return;
+
         if (controller.left) {
             movePlayer(self, -200, true);
         } else if (controller.right) {
@@ -44,11 +54,18 @@ public class InputManager {
         if (controller.dash)
             dash(self);
 
-        if (GameState.isState(GameState.PLAYING) && controller.shoot)
+        if (GameEngine.getInstance().isState(GameState.PLAYING) && controller.shoot)
             shoot(self);
+        sendPosition(position);
+    }
 
-        Vector2 position = self.getBody().getPosition();
-        GameEngine.getInstance().getGameClient().sendTCP(
+    /**
+     * Sends the self character position to the server if it changed from the last one
+     *
+     * @param position current position of the character
+     */
+    private void sendPosition(Vector2 position) {
+        GameEngine.getInstance().getSelfClient().sendTCP(
                 new TransformationPacket(GameEngine.getInstance().getSelfPlayer().getUuid(), position.x, position.y, 0));
     }
 
@@ -63,10 +80,10 @@ public class InputManager {
         else
             self.getAnimator().setCurrentAnimation(Animator.FLYING_SHOT_ANIMATION);
 
-        Projectile projectile = new Projectile(self);
+        Projectile projectile = new Projectile(self, null, UUID.randomUUID());
         self.shoot(projectile);
-        GameEngine.getInstance().getGameClient()
-                .sendTCP(new PlayerShootPacket(GameEngine.getInstance().getSelfPlayer().getUuid(), projectile.getInitialDirection()));
+        GameEngine.getInstance().getSelfClient().sendTCP(new PlayerShootPacket(
+                GameEngine.getInstance().getSelfPlayer().getUuid(), projectile.getInitialDirection(), projectile.getUuid()));
     }
 
     private void dash(Character self) {
@@ -105,7 +122,7 @@ public class InputManager {
         } else if (self.getBody().getLinearVelocity().x > 10) {
             self.applyForce(new Vector2(-150, self.getBody().getLinearVelocity().y), self.getBody().getPosition(), true);
         } else {
-            self.getBody().setLinearVelocity(0, self.getBody().getLinearVelocity().y);
+            self.setLinearVelocity(new Vector2(0, self.getBody().getLinearVelocity().y));
         }
 
         if (!self.getAnimator().getCurrentAnimation().equals(Animator.STANDING_ANIMATION) && self.isGrounded()) {

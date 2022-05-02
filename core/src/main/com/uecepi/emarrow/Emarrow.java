@@ -3,7 +3,7 @@ package com.uecepi.emarrow;
 import com.badlogic.gdx.Game;
 import com.uecepi.emarrow.assets.Assets;
 import com.uecepi.emarrow.display.Screens;
-import com.uecepi.emarrow.networking.account.AccountClient;
+import com.uecepi.emarrow.networking.AccountClient;
 
 public class Emarrow extends Game {
 

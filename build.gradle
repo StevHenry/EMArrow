@@ -63,6 +63,8 @@ project(":core") {
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         api "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
         api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+
+        implementation project(':network_api')
     }
 
     test {
@@ -90,7 +92,7 @@ project(":server") {
         implementation 'mysql:mysql-connector-java:8.0.28'
 
         //Project API
-        implementation project(':core')
+        implementation project(':network_api')
     }
 
     test {
@@ -118,10 +120,20 @@ project(":account_server") {
         implementation 'mysql:mysql-connector-java:8.0.28'
 
         //Project API
-        implementation project(':core')
+        implementation project(':network_api')
     }
 
     test {
         useJUnitPlatform()
+    }
+}
+
+project(":network_api") {
+    apply plugin: "java-library"
+
+    dependencies {
+        //Networking library
+        implementation 'com.esotericsoftware:kryonet:2.22.0-RC1'
+        api "com.badlogicgames.gdx:gdx:$gdxVersion"
     }
 }

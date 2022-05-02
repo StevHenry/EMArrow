@@ -1,36 +1,33 @@
 package com.uecepi.emarrow;
 
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.uecepi.emarrow.map.Map;
-import com.uecepi.emarrow.networking.account.PlayerDataPacket;
-import com.uecepi.emarrow.networking.game.GameClient;
+import com.uecepi.emarrow.network.GameState;
+import com.uecepi.emarrow.networking.GameClient;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class GameEngine {
 
     private static final GameEngine instance = new GameEngine();
-    private static final Vector2[] initialPositions = {new Vector2(25, 110), new Vector2(225, 150)
-            , new Vector2(425, 110), new Vector2(50, 100f)};
+
     private final InputManager inputManager;
-    private final ArrayList<Body> deadBodies;
+    private final List<Body> deadBodies;
     private final List<PlayerInfo> players;
+    private final List<Projectile> projectiles;
     private final GameClient gameClient;
     private final Map map;
+    private GameState state;
     private PlayerInfo self;
 
     public GameEngine() {
         this.inputManager = new InputManager();
+        this.map = new Map("map1");
+        this.projectiles = new ArrayList<>();
         this.deadBodies = new ArrayList<>();
         this.players = new ArrayList<>();
-        this.map = new Map("map1");
         this.gameClient = new GameClient();
     }
 
@@ -43,24 +40,14 @@ public class GameEngine {
      */
     public void startGame() {
         for (PlayerInfo player : players) {
-            player.getClientConnection().close();
+            //player.getClientConnection().close();
             map.getWorld().destroyBody(player.getCharacter().getBody());
         }
+        self.resetCharacter();
         deadBodies.clear();
+        projectiles.clear();
         players.clear();
         players.add(self);
-        //players.add(new PlayerInfo(new Character(), UUID.randomUUID(), "second"));
-    }
-
-    /**
-     * @return whether the round is finished or not
-     */
-    public boolean isRoundFinished() {
-        int playersAlive = 0;
-        for (PlayerInfo player : players) {
-            if (player.getCharacter().getLife() > 0) playersAlive++;
-        }
-        return GameState.isState(GameState.PLAYING) && playersAlive <= 1;
     }
 
     public Map getMap() {
@@ -69,14 +56,6 @@ public class GameEngine {
 
     public World getWorld() {
         return map.getWorld();
-    }
-
-    public Optional<PlayerInfo> seekWinner() {
-        if (players.stream().filter(pl -> pl.getCharacter().getLife() > 0).count() == 1) {
-            return players.stream().filter(pl -> pl.getCharacter().getLife() > 0).findFirst();
-        } else {
-            return Optional.empty();
-        }
     }
 
     public void addPlayer(PlayerInfo newPlayer) {
@@ -88,10 +67,6 @@ public class GameEngine {
         players.remove(player);
     }
 
-    public int getPlayersCount() {
-        return players.size();
-    }
-
     public List<Character> getCharacters() {
         return players.stream().map(PlayerInfo::getCharacter).collect(Collectors.toList());
     }
@@ -100,40 +75,116 @@ public class GameEngine {
         return inputManager;
     }
 
-    public ArrayList<Body> getDeadBodies() {
-        return deadBodies;
+    /**
+     * Queues the kill of the specified body
+     *
+     * @param body Body to kill
+     */
+    public void killBody(Body body) {
+        deadBodies.add(body);
     }
 
+    /**
+     * Sets inactive the bodies from the {@link #deadBodies}
+     */
+    public void disableBodies() {
+        deadBodies.forEach(body -> body.setActive(false));
+    }
+
+    /**
+     * Empties the {@link #deadBodies}'s list
+     */
+    public void clearDeadBodies() {
+        deadBodies.clear();
+    }
+
+    /**
+     * Adds a projectile to the {@link #projectiles} list
+     *
+     * @param projectile projectile to add
+     */
+    public void addProjectile(Projectile projectile) {
+        projectiles.add(projectile);
+    }
+
+
+    /**
+     * Removes a projectile to the {@link #projectiles} list
+     *
+     * @param projectile projectile to remove
+     */
+    public void removeProjectile(Projectile projectile) {
+        projectiles.remove(projectile);
+    }
+
+    /**
+     * @return An unmodifiable list of the projectiles
+     */
+    public List<Projectile> getProjectiles() {
+        return Collections.unmodifiableList(projectiles);
+    }
+
+
+    /**
+     * @param entityUUID UUID of the projectile
+     * @return an Optional of the {@link Projectile} linked to the specified UUID
+     */
+    public Optional<Projectile> getProjectileByUUID(UUID entityUUID) {
+        return projectiles.stream().filter(projectile -> projectile.getUuid().equals(entityUUID)).findFirst();
+    }
+
+    /**
+     * @return the self player
+     */
     public PlayerInfo getSelfPlayer() {
         return self;
     }
 
+    /**
+     * Sets the self player
+     *
+     * @param info self player info
+     */
     public void setSelfPlayer(PlayerInfo info) {
         this.self = info;
     }
 
+    /**
+     * @param uuid UUID of the Player
+     * @return An Optional of {@link PlayerInfo} linked to the specified UUID
+     */
     public Optional<PlayerInfo> getPlayerByUUID(UUID uuid) {
         return players.stream().filter(playerInfo -> playerInfo.getUuid().equals(uuid)).findFirst();
     }
 
-    public GameClient getGameClient() {
+    /**
+     * @return the {@link GameClient} of the self player
+     */
+    public GameClient getSelfClient() {
         return gameClient;
     }
 
-    public void gameClientProcedure() {
-        gameClient.sendTCP(new PlayerDataPacket(self.getUuid(), self.getName()));
+    /**
+     * @return the unmodifiable {@link #players} attribute
+     */
+    public List<PlayerInfo> getPlayers(){
+        return Collections.unmodifiableList(players);
     }
 
-    public void preparingProcedure() {
-        for (int i = 0; i < players.size(); i++) {
-            if (i < initialPositions.length) {
-                int index = players.get(i).getCharacter().getAnimator().getCharacterNumber() - 1;
-                players.get(i).getCharacter().setTransform(initialPositions[index].x, initialPositions[index].y, 0);
-            } else {
-                int last = initialPositions.length - 1;
-                players.get(i).getCharacter().setTransform(initialPositions[last].x, initialPositions[last].y, 0);
-            }
-        }
-        GameState.setState(GameState.PLAYING);
+    /**
+     * Sets the state of the current game
+     *
+     * @param newState new state
+     */
+    public void setState(GameState newState) {
+        this.state = newState;
+    }
+
+    /**
+     * @param compared compared state
+     * @return whether the current state matches the specified one
+     */
+    public boolean isState(GameState compared) {
+        return state == compared;
     }
 }

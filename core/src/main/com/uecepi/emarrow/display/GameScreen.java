@@ -1,21 +1,24 @@
 package com.uecepi.emarrow.display;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.uecepi.emarrow.Character;
 import com.uecepi.emarrow.*;
+import com.uecepi.emarrow.assets.Assets;
 import com.uecepi.emarrow.display.menus.ScreenMenu;
 import com.uecepi.emarrow.map.Map;
 
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
 
 public class GameScreen extends ScreenMenu {
 
@@ -29,23 +32,44 @@ public class GameScreen extends ScreenMenu {
 
     private long startingTimeGameOver = 0;
 
+    private Label titleLabel, subtitleLabel;
+    private HashMap<Character, Label> names;
+
     public GameScreen() {
         super();
         batch = new SpriteBatch();
+        names = new HashMap<>();
         debugRenderer = new Box2DDebugRenderer();
         GameEngine gameEngine = GameEngine.getInstance();
         //gameEngine.startGame();
         gameEngine.getWorld().setContactListener(new CollisionListener());
+        titleLabel = new Label(null, skin);
+        titleLabel.setWrap(true);
+        titleLabel.setFontScale(1);
+        titleLabel.setBounds(100, 0, 500, 260);
+
+        subtitleLabel = new Label(null, skin);
+        subtitleLabel.setWrap(true);
+        subtitleLabel.setFontScale(1);
+        subtitleLabel.setBounds(100, -25, 500, 260);
     }
 
     @Override
     public void show() {
         startingTimeGameOver = 0;
         Gdx.input.setInputProcessor(GameEngine.getInstance().getInputManager().getController());
+        names.clear();
+        skin.getFont("default-font").getData().setScale(0.33f, 0.33f);
     }
 
     @Override
     protected void create() {
+        table.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        table.setFillParent(true);
+        table.top().left();
+        table.add(titleLabel).size(200, 100).center();
+        table.row();
+        table.add(subtitleLabel).size(100, 50).center().padTop(50);
     }
 
     @Override
@@ -56,7 +80,6 @@ public class GameScreen extends ScreenMenu {
 
         // Easy access variables
         GameEngine gameEngine = GameEngine.getInstance();
-        World world = gameEngine.getWorld();
 
         //Init batches
         Box2D.init();
@@ -68,53 +91,40 @@ public class GameScreen extends ScreenMenu {
 
         // Entities
         for (Character character : gameEngine.getCharacters()) {
-            character.update();
-            character.getAnimator().render(batch,
-                    (int) character.getBody().getPosition().x - (Animator.width / 2),
-                    (int) character.getBody().getPosition().y - (Animator.height / 2));
-            character.getHealthBar().draw(batch, 1);
-        }
-        for (Character player : GameEngine.getInstance().getCharacters()) {
-            for (Projectile projectile : player.getProjectilesShot()) {
-                batch.draw(projectile.getTexture(),
-                        projectile.getBody().getPosition().x - (projectile.getTexture().getRegionWidth() / 2f),
-                        projectile.getBody().getPosition().y - (projectile.getTexture().getRegionHeight() / 2f),
-                        projectile.getTexture().getRegionWidth() / 2f, projectile.getTexture().getRegionHeight() / 2f,
-                        projectile.getTexture().getRegionWidth(), projectile.getTexture().getRegionHeight(),
-                        1, 1, projectile.getRotation(), true);
+            if (character.isAlive()) {
+                character.update();
+                HealthBar healthBar = character.getHealthBar();
+                character.getAnimator().render(batch,
+                        (int) character.getBody().getPosition().x - (Animator.width / 2),
+                        (int) character.getBody().getPosition().y - (Animator.height / 2));
+                healthBar.draw(batch, 1);
+                if (!names.containsKey(character))
+                    names.put(character, new Label(character.getInfo().getName(), skin));
+
+                names.get(character).setBounds(healthBar.getX(), healthBar.getY() + 10f,
+                        names.get(character).getPrefWidth(), names.get(character).getPrefHeight());
+                names.get(character).draw(batch, 1);
             }
         }
 
-        // If game is ended
-        if (gameEngine.isRoundFinished()) {
-            if (startingTimeGameOver == 0)
-                startingTimeGameOver = new Date().getTime();
-            long remainingTime = (3 - ((new Date().getTime() - startingTimeGameOver) / 1000));
-            Optional<PlayerInfo> winner = gameEngine.seekWinner();
-            if(winner.isPresent()){
-                Label gameFinished = new Label("Game is over ! Player %s won !\nBack to the main menu in %d"
-                        .formatted(winner.get().getName(), remainingTime), skin);
-                gameFinished.setWrap(true);
-                table.add(gameFinished).row();
-                gameFinished.setFontScale(1);
-                gameFinished.setBounds(100, 0, 500, 260);
-                gameFinished.draw(batch, 1f);
-                if (remainingTime <= 0) {
-                    Gdx.app.postRunnable(() -> {
-                        GameEngine.getInstance().getGameClient().disconnect();
-                        Screens.setScreen(Screens.MAIN_MENU);
-                        Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
-                    });
-                }
-            }
+        for (Projectile projectile : gameEngine.getProjectiles()) {
+            int width = projectile.getTexture().getRegionWidth(), height = projectile.getTexture().getRegionHeight();
+            Vector2 position = projectile.getBody().getPosition();
+            batch.draw(projectile.getTexture(), position.x - (width / 2f), position.y - (height / 2f),
+                    width / 2f, height / 2f, width, height, 1, 1, projectile.getRotation(), true);
         }
+
+        titleLabel.draw(batch, 1f);
+        subtitleLabel.draw(batch, 1f);
+
         batch.end();
-        debugRenderer.render(world, gameEngine.getMap().getCamera().combined);
+        //debugRenderer.render(world, gameEngine.getMap().getCamera().combined);
     }
 
     private void update() {
-        Map map = GameEngine.getInstance().getMap();
-        GameEngine.getInstance().getInputManager().processInput();
+        GameEngine engine = GameEngine.getInstance();
+        Map map = engine.getMap();
+        engine.getInputManager().processInput();
         destroyDeadBodies();
         destroyInactiveBodies(map.getWorld());
         map.getWorld().step(TIME_STEP, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
@@ -123,10 +133,8 @@ public class GameScreen extends ScreenMenu {
             player.getHealthBar().setPosition(player.getBody().getPosition().x - Animator.width / 2f,
                     player.getBody().getPosition().y + Animator.height / 2f);
             player.getHealthBar().updateVisualValue();
-            for (Projectile projectile : player.getProjectilesShot()) {
-                projectile.update();
-            }
         }
+        engine.getProjectiles().forEach(Projectile::update);
     }
 
     @Override
@@ -161,12 +169,10 @@ public class GameScreen extends ScreenMenu {
     }
 
     private void destroyDeadBodies() {
+        GameEngine engine = GameEngine.getInstance();
         Gdx.app.postRunnable(() -> {
-            for (int i = GameEngine.getInstance().getDeadBodies().size() - 1; i >= 0; i--) {
-                GameEngine.getInstance().getDeadBodies().get(i).setActive(false);
-                //world.destroyBody(GameEngine.getInstance().getDeadBodies().get(i).getBody());
-            }
-            GameEngine.getInstance().getDeadBodies().clear();
+            engine.disableBodies();
+            engine.clearDeadBodies();
         });
     }
 
@@ -180,4 +186,11 @@ public class GameScreen extends ScreenMenu {
         }
     }
 
+    public void setTitle(String title) {
+        titleLabel.setText(title);
+    }
+
+    public void setSubtitle(String subtitle) {
+        subtitleLabel.setText(subtitle);
+    }
 }

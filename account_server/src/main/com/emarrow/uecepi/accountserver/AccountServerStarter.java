@@ -1,7 +1,7 @@
 package com.emarrow.uecepi.accountserver;
 
 import com.esotericsoftware.kryonet.Server;
-import com.uecepi.emarrow.networking.PacketManager;
+import com.uecepi.emarrow.network.PacketManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

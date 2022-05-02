@@ -15,8 +15,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.uecepi.emarrow.Emarrow;
 import com.uecepi.emarrow.display.Screens;
-import com.uecepi.emarrow.networking.account.AccountClient;
-import com.uecepi.emarrow.networking.account.AccountCreationPacket;
+import com.uecepi.emarrow.network.account.AccountCreationPacket;
+import com.uecepi.emarrow.networking.AccountClient;
 
 /**
  * Menu class to sign in.
@@ -67,7 +67,7 @@ public class SignInMenu extends ScreenMenu {
     public void responseReceived(boolean response) {
         if (response) {
             Gdx.app.log("signin", "Client registered!");
-            ((LogInMenu)Screens.LOG_IN_MENU.getScreenMenu()).setLoggedIn();
+            ((LogInMenu) Screens.LOG_IN_MENU.getScreenMenu()).setLoggedIn();
             Gdx.app.postRunnable(() -> Screens.setScreen(Screens.CONNECTION_MENU));
         } else {
             addErrorMessage("Cannot create an account!");

@@ -2,7 +2,8 @@ package com.uecepi.emarrow;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.physics.box2d.*;
-import com.uecepi.emarrow.audio.MusicManager;
+import com.uecepi.emarrow.network.game.player_action.PlayerDamagedPacket;
+import com.uecepi.emarrow.network.game.player_action.ProjectileCollisionPacket;
 
 public class CollisionListener implements ContactListener {
 
@@ -10,7 +11,7 @@ public class CollisionListener implements ContactListener {
     public void beginContact(Contact contact) {
         Fixture fixtureA = contact.getFixtureA();
         Fixture fixtureB = contact.getFixtureB();
-        Character self = GameEngine.getInstance().getCharacters().get(0);
+        Character self = GameEngine.getInstance().getSelfPlayer().getCharacter();
 
         if (isFixtureCombinationOneSens(fixtureA, fixtureB, "Ground", "GroundHitBox")
                 || isFixtureCombinationOneSens(fixtureA, fixtureB, "GroundHitBox", "Character")) {
@@ -25,23 +26,27 @@ public class CollisionListener implements ContactListener {
                 Character character = getCharacterByFixture(fixtureA, fixtureB);
                 Projectile projectile = getProjectileByFixture(fixtureA, fixtureB);
 
-                //Cancel auto-kill
-                if (!projectile.getShooter().equals(character)) {
-                    MusicManager.playSE(MusicManager.TOUCHED_SE);
-                    character.damage(projectile.getDamage());
+                if (!character.isAlive()) {
                     destroyProjectile(projectile);
+                    return;
                 }
 
+                if (projectile.getShooter().equals(self) && character != self) {
+                    GameEngine.getInstance().getSelfClient().sendTCP(new ProjectileCollisionPacket(projectile.getUuid()));
+                    GameEngine.getInstance().getSelfClient().sendTCP(
+                            new PlayerDamagedPacket(character.getInfo().getUuid(), projectile.getDamage()));
+                    destroyProjectile(projectile);
+                }
             } else if (isFixtureCombination(fixtureA, fixtureB, "Ground", "Projectile")) {
-                Projectile projectile = getProjectileByFixture(fixtureA, fixtureB);
-                destroyProjectile(projectile);
+                destroyProjectile(getProjectileByFixture(fixtureA, fixtureB));
             }
         }
     }
 
     private void destroyProjectile(Projectile projectile) {
-        projectile.getShooter().getProjectilesShot().remove(projectile);
-        GameEngine.getInstance().getDeadBodies().add(projectile.getBody());
+        GameEngine engine = GameEngine.getInstance();
+        engine.removeProjectile(projectile);
+        engine.killBody(projectile.getBody());
     }
 
     /**
@@ -73,6 +78,7 @@ public class CollisionListener implements ContactListener {
 
     /**
      * Casts fixtureA's or fixtureB's user data into Projectile
+     *
      * @param fixtureA first fixture to try
      * @param fixtureB second fixture to try
      * @return the Projectile object or null
@@ -89,6 +95,7 @@ public class CollisionListener implements ContactListener {
 
     /**
      * Casts fixtureA's or fixtureB's user data into Character
+     *
      * @param fixtureA first fixture to try
      * @param fixtureB second fixture to try
      * @return the Character object or null

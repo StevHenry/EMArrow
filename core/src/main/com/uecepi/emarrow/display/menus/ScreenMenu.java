@@ -32,6 +32,7 @@ public abstract class ScreenMenu implements Screen {
         stage.addActor(table);
 
         skin = Assets.getAssetManager().get(Assets.SKIN_VIS);
+        skin.getFont("default-font").getData().setScale(1f,1f);
     }
 
     @Override

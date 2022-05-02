@@ -7,9 +7,8 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.uecepi.emarrow.Emarrow;
-import com.uecepi.emarrow.display.Screens;
 import com.uecepi.emarrow.audio.MusicManager;
+import com.uecepi.emarrow.display.Screens;
 
 /**
  * Main Menu class.
@@ -87,8 +86,6 @@ public class MainMenu extends ScreenMenu {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Screens.setScreen(Screens.LOG_IN_MENU);
-                Emarrow.getInstance().getAccountClient()
-                        .setLogInMenuInstance((LogInMenu) Screens.LOG_IN_MENU.getScreenMenu());
             }
         });
         table.add(logInButton).height(80).width(200).padTop(20).row();
@@ -103,8 +100,6 @@ public class MainMenu extends ScreenMenu {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Screens.setScreen(Screens.SIGN_IN_MENU);
-                Emarrow.getInstance().getAccountClient()
-                        .setSignInMenuInstance((SignInMenu) Screens.SIGN_IN_MENU.getScreenMenu());
             }
         });
     }
@@ -113,5 +108,11 @@ public class MainMenu extends ScreenMenu {
         //Titre du menu : Image au nom du jeu
         titleImage = new Image(new Texture("images/title.png"));
         table.add(titleImage).row();
+    }
+
+    @Override
+    public void show() {
+        super.show();
+        skin.getFont("default-font").getData().setScale(1f, 1f);
     }
 }

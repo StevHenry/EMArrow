@@ -15,8 +15,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.uecepi.emarrow.Emarrow;
 import com.uecepi.emarrow.display.Screens;
-import com.uecepi.emarrow.networking.account.AccountClient;
-import com.uecepi.emarrow.networking.account.IdentificationPacket;
+import com.uecepi.emarrow.network.account.IdentificationPacket;
+import com.uecepi.emarrow.networking.AccountClient;
 
 /**
  * Menu class to log in.
@@ -33,7 +33,7 @@ public class LogInMenu extends ScreenMenu {
     Label idLabel;
     Label passwordLabel;
     Label errorMessage;
-    private boolean logged = false; //TODO: change to false
+    private boolean logged = false;
 
     public LogInMenu() {
         super();
@@ -133,7 +133,7 @@ public class LogInMenu extends ScreenMenu {
         }
     }
 
-    public void setLoggedIn(){
+    public void setLoggedIn() {
         logged = true;
         Emarrow.getInstance().getAccountClient().disconnect();
     }

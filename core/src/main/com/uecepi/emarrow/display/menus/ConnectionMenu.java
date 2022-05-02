@@ -1,6 +1,7 @@
 package com.uecepi.emarrow.display.menus;
 
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -14,6 +15,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.uecepi.emarrow.GameEngine;
 import com.uecepi.emarrow.display.Screens;
+import com.uecepi.emarrow.network.account.PlayerDataPacket;
+import com.uecepi.emarrow.network.game.update.ConnectionResultPacket;
 
 /**
  * Menu class to connect to server.
@@ -46,25 +49,21 @@ public class ConnectionMenu extends ScreenMenu {
      */
     private void connection() {
         GameEngine gameEngine = GameEngine.getInstance();
-        if (gameEngine.getGameClient().connect(connection.getText())) {
-            lastIP = connection.getText();
-            gameEngine.gameClientProcedure();
-            //Resets the inputs
-            gameEngine.getInputManager().resetInputs();
-            //Resets the game
-            gameEngine.startGame();
-            //Shows the Game Screen
-            Screens.setScreen(Screens.GAME_SCREEN);
+        if (!gameEngine.getSelfClient().connect(connection.getText())) {
+            addErrorMessage("Server unreachable! Please check the address and ports!");
         } else {
-            addErrorMessage();
+            gameEngine.getSelfClient().sendTCP(new PlayerDataPacket(gameEngine.getSelfPlayer().getUuid(),
+                    gameEngine.getSelfPlayer().getName()));
         }
     }
 
     /**
      * Adding message error because of a failed connection to server.
+     *
+     * @param error Error created details
      */
-    public void addErrorMessage() {
-        errorMessage = new Label("Connection to server failed", skin);
+    public void addErrorMessage(String error) {
+        errorMessage = new Label("Connection to server failed. %s".formatted(error), skin);
         errorMessage.setColor(new Color(1f, 0.5f, 0f, 1f));
         secondTable.add(errorMessage);
         secondTable.padTop(5).row();
@@ -108,5 +107,24 @@ public class ConnectionMenu extends ScreenMenu {
         secondTable.setBackground(textureRegionDrawableBg);
         table.add(secondTable).height(300).width(400);
         bgPixmap.dispose();
+    }
+
+    public void responseReceived(ConnectionResultPacket.ResultMeaning meaning) {
+        Gdx.app.log("connection_menu", "Result=%s".formatted(meaning.name()));
+        if (meaning == ConnectionResultPacket.ResultMeaning.ACCEPTED) {
+            Gdx.app.log("connection_menu", "Client logged in!");
+            lastIP = connection.getText();
+            GameEngine gameEngine = GameEngine.getInstance();
+            Gdx.app.postRunnable(() -> {
+                //Resets the inputs
+                gameEngine.getInputManager().resetInputs();
+                //Resets the game
+                gameEngine.startGame();
+                //Shows the Game Screen
+                Screens.setScreen(Screens.GAME_SCREEN);
+            });
+        } else {
+            addErrorMessage(meaning.name());
+        }
     }
 }

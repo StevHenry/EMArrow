@@ -1,2 +1,2 @@
-include 'desktop', 'core', 'server', 'account_server'
+include 'desktop', 'core', 'server', 'account_server', 'network_api'
 

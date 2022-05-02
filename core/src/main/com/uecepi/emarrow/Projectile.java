@@ -10,38 +10,37 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 
+import java.util.UUID;
+
 public class Projectile {
 
     private final float speed;
     private final int damage;
     private final Sprite texture;
     private final Character shooter;
+    private final UUID uuid;
+    private Vector2 initialDirection;
     private Body body;
 
-    private Vector2 initialDirection;
-
     /**
-     * @param shooter {@link Character} who launches the projectile
+     * @param direction normalized vector of the initial direction of the projectile
+     *                  Has to be null if it has to be calculated
+     * @param shooter   {@link Character} who launches the projectile
      */
-    public Projectile(Character shooter) {
+    public Projectile(Character shooter, Vector2 direction, UUID uuid) {
         this.texture = new Sprite(new Texture(Gdx.files.internal("images/char/arrow.png")));
         this.shooter = shooter;
         this.speed = 6;
         this.damage = 25;
+        this.uuid = uuid;
         this.createHitBox();
-        this.calculateDirection();
+        if (direction == null) {
+            this.calculateDirection();
+        } else {
+            initialDirection = direction;
+        }
         body.setBullet(true);
 
-    }
-
-    /**
-     * Constructor used when a packet needs to recreate the projectile launched externally
-     * @param shooter  {@link Character} who launches the projectile
-     * @param direction normalized vector of the initial direction of the projectile
-     */
-    public Projectile(Character shooter, Vector2 direction) {
-        this(shooter);
-        this.initialDirection = direction;
     }
 
     /**
@@ -138,5 +137,12 @@ public class Projectile {
      */
     public Body getBody() {
         return body;
+    }
+
+    /**
+     * @return the entity UID
+     */
+    public UUID getUuid() {
+        return uuid;
     }
 }
