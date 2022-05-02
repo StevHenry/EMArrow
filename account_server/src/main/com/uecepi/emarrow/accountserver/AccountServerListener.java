@@ -1,4 +1,4 @@
-package com.emarrow.uecepi.accountserver;
+package com.uecepi.emarrow.accountserver;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;

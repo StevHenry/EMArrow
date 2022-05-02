@@ -1,6 +1,6 @@
 package com.emarrow.uecepi;
 
-import com.emarrow.uecepi.accountserver.DatabaseConnector;
+import com.uecepi.emarrow.accountserver.DatabaseConnector;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -108,7 +108,7 @@ public class DatabaseTest {
         LOGGER.debug("Start of getUUIDTest");
         DatabaseConnector connector = DatabaseConnector.getInstance();
         connector.connect();
-        Assertions.assertNotEquals(connector.getPlayerData("demoAccount"), "00000000-0000-0000-0000-00000");
+        Assertions.assertNotEquals(connector.getPlayerData("demoAccount")[0], "00000000-0000-0000-0000-00000");
         LOGGER.debug("End of getUUIDTest.");
     }
 }

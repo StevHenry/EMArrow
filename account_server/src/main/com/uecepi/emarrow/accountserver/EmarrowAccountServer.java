@@ -1,4 +1,4 @@
-package com.emarrow.uecepi.accountserver;
+package com.uecepi.emarrow.accountserver;
 
 public class EmarrowAccountServer {
 

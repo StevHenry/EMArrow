@@ -1,4 +1,4 @@
-package com.emarrow.uecepi.accountserver;
+package com.uecepi.emarrow.accountserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,7 +76,7 @@ public class DatabaseConnector {
         Map<String, String> properties = new HashMap<>();
         Properties dbProperties = new Properties();
 
-        dbProperties.load(new FileInputStream("../properties/credentials.properties"));
+        dbProperties.load(new FileInputStream("./properties/credentials.properties"));
         for (String key : new String[]{"ip", "port", "identifier", "password", "database_name"}) {
             properties.put(key, dbProperties.getProperty(key));
         }
