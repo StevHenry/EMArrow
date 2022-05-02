@@ -3,7 +3,9 @@ package com.uecepi.emarrow.accountserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -75,7 +77,20 @@ public class DatabaseConnector {
     private Map<String, String> loadConfiguration() throws IOException {
         Map<String, String> properties = new HashMap<>();
         Properties dbProperties = new Properties();
-
+        if (new File("./properties").mkdir()) {
+            File f = new File("./properties/credentials.properties");
+            if (f.createNewFile()) {
+                f.setWritable(true);
+                FileWriter myWriter = new FileWriter(f);
+                myWriter.write("ip=url.com\n" +
+                        "port=3306\n" +
+                        "identifier=id\n" +
+                        "password=pass\n" +
+                        "database_name=mytable\n");
+                myWriter.close();
+                f.setWritable(false);
+            }
+        }
         dbProperties.load(new FileInputStream("./properties/credentials.properties"));
         for (String key : new String[]{"ip", "port", "identifier", "password", "database_name"}) {
             properties.put(key, dbProperties.getProperty(key));
@@ -188,13 +203,13 @@ public class DatabaseConnector {
      * @param identifier player account identifier
      * @return a String array containing [uuid, nickname]
      */
-    public String[] getPlayerData(String identifier){
+    public String[] getPlayerData(String identifier) {
         String[] data = {"00000000-0000-0000-0000-00000", ""};
         try {
             PreparedStatement stmt = connection.prepareStatement("SELECT uuid, nickname FROM accounts WHERE identifier=?");
             stmt.setString(1, identifier);
             ResultSet result = stmt.executeQuery();
-            if (result.next()){
+            if (result.next()) {
                 data[0] = result.getString("uuid");
                 data[1] = result.getString("nickname");
             }
